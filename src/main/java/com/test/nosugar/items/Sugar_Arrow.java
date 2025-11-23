@@ -2,6 +2,7 @@ package com.test.nosugar.items;
 
 import com.test.nosugar.utils.ColorUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -10,14 +11,14 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class Block_Suger_Item extends Item {
-    public Block_Suger_Item(Properties props) {
+public class Sugar_Arrow extends ArrowItem {
+    public Sugar_Arrow(Properties props) {
         super(props);
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = Component.translatable("item.nosuger.block_suger.name").getString();
+        String text = "Sugar Arrow";
         var result = Component.empty();
         long time = System.currentTimeMillis() / 50;
 
@@ -32,7 +33,7 @@ public class Block_Suger_Item extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         long gameTime = (level != null) ? level.getGameTime() : 0;
-        String desc = Component.translatable("item.nosuger.block_suger.desc").getString();
+        String desc = Component.translatable("item.nosugar.sugar_arrow.desc").getString();
         var result = Component.empty();
         long time = System.currentTimeMillis() / 50;
 
@@ -44,3 +45,4 @@ public class Block_Suger_Item extends Item {
         tooltip.add(1, result);
     }
 }
+

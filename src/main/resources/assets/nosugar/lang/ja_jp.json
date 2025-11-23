@@ -1,10 +1,9 @@
 {
-  "death.attack.erase": "%1$s は消しゴムのカスになった",
-  "death.attack.erase.player": "%1$s は %2$s に消しゴムのカスにされた",
+  "death.attack.erase": "%1$s 砂糖になった",
+  "death.attack.erase.player": "%1$s は %2$s に砂糖にされた",
   "item.nosuger.null_ingot": "?インゴット",
-  "item.nosuger.null_ingot.desc": "何かよー分からんけど柔らかいインゴット　強そう",
-  "item.nosuger.eraser_item": "Eraser.",
-  "item.nosuger.eraser_item.desc": "なんか柔らかい剣っぽいやつ",
+  "item.nosuger.null_ingot.desc": "うぇええええええええええええええええええい",
+  "item.nosuger.sugar_sword.desc": "致死量のお砂糖をどうぞ",
   "item.nosuger.world_destroyer": "Snack Destroyer",
   "item.nosuger.world_destroyer.desc": "おじいちゃん?おやつはもう食べたでしょう?",
   "key.categories.world_destroyer": "ワールドデストロイヤー",
@@ -13,5 +12,13 @@
   "item.erasers.sneak_use": "スニークしながら使用したとき:",
 
   "item.nosuger.eraser_eraser": "Eraser 消しゴム",
-  "item.nosuger.eraser_eraser.desc": "ん?何いってんだって?  ...知らんな。"
+  "item.nosuger.eraser_eraser.desc": "ん?何いってんだって?  ...知らんな。",
+
+  "item.nosuger.block_suger.name": "角砂糖",
+  "item.nosuger.block_suger.desc": "かじりつきたい ",
+
+  "item.nosugar.sugar_sword.name": "砂糖の剣",
+
+  "item.nosugar.sugar_arrow.desc": "角砂糖をグサッ! 相手は死ぬ!",
+  "item.nosugar.sugar_bow.desc": "角砂糖をシュー!!\n超☆エキサイティン!"
 }

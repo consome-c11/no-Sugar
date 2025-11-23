@@ -1,6 +1,6 @@
 package com.test.nosugar.additional;
 
-/*mport com.test.eraser.NoSuger;
+/*mport com.test.eraser.NoSugar;
 import io.redspace.ironsspellbooks.api.spells.SchoolType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
@@ -26,20 +26,20 @@ import java.util.function.Supplier;
 
 public class SchoolRegistry {
     public static final ResourceKey<net.minecraft.core.Registry<SchoolType>> SCHOOL_REGISTRY_KEY =
-            ResourceKey.createRegistryKey(new ResourceLocation(NoSuger.MODID, "schools"));
+            ResourceKey.createRegistryKey(new ResourceLocation(NoSugar.MODID, "schools"));
 
     private static final DeferredRegister<SchoolType> SCHOOLS =
-            DeferredRegister.create(SCHOOL_REGISTRY_KEY, NoSuger.MODID);
+            DeferredRegister.create(SCHOOL_REGISTRY_KEY, NoSugar.MODID);
 
     public static final Supplier<IForgeRegistry<SchoolType>> REGISTRY =
             SCHOOLS.makeRegistry(() -> new RegistryBuilder<SchoolType>().disableSaving().disableOverrides());
 
-    public static final ResourceLocation ANCIENT_RESOURCE = new ResourceLocation(NoSuger.MODID, "ancient");
+    public static final ResourceLocation ANCIENT_RESOURCE = new ResourceLocation(NoSugar.MODID, "ancient");
 
     public static final RegistryObject<SchoolType> ANCIENT;
 
     static {
-        TagKey<Item> ancientFocusTag = TagKey.create(Registries.ITEM, new ResourceLocation(NoSuger.MODID, "ancient_focus"));
+        TagKey<Item> ancientFocusTag = TagKey.create(Registries.ITEM, new ResourceLocation(NoSugar.MODID, "ancient_focus"));
 
         LazyOptional<Attribute> ancientSpellPower = LazyOptional.<Attribute>empty();
         LazyOptional<Attribute> ancientMagicResist = LazyOptional.<Attribute>empty();

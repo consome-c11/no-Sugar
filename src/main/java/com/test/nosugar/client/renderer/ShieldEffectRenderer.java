@@ -2,7 +2,7 @@ package com.test.nosugar.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.RenderUtils;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ShieldEffectRenderer {
     private static final ResourceLocation NOISE_TEXTURE =
-            Res.getResource(NoSuger.MODID, "textures/misc/noise_overlay.png");
+            Res.getResource(NoSugar.MODID, "textures/misc/noise_overlay.png");
 
     private static final List<ShieldInstance> activeShields = new ArrayList<>();
 

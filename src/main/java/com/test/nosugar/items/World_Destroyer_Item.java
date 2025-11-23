@@ -65,7 +65,7 @@ public class World_Destroyer_Item extends PickaxeItem {
             }
         }
 
-        String desc = Component.translatable("item.nosuger.world_destroyer.desc").getString();
+        String desc = Component.translatable("item.nosugar.world_destroyer.desc").getString();
         String[] parts = desc.split(" ");
         var waveLineNormal = Component.empty();
 

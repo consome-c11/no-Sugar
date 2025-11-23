@@ -2,8 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "nosugar:item/block_suger",
-		"particle": "nosugar:item/block_suger"
+		"0": "nosugar:item/block_sugar",
+		"particle": "nosugar:item/block_sugar"
 	},
 	"elements": [
 		{

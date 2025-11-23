@@ -1,7 +1,7 @@
 package com.test.nosugar.additional;
 
 import com.mojang.brigadier.Command;
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.ILivingEntity;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -9,7 +9,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = NoSuger.MODID)
+@Mod.EventBusSubscriber(modid = NoSugar.MODID)
 public class ModCommands {
 
     @SubscribeEvent

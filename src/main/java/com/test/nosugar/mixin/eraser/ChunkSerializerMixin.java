@@ -43,7 +43,7 @@ public class ChunkSerializerMixin {
         acc.getKnownUuids().removeIf(uuid -> {
             Entity e = level.getEntity(uuid);
             if ((e instanceof ILivingEntity living) && living.isErased() && !Config.isNormalDieEntity(e))
-                System.out.println("[NoSuger] Removed entity UUID from knownUuids: " + uuid);
+                System.out.println("[NoSugar] Removed entity UUID from knownUuids: " + uuid);
             return (e instanceof ILivingEntity living) && living.isErased();
         });
 

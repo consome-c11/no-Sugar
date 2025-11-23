@@ -29,7 +29,7 @@ public class ClientPacketHandler {
             }
 
             if (((LivingEntity)e) instanceof ILivingEntity erased) {
-                //LOGGER.info("[NoSuger] Received EraseEntityPacket for: " + e.getName().getString());
+                //LOGGER.info("[NoSugar] Received EraseEntityPacket for: " + e.getName().getString());
                 //erased.setErased(true);
                 erased.markErased(e.getUUID());
 

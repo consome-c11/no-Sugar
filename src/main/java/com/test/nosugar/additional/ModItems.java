@@ -1,6 +1,6 @@
 package com.test.nosugar.additional;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.items.*;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, NoSuger.MODID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
     public static final DeferredRegister<Item> ADDON_ITEMS =
-            DeferredRegister.create(ForgeRegistries.ITEMS, NoSuger.MODID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
     public static final RegistryObject<Item> ERASER_ITEM =
-            ITEMS.register("eraser_item", () -> new Eraser_Item(new Item.Properties().stacksTo(1)));
+            ITEMS.register("eraser_item", () -> new SugarSword_Item(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> WORLD_DESTROYER =
             ITEMS.register("world_destroyer", () -> new World_Destroyer_Item(new Item.Properties()));
@@ -45,8 +45,12 @@ public class ModItems {
             ADDON_ITEMS.register("eraser_eraser", () -> new Eraser_Eraser(new Item.Properties().stacksTo(1)));*/
 
     public static final RegistryObject<Item> BLOCK_SUGER_ITEM =
-            ITEMS.register("block_suger", () -> new Block_Suger_Item(new Item.Properties().stacksTo(128)));
+            ITEMS.register("block_suger", () -> new Block_Suger_Item(new Item.Properties().stacksTo(127)));
 
+    public static final RegistryObject<Item> SUGAR_ARROW =
+            ITEMS.register("sugar_arrow", () -> new Sugar_Arrow(new Item.Properties().stacksTo(127)));
+    public static final RegistryObject<Item> SUGAR_BOW =
+            ITEMS.register("sugar_bow", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
     public static List<Item> getAllItems() {
         return ITEMS.getEntries().stream()
                 .map(RegistryObject::get)

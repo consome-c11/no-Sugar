@@ -292,7 +292,7 @@ public class ClientEvents {
                 if (mc == null || mc.player == null || mc.level == null) {
                 }
 
-                //System.out.println(Component.literal("[NoSuger] Prevented joining erased entity to level: " + event.getEntity().toString()));
+                //System.out.println(Component.literal("[NoSugar] Prevented joining erased entity to level: " + event.getEntity().toString()));
                 //event.setCanceled(true);
             }
         }

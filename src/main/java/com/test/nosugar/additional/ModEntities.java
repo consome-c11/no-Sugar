@@ -1,6 +1,6 @@
 package com.test.nosugar.additional;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.entity.Sand_Bag;
 import net.minecraft.world.entity.EntityType;
@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
-            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, NoSuger.MODID);
+            DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, NoSugar.MODID);
 
     public static final RegistryObject<EntityType<HomingArrowEntity>> HOMING_ARROW =
             ENTITIES.register("homing_arrow",

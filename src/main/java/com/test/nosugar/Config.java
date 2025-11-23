@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(modid = NoSuger.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
@@ -34,7 +34,7 @@ public class Config {
             .define("client_message", false);
 
     public static final ForgeConfigSpec.BooleanValue SKIP_DEATH_ANIMATION = BUILDER
-            .comment("If true to skip the death animation of entities killed by the NoSuger")
+            .comment("If true to skip the death animation of entities killed by the NoSugar")
             .define("skipAnimation", false);
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();

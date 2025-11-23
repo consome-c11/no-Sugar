@@ -2,6 +2,9 @@ package com.test.nosugar.entity;
 
 import com.test.nosugar.additional.ModEntities;
 import com.test.nosugar.utils.ILivingEntity;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +27,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
     private static final double MAX_ANGLE_DEGREES = 25.0; //Homing Fov
     private static final double MAX_ANGLE_COS = Math.cos(Math.toRadians(MAX_ANGLE_DEGREES));
     private LivingEntity homingTarget;
+    private static final EntityDataAccessor<Integer> CHARGE_LEVEL = SynchedEntityData.defineId(HomingArrowEntity.class, EntityDataSerializers.INT);
 
     public HomingArrowEntity(EntityType<? extends HomingArrowEntity> type, Level level) {
         super(type, level);
@@ -145,7 +149,8 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
         if (distSq < 1e-6) {
             Vec3 cur = this.getDeltaMovement();
             double curSpeed = cur.length();
-            double fallbackSpeed = Math.max(curSpeed, 1.8);
+            double fallbackSpeed = Math.max(curSpeed, 26.8);
+            fallbackSpeed = Math.min(fallbackSpeed, 16.0);
             if (cur.lengthSqr() < 1e-6) {
                 Vec3 forward = this.getLookAngle().normalize().scale(fallbackSpeed);
                 this.setDeltaMovement(forward);
@@ -157,28 +162,13 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
 
         Vec3 desiredDir = toTarget.normalize();
 
-        desiredDir = desiredDir.add(0, 0.08, 0).normalize();
-
         Vec3 current = this.getDeltaMovement();
-        double curSpeed = current.length();
-        double minSpeed = 1.8;
-        double maxSpeed = 7.0;
-        double speed = Math.max(curSpeed, minSpeed);
-        speed = Math.min(speed, maxSpeed);
+        double maxSpeed = 32.0;
 
-        Vec3 desired = desiredDir.scale(speed);
+        Vec3 desired = desiredDir.scale(maxSpeed);
 
         double blend = 0.25;
         Vec3 newMotion = current.lerp(desired, blend);
-
-        double minY = -0.6;
-        double maxY = 1.2;
-        if (newMotion.y < minY) newMotion = new Vec3(newMotion.x, minY, newMotion.z);
-        if (newMotion.y > maxY) newMotion = new Vec3(newMotion.x, maxY, newMotion.z);
-
-        if (newMotion.length() < 0.5) {
-            newMotion = newMotion.normalize().scale(minSpeed);
-        }
 
         this.setDeltaMovement(newMotion);
 
@@ -189,30 +179,23 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
         this.setXRot(xRotDeg);
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
-
     }
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        //super.onHitEntity(result);
-
-        if (this.level().isClientSide) return;
+        //if (this.level().isClientSide) return;
 
         Entity hit = result.getEntity();
-        if (hit == this.getOwner()) return;
-        /*Entity shooter = this.getOwner();
-        if (!(shooter instanceof Player player)) return;
+        if (hit == null || hit == this.getOwner()) {
+            super.onHitEntity(result);
+            return;
+        }
 
-        ItemStack main = player.getMainHandItem();
-        ItemStack off = player.getOffhandItem();
-        boolean shooterHasEraser =
-                main.getItem() instanceof com.test.eraser.Items.Eraser_Item
-                        || off.getItem() instanceof com.test.eraser.Items.Eraser_Item;
-        if (!shooterHasEraser) return;*/
+        if (hit instanceof LivingEntity living && living instanceof ILivingEntity hit_ && this.getOwner() instanceof Player owner)
+            hit_.instantKill(owner, false);
 
-        if (hit instanceof LivingEntity living)
-            if (living instanceof ILivingEntity hit_) hit_.instantKill((Player) this.getOwner(), false);
-        this.remove(RemovalReason.KILLED);
+        //this.remove(RemovalReason.DISCARDED);//removeしないと消えるまで永遠にホーミングする
+        super.onHitEntity(result);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.test.nosugar.client;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModEntities;
 import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.additional.ModMenus;
@@ -18,7 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = NoSuger.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = NoSugar.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientModRegister {
 
     @SubscribeEvent

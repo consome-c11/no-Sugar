@@ -1,6 +1,6 @@
 package com.test.nosugar.spells;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.ILivingEntity;
 import com.test.nosugar.utils.Eraser_Utils;
 import com.test.nosugar.utils.Res;
@@ -117,6 +117,6 @@ public class GazeDeathSpell extends AbstractSpell {
 
     @Override
     public ResourceLocation getSpellResource() {
-        return Res.getResource(NoSuger.MODID, "gaze_death");
+        return Res.getResource(NoSugar.MODID, "gaze_death");
     }
 }

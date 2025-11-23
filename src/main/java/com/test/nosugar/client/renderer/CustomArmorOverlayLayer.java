@@ -2,7 +2,7 @@ package com.test.nosugar.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.model.HumanoidModel;
@@ -19,7 +19,7 @@ public class CustomArmorOverlayLayer<T extends LivingEntity, M extends HumanoidM
         extends RenderLayer<T, M> {
 
     private static final ResourceLocation OVERLAY =
-            Res.getResource(NoSuger.MODID, "textures/misc/noise_overlay.png");
+            Res.getResource(NoSugar.MODID, "textures/misc/noise_overlay.png");
 
     public CustomArmorOverlayLayer(RenderLayerParent<T, M> parent) {
         super(parent);

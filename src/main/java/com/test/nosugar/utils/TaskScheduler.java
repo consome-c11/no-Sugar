@@ -1,6 +1,6 @@
 package com.test.nosugar.utils;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-@Mod.EventBusSubscriber(modid = NoSuger.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TaskScheduler {
     private static final Queue<Task> queue = new ArrayDeque<>();
 

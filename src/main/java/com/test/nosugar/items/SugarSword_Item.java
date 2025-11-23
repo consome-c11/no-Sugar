@@ -23,8 +23,8 @@ import java.util.List;
 
 import static com.test.nosugar.utils.Eraser_Utils.killIfParentFound;
 
-public class Eraser_Item extends SwordItem {
-    public Eraser_Item(Properties props) {
+public class SugarSword_Item extends SwordItem {
+    public SugarSword_Item(Properties props) {
         super(ModTiers.ERASER_TIER, 10, 3.F, props.stacksTo(1).fireResistant());
     }
 
@@ -135,7 +135,7 @@ public class Eraser_Item extends SwordItem {
     }*/
 
     public Component getName(ItemStack stack) {
-        String text = "Eraser.";
+        String text = Component.translatable("item.nosugar.sugar_sword.name").getString();
         var result = Component.empty();
         long time = System.currentTimeMillis() / 50;
 
@@ -151,7 +151,7 @@ public class Eraser_Item extends SwordItem {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         long gameTime = (level != null) ? level.getGameTime() : 0;
 
-        String desc = Component.translatable("item.nosuger.eraser_item.desc").getString();
+        String desc = Component.translatable("item.nosuger.sugar_sword.desc").getString();
         var waveLine = Component.empty();
         for (int i = 0; i < desc.length(); i++) {
             char c = desc.charAt(i);

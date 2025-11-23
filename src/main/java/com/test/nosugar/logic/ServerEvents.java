@@ -1,6 +1,6 @@
 package com.test.nosugar.logic;
 
-import com.test.nosugar.NoSuger;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageTypes;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.SnackArmor;
@@ -24,7 +24,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = NoSuger.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)

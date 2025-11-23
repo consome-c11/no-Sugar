@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "nosuger:block_suger"
+      "item": "nosugar:block_sugar"
     }
   ],
   "result": {
-    "item": "minecraft:suger",
+    "item": "minecraft:sugar",
     "count": 4
   }
 }

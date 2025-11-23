@@ -22,12 +22,12 @@ import static com.test.nosugar.utils.Deets.IRONS_SPELLBOOKS;
 import static com.test.nosugar.utils.Deets.require;
 
 @SuppressWarnings("removal")
-@Mod(NoSuger.MODID)
-public class NoSuger {
+@Mod(NoSugar.MODID)
+public class NoSugar {
     public static final String MODID = "nosugar";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public NoSuger() {
+    public NoSugar() {
         MinecraftForge.EVENT_BUS.register(this);
 
         var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
