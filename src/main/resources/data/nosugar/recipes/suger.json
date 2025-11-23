@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "nosuger:block_suger"
+    }
+  ],
+  "result": {
+    "item": "minecraft:suger",
+    "count": 4
+  }
+}

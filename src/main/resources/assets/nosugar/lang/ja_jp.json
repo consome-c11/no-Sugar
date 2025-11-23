@@ -1,0 +1,17 @@
+{
+  "death.attack.erase": "%1$s は消しゴムのカスになった",
+  "death.attack.erase.player": "%1$s は %2$s に消しゴムのカスにされた",
+  "item.nosuger.null_ingot": "?インゴット",
+  "item.nosuger.null_ingot.desc": "何かよー分からんけど柔らかいインゴット　強そう",
+  "item.nosuger.eraser_item": "Eraser.",
+  "item.nosuger.eraser_item.desc": "なんか柔らかい剣っぽいやつ",
+  "item.nosuger.world_destroyer": "Snack Destroyer",
+  "item.nosuger.world_destroyer.desc": "おじいちゃん?おやつはもう食べたでしょう?",
+  "key.categories.world_destroyer": "ワールドデストロイヤー",
+  "key.world_destroyer.toggle_range": "破壊範囲切替",
+  "item.erasers.use": "使用したとき:",
+  "item.erasers.sneak_use": "スニークしながら使用したとき:",
+
+  "item.nosuger.eraser_eraser": "Eraser 消しゴム",
+  "item.nosuger.eraser_eraser.desc": "ん?何いってんだって?  ...知らんな。"
+}

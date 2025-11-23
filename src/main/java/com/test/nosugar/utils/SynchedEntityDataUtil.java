@@ -1,0 +1,22 @@
+package com.test.nosugar.utils;
+
+import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
+
+import java.util.Objects;
+
+public class SynchedEntityDataUtil {
+    public static <T> void forceSet(SynchedEntityData data, EntityDataAccessor<T> accessor, T value) {
+        SynchedEntityDataAccessor acc = (SynchedEntityDataAccessor) data;
+        SynchedEntityData.DataItem<T> item = acc.invokeGetItem(accessor);
+
+        if (!Objects.equals(item.getValue(), value)) {
+            item.setValue(value);
+            //acc.getEntity().onSyncedDataUpdated(accessor);
+            item.setDirty(true);
+            acc.setDirtyFlag(true);
+        }
+    }
+}
+
