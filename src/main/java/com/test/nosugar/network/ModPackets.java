@@ -79,5 +79,12 @@ public class ModPackets {
                 DestroyBlockPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, SugarBowSetModePacket.class,
+                SugarBowSetModePacket::encode,
+                SugarBowSetModePacket::decode,
+                SugarBowSetModePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
     }
 }

@@ -38,7 +38,7 @@ public class ProtectedNonNullList extends NonNullList<ItemStack> {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : stack) {
             String className = element.getClassName();
-            System.out.println("Class: " + className);
+            //System.out.println("Class: " + className);
             if (className.contains("Container") || //AbstractContainerMenu
                     className.contains("Slot") ||
                     className.contains("ProtectedNonNullList") ||

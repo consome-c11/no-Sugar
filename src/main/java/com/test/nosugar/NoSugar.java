@@ -36,6 +36,7 @@ public class NoSugar {
 
         ModItems.ITEMS.register(modEventBus);
         ModItems.ADDON_ITEMS.register(modEventBus);
+        ModItems.DUMMY_ITEMS.register(modEventBus);
         ModCreativeTabs.TABS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);//深夜テンションの時にコード書いてはダメだな

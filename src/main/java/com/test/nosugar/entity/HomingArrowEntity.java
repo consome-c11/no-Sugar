@@ -101,6 +101,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
                 found = candidates.stream()
                         .filter(e -> hasLineOfSight(player, e))
                         .filter(e -> isWithinViewAngle(player, e))
+                        .filter(e -> e != this.getOwner())
                         .min(Comparator.comparingDouble(e -> getAngleToTarget(player, e)))
                         .orElse(null);
             } else {
@@ -167,7 +168,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
 
         Vec3 desired = desiredDir.scale(maxSpeed);
 
-        double blend = 0.25;
+        double blend = 0.75;
         Vec3 newMotion = current.lerp(desired, blend);
 
         this.setDeltaMovement(newMotion);

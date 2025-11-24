@@ -3,13 +3,22 @@ package com.test.nosugar.items;
 import com.test.nosugar.additional.ModEntities;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.entity.HomingArrowEntity;
+import com.test.nosugar.network.PacketHandler;
+import com.test.nosugar.network.packets.SugarBowSetModePacket;
+import com.test.nosugar.network.packets.WorldDestroyerChangeModePacket;
 import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.utils.ShootMode;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -26,6 +35,7 @@ public class Sugar_Bow_Item extends BowItem {
         super(prop);
     }
 
+    public static float pull;
     @Override
     public AbstractArrow customArrow(AbstractArrow arrow) {
         Level level = arrow.level();
@@ -76,25 +86,48 @@ public class Sugar_Bow_Item extends BowItem {
     };
 
     @Override
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
+        if (entity instanceof Player player) {
+            int useDuration = this.getUseDuration(stack) - timeLeft;
+            float pullProgress = BowItem.getPowerForTime(useDuration);
+            int arrowamount = ShootMode.getMode(stack) == ShootMode.MULTI ? 16 : 1;
+            if (pullProgress >= 0.1F) {
+
+                for (int i = 0; i < arrowamount; i++) {
+
+                    Arrow vanillaArrow = new Arrow(level, player);
+
+                    AbstractArrow customArrow = this.customArrow(vanillaArrow);
+
+                    double spreadX = (level.random.nextFloat() - 0.5);
+                    double spreadZ = (level.random.nextFloat() - 0.5);
+                    customArrow.shootFromRotation(player, player.getXRot(), (float) (player.getYRot() + spreadX), 0.0F, 7, (float) (1.0F + spreadZ));
+
+                    level.addFreshEntity(customArrow);
+                }
+
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + pullProgress * 0.5F);
+
+                player.awardStat(Stats.ITEM_USED.get(this));
+            }
+        }
+    }
+    @Override
     public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
         return SUGAR_ARROW_ONLY;
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-        int useDuration = this.getUseDuration(stack) - timeLeft;
-        float pullProgress = BowItem.getPowerForTime(useDuration);
-
-        System.out.println("[SugarBow Debug] useDuration=" + useDuration +
-                " pullProgress=" + pullProgress +
-                " pulling=" + (entity.isUsingItem() ? 1 : 0));
-
-        super.releaseUsing(stack, level, entity, timeLeft);
-    }
-
-    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+
+        if (player.isShiftKeyDown() && !level.isClientSide) {
+            //PacketHandler.CHANNEL.sendToServer(new SugarBowSetModePacket(ShootMode.cycleMode(stack)));
+            ShootMode.cycleMode(stack);
+            return InteractionResultHolder.pass(stack);
+        }
+
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(stack);
     }
@@ -107,6 +140,6 @@ public class Sugar_Bow_Item extends BowItem {
     @Override
     public int getUseDuration(ItemStack stack) {
         return 777;
-    }
+    }//:/
 
 }

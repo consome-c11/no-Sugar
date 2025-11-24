@@ -14,6 +14,9 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
+    public static final DeferredRegister<Item> DUMMY_ITEMS =
+            DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
+
     public static final DeferredRegister<Item> ADDON_ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
@@ -45,12 +48,21 @@ public class ModItems {
             ADDON_ITEMS.register("eraser_eraser", () -> new Eraser_Eraser(new Item.Properties().stacksTo(1)));*/
 
     public static final RegistryObject<Item> BLOCK_SUGER_ITEM =
-            ITEMS.register("block_suger", () -> new Block_Suger_Item(new Item.Properties().stacksTo(127)));
+            ITEMS.register("block_sugar", () -> new Block_Suger_Item(new Item.Properties().stacksTo(127)));
 
     public static final RegistryObject<Item> SUGAR_ARROW =
             ITEMS.register("sugar_arrow", () -> new Sugar_Arrow(new Item.Properties().stacksTo(127)));
     public static final RegistryObject<Item> SUGAR_BOW =
             ITEMS.register("sugar_bow", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
+
+    //f*cking bakedmodel load :(
+    public static final RegistryObject<Item> SUGAR_BOW_DUMMY1 =
+            DUMMY_ITEMS.register("sugar_bow_pulling_0", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> SUGAR_BOW_DUMMY2 =
+            DUMMY_ITEMS.register("sugar_bow_pulling_1", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> SUGAR_BOW_DUMMY3 =
+            DUMMY_ITEMS.register("sugar_bow_pulling_2", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
+
     public static List<Item> getAllItems() {
         return ITEMS.getEntries().stream()
                 .map(RegistryObject::get)

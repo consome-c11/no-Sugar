@@ -3,6 +3,7 @@ package com.test.nosugar.mixin.client;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.ColorUtils;
 import com.test.nosugar.utils.DestroyMode;
+import com.test.nosugar.utils.ShootMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -121,7 +122,7 @@ public abstract class ItemStackDisplayMixin {
     }
 
     private boolean applycolorname(ItemStack stack) {//hate my brain
-        return stack.getItem() == ModItems.ERASER_ITEM.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
+        return stack.getItem() == ModItems.ERASER_ITEM.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get()  || stack.getItem() == ModItems.SUGAR_BOW.get();
     }
 
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
@@ -129,8 +130,9 @@ public abstract class ItemStackDisplayMixin {
         ItemStack stack = (ItemStack) (Object) this;
 
         if (applycolorname(stack)) {
-            String text = cir.getReturnValue().getString(); //after rename
+            String text = cir.getReturnValue().getString(); // after rename
             long time = System.currentTimeMillis() / 50;
+
             if (stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
                 text += " Mode:[";
                 text += DestroyMode.getMode(stack);
@@ -139,6 +141,12 @@ public abstract class ItemStackDisplayMixin {
                     text += " [SilkTouch Enabled]";
                 }
             }
+            else if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
+                text += " Mode:[";
+                text += ShootMode.getMode(stack).getDisplayName();
+                text += "]";
+            }
+
             MutableComponent waveLine = Component.empty();
             for (int i = 0; i < text.length(); i++) {
                 int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
