@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.client;
 
 import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.utils.BlessingUtils;
 import com.test.nosugar.utils.ColorUtils;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.ShootMode;
@@ -116,7 +117,10 @@ public abstract class ItemStackDisplayMixin {
                 String sneakText = " Get Cookie x64";
                 tooltip.add(makeWaveLine(sneakText, false));
             }
-
+            if(BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.TOOL) ||  BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.SWORD)) {
+                tooltip.add(makeWaveLine("Sugar Blessing", true));
+                System.out.println("hmmmmmmmmmmm");
+            }
             cir.setReturnValue(tooltip);
         }
     }

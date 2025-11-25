@@ -38,7 +38,7 @@ public class BlessingUtils {
         else return isBlessed;
     }
 
-    private static boolean isBlessedAndMatchesType(ItemStack stack, ItemType type) {
+    public static boolean isBlessedAndMatchesType(ItemStack stack, ItemType type) {
         if (stack.isEmpty()) {
             return false;
         }

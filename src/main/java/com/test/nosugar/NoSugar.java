@@ -2,6 +2,7 @@ package com.test.nosugar;
 
 import com.mojang.logging.LogUtils;
 import com.test.nosugar.additional.*;
+import com.test.nosugar.additional.tconstruct.TConstruct;
 import com.test.nosugar.network.ModPackets;
 import com.test.nosugar.utils.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
@@ -46,6 +47,7 @@ public class NoSugar {
         require(IRONS_SPELLBOOKS).run(() -> {
             ModSpells.register(modEventBus);
         });
+        new TConstruct(modEventBus,FMLJavaModLoadingContext.get());
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
