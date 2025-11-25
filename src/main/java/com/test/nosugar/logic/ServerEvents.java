@@ -5,21 +5,28 @@ import com.test.nosugar.additional.ModDamageTypes;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
+import com.test.nosugar.items.Null_Ingot_Item;
 import com.test.nosugar.utils.ILivingEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LootingLevelEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -115,6 +122,64 @@ public class ServerEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onAnvilUpdate(AnvilUpdateEvent event) {
+        if (event.getPlayer().level().isClientSide()) {
+            return;
+        }
+
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+
+        if (!right.is(ModItems.NULL_INGOT.get())) {
+            return;
+        }
+
+        boolean isValidItem = left.getItem() instanceof ArmorItem ||
+                left.getItem() instanceof SwordItem ||
+                left.getItem() instanceof PickaxeItem ||
+                left.getItem() instanceof AxeItem ||
+                left.getItem() instanceof ShovelItem;
+
+        if (!isValidItem) {
+            return;
+        }
+
+        if (left.hasTag() && left.getTag().contains("Blessing_of_Sugar") && left.getTag().getBoolean("Blessing_of_Sugar")) {
+            event.setCost(40);
+            event.setOutput(ItemStack.EMPTY);
+            return;
+        }
+
+        int baseRepairCost = left.getBaseRepairCost() + right.getBaseRepairCost();
+        int totalCost = AnvilMenu.calculateIncreasedRepairCost(baseRepairCost) + 10;
+
+        if (totalCost > 39) {
+            totalCost = 39;
+        }
+
+        ItemStack output = left.copy();
+        CompoundTag nbt = output.getOrCreateTag().copy();
+
+        nbt.putBoolean("Blessing_of_Sugar", true);
+        nbt.putString("SpecialEffect", "BlessingOfSugar");
+        output.setTag(nbt);
+
+        output.setRepairCost(AnvilMenu.calculateIncreasedRepairCost(baseRepairCost));
+
+        event.setOutput(output);
+        event.setCost(totalCost);
+        event.setMaterialCost(1);
+    }
+
+    private boolean isValidBaseItem(ItemStack stack) {
+        Item item = stack.getItem();
+        return item instanceof ArmorItem ||
+                item instanceof SwordItem ||
+                item instanceof PickaxeItem ||
+                item instanceof AxeItem ||
+                item instanceof ShovelItem;
+    }
 }
 
 

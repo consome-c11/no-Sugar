@@ -3,19 +3,18 @@ package com.test.nosugar.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.*;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.DestroyBlockPacket;
 import com.test.nosugar.network.packets.EraserRangeAttackPacket;
 import com.test.nosugar.network.packets.RayCastPacket;
 import com.test.nosugar.network.packets.WorldDestroyerChangeModePacket;
-import com.test.nosugar.utils.DestroyMode;
-import com.test.nosugar.utils.Res;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
@@ -24,15 +23,18 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -46,12 +48,43 @@ import java.util.function.Predicate;
 import static com.test.nosugar.logic.DestroyBlock.QueueRenderBreakBlock;
 import static com.test.nosugar.utils.RenderUtils.renderBlockList;
 
+@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEvents {
 
     public static final List<Entity> erasedEntities = new ArrayList<>();
     private static final Map<UUID, Long> lastUpdate = new HashMap<>();
     private static int tick = 0;
+
+    public static boolean hasBlessedTool() {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc == null || mc.player == null || mc.level == null) {
+            return false;
+        }
+
+        return isBlessedTool(mc.player.getMainHandItem()) ||
+                isBlessedTool(mc.player.getOffhandItem());
+    }
+
+    private static boolean isBlessedTool(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+
+        boolean isTool = stack.getItem() instanceof PickaxeItem ||
+                stack.getItem() instanceof AxeItem ||
+                stack.getItem() instanceof ShovelItem ||
+                stack.getItem() instanceof HoeItem;
+
+        if (!isTool) {
+            return false;
+        }
+        CompoundTag tag = stack.getTag();
+        return tag != null &&
+                tag.contains("Blessing_of_Sugar", net.minecraft.nbt.Tag.TAG_BYTE) &&
+                tag.getBoolean("Blessing_of_Sugar");
+    }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -119,7 +152,8 @@ public class ClientEvents {
             }
         }
 
-        if (isInGameWorld() && mc.options.keyAttack.isDown() && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
+        if (isInGameWorld() && mc.options.keyAttack.isDown() &&
+                (stack.getItem() == ModItems.WORLD_DESTROYER.get() || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL))) {
             if (mc.options.keyShift.isDown() && tick < 7) {
                 tick++;
                 return;
@@ -162,9 +196,9 @@ public class ClientEvents {
         if (player instanceof ServerPlayer serverPlayer) {
             if (player == null) return;
             ItemStack stack = serverPlayer.getMainHandItem();
-            if (isInGameWorld() && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
+            if (isInGameWorld() && (stack.getItem() == ModItems.WORLD_DESTROYER.get()) ||  BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
                 if (!player.isShiftKeyDown()) {
-                    //WorldDestroyerUtils.destroyblock(serverPlayer.getMainHandItem(), serverPlayer);
+                    PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(event.getPos(), DestroyMode.NORMAL));
                 } else {
                     event.setCanceled(true);
                 }
@@ -184,7 +218,7 @@ public class ClientEvents {
         if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
 
             HitResult hit = mc.hitResult;
-            if (hit != null && hit.getType() == HitResult.Type.ENTITY) {
+            if (hit != null && hit.getType() == HitResult.Type.ENTITY && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
                 EntityHitResult entityHit = (EntityHitResult) hit;
                 int id = entityHit.getEntity().getId();
                 PacketHandler.CHANNEL.sendToServer(new RayCastPacket(id));
@@ -197,6 +231,23 @@ public class ClientEvents {
 
                 PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
             }
+        }
+        if(isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.SWORD)) {
+            HitResult hit = mc.hitResult;
+            if (hit != null && hit.getType() == HitResult.Type.ENTITY) {
+                EntityHitResult entityHit = (EntityHitResult) hit;
+                int id = entityHit.getEntity().getId();
+                PacketHandler.CHANNEL.sendToServer(new RayCastPacket(id));
+            }
+        }
+        if(isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) return;
+
+            BlockPos pos = getPlayerLookingAt(mc.player, 5).getBlockPos();
+            DestroyMode mode = DestroyMode.getMode(player.getMainHandItem());
+
+            PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
         }
     }
 

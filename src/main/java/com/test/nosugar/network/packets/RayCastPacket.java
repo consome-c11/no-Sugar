@@ -2,6 +2,7 @@ package com.test.nosugar.network.packets;
 
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.mixin.client.BossHelthOverlayAccessor;
+import com.test.nosugar.utils.BlessingUtils;
 import com.test.nosugar.utils.Eraser_Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,15 +32,12 @@ public class RayCastPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer sender = ctx.get().getSender();
             Item held = sender.getMainHandItem().getItem();
-            if (held != ModItems.ERASER_ITEM.get() && held != ModItems.WORLD_DESTROYER.get()) {
-                return;//ah
-            }
+            if (held != ModItems.ERASER_ITEM.get() && held != ModItems.WORLD_DESTROYER.get() &&
+                    !BlessingUtils.hasBlessedItem(sender,BlessingUtils.ItemType.SWORD)) return;
             if (sender != null) {
                 Entity target = sender.level().getEntity(msg.entityId);
                 if (sender.level().isClientSide()) return;
                 if (target != null && sender.getPosition(0).distanceTo(target.getPosition(0)) <= 4) {
-                    Minecraft mc = Minecraft.getInstance();
-                    ((BossHelthOverlayAccessor) mc.gui.getBossOverlay()).getEvents().remove(target.getUUID());
                     Eraser_Utils.killIfParentFound(target, sender, 32);
 
                     //System.out.println("RayCastPacket: processed entity ID " + msg.entityId);

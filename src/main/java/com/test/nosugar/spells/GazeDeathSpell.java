@@ -50,7 +50,6 @@ public class GazeDeathSpell extends AbstractSpell {
 
         switch (spellLevel) {
             case 1 -> {
-                float hp = target.getHealth();
                 target.hurt(level.damageSources().magic(), target.getHealth());
             }
             case 2 -> {

@@ -9,6 +9,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -67,6 +69,11 @@ public class WorldDestroyerUtils {
             if (getPlayerLookingAt(player, 5) != null && !player.level().getBlockState(getPlayerLookingAt(player, 5).getBlockPos()).isAir()) {
                 DestroyBlock.breakSameId((ServerLevel) player.level(), player, getPlayerLookingAt(player, 5).getBlockPos(), player.getMainHandItem(), 7, false, 7, LogPredicate);
                 DestroyBlock.breakAreaWithFortune((ServerLevel) player.level(), player, getPlayerLookingAt(player, 5).getBlockPos(), DestroyMode.NORMAL, player.getMainHandItem(), 7);
+            }
+        }
+        else if (BlessingUtils.hasBlessedItem(player, BlessingUtils.ItemType.TOOL)) {
+            if (getPlayerLookingAt(player, 5) != null && !player.level().getBlockState(getPlayerLookingAt(player, 5).getBlockPos()).isAir()) {
+                DestroyBlock.breakArea((ServerLevel) player.level(), player, getPlayerLookingAt(player, 5).getBlockPos(), DestroyMode.NORMAL, player.getMainHandItem(), held.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE));
             }
         }
         return true;

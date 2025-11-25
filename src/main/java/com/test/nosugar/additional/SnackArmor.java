@@ -1,11 +1,13 @@
 package com.test.nosugar.additional;
 
 import com.test.nosugar.utils.ILivingEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.ArmorItem.Type;
@@ -89,29 +91,49 @@ public class SnackArmor {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class SnackProtector {
 
+        public static boolean isDecoratedArmor(ItemStack stack) {
+            if (stack.isEmpty() || !(stack.getItem() instanceof ArmorItem)) return false;
+            CompoundTag nbt = stack.getTag();
+            return nbt != null && nbt.getBoolean("Blessing_of_Sugar");
+        }
+
+        public static boolean isSnackArmor(ItemStack stack) {
+            return !stack.isEmpty() && (
+                    stack.getItem() == ModItems.SNACK_HELMET.get() ||
+                            stack.getItem() == ModItems.SNACK_CHESTPLATE.get() ||
+                            stack.getItem() == ModItems.SNACK_LEGGINGS.get() ||
+                            stack.getItem() == ModItems.SNACK_BOOTS.get()
+            );
+        }
+
         public static boolean isFullSet(Player player) {
             if (player == null || player.getInventory() == null) return false;
-            ItemStack head = player.getInventory().armor.get(3);
-            ItemStack chest = player.getInventory().armor.get(2);
-            ItemStack legs = player.getInventory().armor.get(1);
-            ItemStack feet = player.getInventory().armor.get(0);
 
-            return head.getItem() == ModItems.SNACK_HELMET.get()
-                    && chest.getItem() == ModItems.SNACK_CHESTPLATE.get()
-                    && legs.getItem() == ModItems.SNACK_LEGGINGS.get()
-                    && feet.getItem() == ModItems.SNACK_BOOTS.get();
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+            ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
+            ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
+            boolean hasFullDedicatedSet =
+                    isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+
+            boolean hasFullDecoratedSet =
+                    isDecoratedArmor(head) && isDecoratedArmor(chest) && isDecoratedArmor(legs) && isDecoratedArmor(feet);
+
+            return hasFullDedicatedSet || hasFullDecoratedSet;
         }
 
         public static boolean hasSnackProtector(Player player) {
-            ItemStack head = player.getInventory().armor.get(3);
-            ItemStack chest = player.getInventory().armor.get(2);
-            ItemStack legs = player.getInventory().armor.get(1);
-            ItemStack feet = player.getInventory().armor.get(0);
+            if (player == null || player.getInventory() == null) return false;
 
-            return head.getItem() == ModItems.SNACK_HELMET.get()
-                    || chest.getItem() == ModItems.SNACK_CHESTPLATE.get()
-                    || legs.getItem() == ModItems.SNACK_LEGGINGS.get()
-                    || feet.getItem() == ModItems.SNACK_BOOTS.get();
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                    ItemStack stack = player.getItemBySlot(slot);
+                    if (isSnackArmor(stack) || isDecoratedArmor(stack)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         @SubscribeEvent

@@ -1,5 +1,5 @@
 {
-  "death.attack.erase": "%1$s 砂糖になった",
+  "death.attack.erase": "%1$s は砂糖になった",
   "death.attack.erase.player": "%1$s は %2$s に砂糖にされた",
   "item.nosuger.null_ingot": "?インゴット",
   "item.nosuger.null_ingot.desc": "うぇええええええええええええええええええい",

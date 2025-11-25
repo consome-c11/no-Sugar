@@ -2,10 +2,12 @@ package com.test.nosugar.mixin.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -102,15 +104,6 @@ public abstract class ItemRendererMixin {
         }
     }*/
 
-    @Unique
-    private static void initTexture() {
-        if (dynTex == null) {
-            img = new NativeImage(16, 16, true); // 16x16 RGBA?
-            dynTex = new DynamicTexture(img);
-            dynLoc = Minecraft.getInstance().getTextureManager()
-                    .register("eraser:item_overlay", dynTex);
-        }
-    }
 
     @Unique
     public List<String> getAffectedItemIds() {
@@ -120,29 +113,6 @@ public abstract class ItemRendererMixin {
     @Unique
     public boolean add_toAffectedItemIds(String id) {
         return AFFECTED_ITEM_IDS.add(id);
-    }
-
-    @Inject(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;getFoilBufferDirect(Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/RenderType;ZZ)Lcom/mojang/blaze3d/vertex/VertexConsumer;",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void eraser$injectFoilBuffer(ItemStack stack, ItemDisplayContext ctx, boolean leftHand,
-                                         PoseStack poseStack, MultiBufferSource buffer,
-                                         int packedLight, int packedOverlay, BakedModel model,
-                                         CallbackInfo ci) {
-        if (shouldAffect(stack, ctx)) {
-            long time = System.currentTimeMillis();
-            int argb = ColorUtils.waveGrayWhiteColor(time, 0, 700.0);
-            float r = ((argb >> 16) & 0xFF) / 255f;
-            float g = ((argb >> 8) & 0xFF) / 255f;
-            float b = (argb & 0xFF) / 255f;
-            float a = ((argb >> 24) & 0xFF) / 255f;
-
-        }
     }
 
     @Inject(method = "render", at = @At("HEAD"))

@@ -40,7 +40,7 @@ public class ChangeBagPagePacket {
                 AbstractContainerMenu openContainer = player.containerMenu;
                 if (openContainer instanceof BagMenu bagMenu) {
                     if (bagMenu.getBagId().equals(pkt.bagId)) {
-                        bagMenu.setPage(pkt.newPage); // setPage で customItemHandler を更新 (後述)
+                        bagMenu.setPage(pkt.newPage);//ｳﾜ-Packet作るのめんどくさくてChatGPT使ったのバレたー
                     } else {
                         System.err.println("Player " + player.getName().getString() + " tried to change page for bag " + pkt.bagId + " but open menu is for " + bagMenu.getBagId());
                     }

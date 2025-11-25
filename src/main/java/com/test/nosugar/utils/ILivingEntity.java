@@ -28,5 +28,9 @@ public interface ILivingEntity {
     // "client.ClientLevelAccessor",
     void eraseClientEntity();
 
+    int getDeathCount();
 
+    void setDeathCount(int count);
+    long getLastDeathTime();
+    void setLastDeathTime(long time);
 }
