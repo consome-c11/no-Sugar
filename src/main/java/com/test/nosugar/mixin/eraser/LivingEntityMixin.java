@@ -115,7 +115,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Override
-    public void instantKill(Player attacker, boolean SkipAnimation) {
+    public void instantKill(LivingEntity attacker, boolean SkipAnimation) {
         LivingEntity self = (LivingEntity) (Object) this;
         //self.setPose(Pose.DYING);
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
@@ -125,7 +125,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         if (Config.isNormalDieEntity(self)) {
 
             self.setHealth(0);
-            ((LivingEntityAccessor) self).setLastHurtByPlayer(attacker);
+            if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
             self.getCombatTracker().recordDamage(eraseSrc, 0);
@@ -134,7 +134,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
             //self.hurt(eraseSrc,Float.MAX_VALUE);
             SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.0F);
-            ((LivingEntityAccessor) self).setLastHurtByPlayer(attacker);
+            if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
             self.getCombatTracker().recordDamage(eraseSrc, 0);

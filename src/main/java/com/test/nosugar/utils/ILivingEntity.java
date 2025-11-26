@@ -1,5 +1,6 @@
 package com.test.nosugar.utils;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
@@ -9,7 +10,7 @@ public interface ILivingEntity {
 
     void setErased(boolean erased);
 
-    void instantKill(Player attacker, boolean SkipAnimation);
+    void instantKill(LivingEntity attacker, boolean SkipAnimation);
 
     void instantKill();
 

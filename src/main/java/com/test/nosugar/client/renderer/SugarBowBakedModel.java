@@ -45,7 +45,7 @@ public class SugarBowBakedModel extends BakedModelWrapper<BakedModel> {
 
                 int pullingStage = (int) (pullProgress * 3); // 0, 1, 2, 3 -> 0, 1, 2 (clamped)
                 pullingStage = Math.max(0, Math.min(2, pullingStage));
-                System.out.println("[SugarBow] PullingStage: " + pullingStage + " (PullProgress: " + pullProgress + ", UseDuration: " + useDuration + ", RemainingTicks: " + entity.getUseItemRemainingTicks() + ")");
+                //System.out.println("[SugarBow] PullingStage: " + pullingStage + " (PullProgress: " + pullProgress + ", UseDuration: " + useDuration + ", RemainingTicks: " + entity.getUseItemRemainingTicks() + ")");
 
                 ModelResourceLocation targetModelLocation;
                 switch (pullingStage) {

@@ -28,6 +28,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import static com.test.nosugar.utils.Eraser_Utils.killIfParentFound;
+
 @Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
 
@@ -185,6 +187,14 @@ public class ServerEvents {
             //((ISynchedEntityDataItem) ((SynchedEntityDataAccessor) e.getEntity().getEntityData()).invokeGetItem(healthId)).CheckData();
         }
     }
+
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if(!(event.getSource().getEntity() instanceof LivingEntity living) ||  living.getMainHandItem().getItem() != ModItems.ERASER_ITEM.get()) return;
+        if(event.getEntity() instanceof ILivingEntity Iliving)Iliving.instantKill();
+        System.out.println("Target: " + event.getEntity().getName().getString() + "Attacker: " + event.getSource().getEntity().getName().getString());
+    }
+
 }
 
 

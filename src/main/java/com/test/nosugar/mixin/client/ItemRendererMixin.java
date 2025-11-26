@@ -1,11 +1,19 @@
 package com.test.nosugar.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.client.renderer.RenderTypes;
+import com.test.nosugar.client.renderer.Shaders;
 import com.test.nosugar.utils.ColorUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -16,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.registries.RegistryObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,7 +37,6 @@ import java.util.stream.Collectors;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-
     @Unique
     private static final List<RegistryObject<Item>> AFFECTED_ITEMS = List.of(
             ModItems.SNACK_HELMET,
@@ -104,7 +112,6 @@ public abstract class ItemRendererMixin {
         }
     }*/
 
-
     @Unique
     public List<String> getAffectedItemIds() {
         return AFFECTED_ITEM_IDS;
@@ -113,6 +120,61 @@ public abstract class ItemRendererMixin {
     @Unique
     public boolean add_toAffectedItemIds(String id) {
         return AFFECTED_ITEM_IDS.add(id);
+    }
+
+    /*@Inject( //W.I.P :)
+            method = "render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V",
+            at = @At(
+                    value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V",
+            shift = At.Shift.AFTER
+    )
+    )
+    private void onRenderModelLists(ItemStack stack, ItemDisplayContext context, boolean leftHand, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay, BakedModel model, CallbackInfo ci) {
+        if (shouldAffect(stack, context)) {
+            float[] color = ColorUtils.getGlintColor(stack);
+            if (color != null && color.length >= 3 && RenderTypes.GLINT_COLORED_TYPE != null) {
+                if (Shaders.glintColorUniform != null) {
+                    Shaders.glintColorUniform.set(color[0], color[1], color[2]);
+                }
+
+                VertexConsumer glintConsumer = buffer.getBuffer(RenderTypes.GLINT_COLORED_TYPE);
+
+                renderModelLists(model, stack, packedLight, packedOverlay, poseStack, glintConsumer);
+            }
+        }
+    }*/
+
+    @Unique
+    private void renderModelLists(BakedModel model, ItemStack stack, int packedLight, int packedOverlay, PoseStack poseStack, VertexConsumer vertexConsumer) {
+        net.minecraft.util.RandomSource randomsource = net.minecraft.util.RandomSource.create();
+        long i = 42L;
+
+        for(net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
+            randomsource.setSeed(42L);
+            renderQuadList(poseStack, vertexConsumer, model.getQuads(null, direction, randomsource), stack, packedLight, packedOverlay);
+        }
+
+        randomsource.setSeed(42L);
+        renderQuadList(poseStack, vertexConsumer, model.getQuads(null, null, randomsource), stack, packedLight, packedOverlay);
+    }
+
+    @Unique
+    private void renderQuadList(PoseStack poseStack, VertexConsumer vertexConsumer, java.util.List<net.minecraft.client.renderer.block.model.BakedQuad> quads, ItemStack stack, int packedLight, int packedOverlay) {
+        boolean flag = !stack.isEmpty();
+        com.mojang.blaze3d.vertex.PoseStack.Pose posestack$pose = poseStack.last();
+
+        for(net.minecraft.client.renderer.block.model.BakedQuad bakedquad : quads) {
+            int i = -1;
+            if (flag && bakedquad.isTinted()) {
+                i = net.minecraft.client.Minecraft.getInstance().getItemColors().getColor(stack, bakedquad.getTintIndex());
+            }
+
+            float f = (float)(i >> 16 & 255) / 255.0F;
+            float f1 = (float)(i >> 8 & 255) / 255.0F;
+            float f2 = (float)(i & 255) / 255.0F;
+            vertexConsumer.putBulkData(posestack$pose, bakedquad, f, f1, f2, 1.0F, packedLight, packedOverlay, true);
+        }
     }
 
     @Inject(method = "render", at = @At("HEAD"))

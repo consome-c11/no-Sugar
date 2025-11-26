@@ -108,6 +108,7 @@ public class SugarSword_Item extends SwordItem {
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        killIfParentFound(target, attacker, 32);
         return false;
     }
 

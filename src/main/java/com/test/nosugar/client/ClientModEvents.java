@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientModEvents {
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
         event.register((stack, tintIndex) -> {
                     if (tintIndex == 1) {
@@ -37,7 +37,7 @@ public class ClientModEvents {
                 }, ModItems.ERASER_ITEM.get(),
                 ModItems.WORLD_DESTROYER.get());
 
-    }
+    }*/
 
     @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {

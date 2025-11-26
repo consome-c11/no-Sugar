@@ -19,6 +19,7 @@
     "client.BossHelthOverlayAccessor",
     "client.EntityMixin",
     "client.LevelRendererMixin",
+    "client.RenderStateShardAccessor",
     "snackprotector.GameRendererMixin"
   ],
   "mixins": [
