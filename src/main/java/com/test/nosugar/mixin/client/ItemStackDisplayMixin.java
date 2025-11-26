@@ -70,6 +70,9 @@ public abstract class ItemStackDisplayMixin {
         boolean isEraserOrWorld = stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
         boolean isSnackProtector = stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
         if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessedAndMatchesType(stack)/*うわ忘れてた*/) {
+            if(BlessingUtils.isBlessedAndMatchesType(stack)) {
+                tooltip.add(makeWaveLine("Sugar Blessing", true));
+            }
             String attackKeyStr = Component.translatable("attribute.name.generic.attack_damage").getString();
             String armorKeyStr = Component.translatable("attribute.name.generic.armor").getString();
             String toughnessKeyStr = Component.translatable("attribute.name.generic.armor_toughness").getString();
@@ -115,10 +118,6 @@ public abstract class ItemStackDisplayMixin {
 
                 String sneakText = " Get Cookie x64";
                 tooltip.add(makeWaveLine(sneakText, false));
-            }
-            if(BlessingUtils.isBlessedAndMatchesType(stack)) {
-                tooltip.add(makeWaveLine("Sugar Blessing", true));
-                //System.out.println("hmmmmmmmmmmm");
             }
             cir.setReturnValue(tooltip);
         }

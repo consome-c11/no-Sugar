@@ -36,7 +36,7 @@ public abstract class ItemRendererMixin {
 
     @Unique
     private static List<String> AFFECTED_ITEM_IDS = List.of(
-            "eraser:eraser_eraser"
+            "eraser:sugar_eraser"
     );
     @Unique
     private static DynamicTexture dynTex = null;
