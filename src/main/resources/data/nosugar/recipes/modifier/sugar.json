@@ -5,6 +5,9 @@
       "tag": "tconstruct:modifiable/melee/primary"
     },
     {
+      "tag": "tconstruct:mineable"
+    },
+    {
       "tag": "tconstruct:modifiable/ranged"
     }
   ],

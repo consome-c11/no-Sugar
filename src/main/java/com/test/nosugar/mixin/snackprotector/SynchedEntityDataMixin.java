@@ -2,6 +2,8 @@ package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
+import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
+import com.test.nosugar.utils.ISynchedEntityDataItem;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +14,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.List;
 
 @Mixin(SynchedEntityData.class)
 public abstract class SynchedEntityDataMixin {
@@ -41,5 +48,20 @@ public abstract class SynchedEntityDataMixin {
         if (value instanceof Float newHealth && newHealth <= living.getHealth()) {
             ci.cancel();
         }
+    }
+
+    @Inject(
+            method = "packDirty",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
+    private void skipHealthSyncIfProtected(CallbackInfoReturnable<List<SynchedEntityData.DataValue<?>>> cir) {
+        SynchedEntityDataAccessor dataAccessor = (SynchedEntityDataAccessor) this;
+        Entity entity = dataAccessor.getEntity();
+
+        if (entity == null || entity.level().isClientSide || !(entity instanceof LivingEntity living) || !(living instanceof Player player) || !SnackArmor.SnackProtector.isFullSet(player)) {
+            return;
+        }
+        ((ISynchedEntityDataItem) ((SynchedEntityDataAccessor) player.getEntityData()).invokeGetItem(LivingEntityAccessor.getDataHealthId())).CheckData();
     }
 }

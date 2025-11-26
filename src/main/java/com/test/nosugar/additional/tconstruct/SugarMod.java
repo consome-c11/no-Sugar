@@ -3,30 +3,38 @@ package com.test.nosugar.additional.tconstruct;
 import com.mochi_753.eraser.util.EraserHandler;
 import com.test.nosugar.utils.ColorUtils;
 import com.test.nosugar.utils.Eraser_Utils;
+import com.test.nosugar.utils.WorldDestroyerUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 import slimeknights.tconstruct.common.TinkerTags;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.modifiers.ModifierHooks;
 import slimeknights.tconstruct.library.modifiers.hook.combat.MeleeHitModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.mining.BlockBreakModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.mining.BlockHarvestModifierHook;
+import slimeknights.tconstruct.library.modifiers.hook.mining.BreakSpeedModifierHook;
 import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifierHook;
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
+import slimeknights.tconstruct.library.tools.context.ToolHarvestContext;
 import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 
 import javax.annotation.Nullable;
 
-public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, ProjectileHitModifierHook {
+public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, ProjectileHitModifierHook, BlockHarvestModifierHook {
     @Override
     public @NotNull Component getDisplayName() {
         return ColorUtils.makeWaveLine("Sugar");
@@ -39,7 +47,7 @@ public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, 
 
     @Override
     protected void registerHooks(ModuleHookMap.Builder hookBuilder) {
-        hookBuilder.addHook(this, ModifierHooks.MELEE_HIT, ModifierHooks.PROJECTILE_HIT);
+        hookBuilder.addHook(this, ModifierHooks.MELEE_HIT, ModifierHooks.PROJECTILE_HIT, ModifierHooks.BLOCK_HARVEST);
     }
 
     @Override
@@ -62,5 +70,17 @@ public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, 
             }
         }
         return ProjectileHitModifierHook.super.onProjectileHitEntity(modifiers, persistentData, modifier, projectile, hit, attacker, target);
+    }
+
+    @Override
+    public void finishHarvest(IToolStackView iToolStackView, ModifierEntry modifierEntry, ToolHarvestContext toolHarvestContext, int i) {
+
+    }
+
+    @Override
+    public void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
+        if(context.getPlayer() != null && !context.getPlayer().level().isClientSide()) {
+            WorldDestroyerUtils.destroyblock(new ItemStack(tool.getItem()), context.getPlayer());
+        }
     }
 }

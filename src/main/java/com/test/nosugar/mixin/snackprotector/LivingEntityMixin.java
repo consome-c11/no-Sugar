@@ -2,6 +2,9 @@ package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
+import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
+import com.test.nosugar.utils.SynchedEntityDataUtil;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;

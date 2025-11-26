@@ -71,7 +71,7 @@ public class WorldDestroyerUtils {
                 DestroyBlock.breakAreaWithFortune((ServerLevel) player.level(), player, getPlayerLookingAt(player, 5).getBlockPos(), DestroyMode.NORMAL, player.getMainHandItem(), 7);
             }
         }
-        else if (BlessingUtils.hasBlessedItem(player, BlessingUtils.ItemType.TOOL)) {
+        else{
             if (getPlayerLookingAt(player, 5) != null && !player.level().getBlockState(getPlayerLookingAt(player, 5).getBlockPos()).isAir()) {
                 DestroyBlock.breakArea((ServerLevel) player.level(), player, getPlayerLookingAt(player, 5).getBlockPos(), DestroyMode.NORMAL, player.getMainHandItem(), held.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE));
             }

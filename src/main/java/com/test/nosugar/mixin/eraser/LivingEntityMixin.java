@@ -119,7 +119,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         LivingEntity self = (LivingEntity) (Object) this;
         //self.setPose(Pose.DYING);
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
-        if (this.isErased()) return;
+        if (this.isErased() || self.level().isClientSide) return;
         DamageSource eraseSrc = ModDamageSources.erase(self, attacker);
 
         if (Config.isNormalDieEntity(self)) {

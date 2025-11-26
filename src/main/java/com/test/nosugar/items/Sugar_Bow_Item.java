@@ -99,9 +99,7 @@ public class Sugar_Bow_Item extends BowItem {
 
                     AbstractArrow customArrow = this.customArrow(vanillaArrow);
 
-                    double spreadX = (level.random.nextFloat() - 0.5);
-                    double spreadZ = (level.random.nextFloat() - 0.5);
-                    customArrow.shootFromRotation(player, player.getXRot(), (float) (player.getYRot() + spreadX), 0.0F, 7, (float) (1.0F + spreadZ));
+                    customArrow.shootFromRotation(player, player.getXRot(),player.getYRot(), 0.0F, 3,1.0F);
 
                     level.addFreshEntity(customArrow);
                 }

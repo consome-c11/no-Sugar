@@ -5,19 +5,17 @@ import com.test.nosugar.additional.ModDamageTypes;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
-import com.test.nosugar.items.Null_Ingot_Item;
+import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
+import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
 import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.ISynchedEntityDataItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -26,7 +24,6 @@ import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -179,6 +176,14 @@ public class ServerEvents {
                 item instanceof PickaxeItem ||
                 item instanceof AxeItem ||
                 item instanceof ShovelItem;
+    }
+
+    @SubscribeEvent
+    public static void onTick(LivingEvent.LivingTickEvent e) {
+        if(e.getEntity() instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
+            //((ISynchedEntityDataItem) ((SynchedEntityDataAccessor) e.getEntity().getEntityData()).invokeGetItem(healthId)).CheckData();
+        }
     }
 }
 

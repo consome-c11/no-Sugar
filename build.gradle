@@ -84,6 +84,7 @@ dependencies {
     runtimeOnly fg.deobf(files("libs/TConstruct.jar"))
     compileOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
     runtimeOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
+
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         jarJar.ranged(it, "[0.5.0,)")

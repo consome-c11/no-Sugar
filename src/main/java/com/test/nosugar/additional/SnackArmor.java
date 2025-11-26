@@ -98,12 +98,12 @@ public class SnackArmor {
         }
 
         public static boolean isSnackArmor(ItemStack stack) {
-            return !stack.isEmpty() && (
+            return
                     stack.getItem() == ModItems.SNACK_HELMET.get() ||
                             stack.getItem() == ModItems.SNACK_CHESTPLATE.get() ||
                             stack.getItem() == ModItems.SNACK_LEGGINGS.get() ||
-                            stack.getItem() == ModItems.SNACK_BOOTS.get()
-            );
+                            stack.getItem() == ModItems.SNACK_BOOTS.get() ||
+                            isDecoratedArmor(stack);
         }
 
         public static boolean isFullSet(Player player) {
@@ -113,13 +113,8 @@ public class SnackArmor {
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-            boolean hasFullDedicatedSet =
-                    isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
 
-            boolean hasFullDecoratedSet =
-                    isDecoratedArmor(head) && isDecoratedArmor(chest) && isDecoratedArmor(legs) && isDecoratedArmor(feet);
-
-            return hasFullDedicatedSet || hasFullDecoratedSet;
+            return isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
         }
 
         public static boolean hasSnackProtector(Player player) {

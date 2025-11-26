@@ -79,6 +79,17 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
         Entity owner = this.getOwner();
         LivingEntity livingOwner = (owner instanceof LivingEntity) ? (LivingEntity) owner : null;
 
+        Vec3 cur = this.getDeltaMovement();
+        double curSpeed = cur.length();
+        double fallbackSpeed = Math.max(curSpeed, 26.8);
+        fallbackSpeed = Math.min(fallbackSpeed, 16.0);
+        if (cur.lengthSqr() < 1e-6) {
+            Vec3 forward = this.getLookAngle().normalize().scale(fallbackSpeed);
+            this.setDeltaMovement(forward);
+        } else {
+            this.setDeltaMovement(cur.normalize().scale(fallbackSpeed));
+        }
+
         if (homingTarget != null && (!homingTarget.isAlive() || this.distanceToSqr(homingTarget) > SEARCH_RADIUS * SEARCH_RADIUS)) {
             homingTarget = null;
         }
@@ -146,20 +157,6 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
                 .add(0, target.getBbHeight() * 0.5, 0)
                 .subtract(this.position());
 
-        double distSq = toTarget.lengthSqr();
-        if (distSq < 1e-6) {
-            Vec3 cur = this.getDeltaMovement();
-            double curSpeed = cur.length();
-            double fallbackSpeed = Math.max(curSpeed, 26.8);
-            fallbackSpeed = Math.min(fallbackSpeed, 16.0);
-            if (cur.lengthSqr() < 1e-6) {
-                Vec3 forward = this.getLookAngle().normalize().scale(fallbackSpeed);
-                this.setDeltaMovement(forward);
-            } else {
-                this.setDeltaMovement(cur.normalize().scale(fallbackSpeed));
-            }
-            return;
-        }
 
         Vec3 desiredDir = toTarget.normalize();
 
