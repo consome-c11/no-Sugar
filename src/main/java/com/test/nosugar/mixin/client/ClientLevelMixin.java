@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.intercafes.ILivingEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;

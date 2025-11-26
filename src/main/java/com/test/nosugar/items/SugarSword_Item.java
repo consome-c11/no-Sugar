@@ -1,7 +1,7 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static com.test.nosugar.utils.Eraser_Utils.killIfParentFound;
+import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
 
 public class SugarSword_Item extends SwordItem {
     public SugarSword_Item(Properties props) {

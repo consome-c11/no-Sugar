@@ -1,9 +1,8 @@
 package com.test.nosugar.gui;
 
-import com.test.nosugar.additional.ModMenus;
 import com.test.nosugar.utils.BagSavedData;
-import com.test.nosugar.utils.CustomItemStackHandler;
-import com.test.nosugar.utils.CustomSlotItemHandler;
+import com.test.nosugar.utils.network.CustomItemStackHandler;
+import com.test.nosugar.utils.network.CustomSlotItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

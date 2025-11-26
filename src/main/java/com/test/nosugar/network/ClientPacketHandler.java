@@ -1,6 +1,6 @@
 package com.test.nosugar.network;
 
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.utils.TaskScheduler;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.additional.ModCreativeTabs;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.client.ModCreativeTabs;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

@@ -1,10 +1,8 @@
 package com.test.nosugar.network.packets;
 
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.mixin.client.BossHelthOverlayAccessor;
-import com.test.nosugar.utils.BlessingUtils;
-import com.test.nosugar.utils.Eraser_Utils;
-import net.minecraft.client.Minecraft;
+import com.test.nosugar.items.ModItems;
+import com.test.nosugar.utils.item.BlessingUtils;
+import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +30,7 @@ public class RayCastPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer sender = ctx.get().getSender();
             Item held = sender.getMainHandItem().getItem();
-            if (held != ModItems.ERASER_ITEM.get() && held != ModItems.WORLD_DESTROYER.get() &&
+            if (held != ModItems.SUGAR_SWORD.get() && held != ModItems.WORLD_DESTROYER.get() &&
                     !BlessingUtils.hasBlessedItem(sender,BlessingUtils.ItemType.SWORD)) return;
             if (sender != null) {
                 Entity target = sender.level().getEntity(msg.entityId);

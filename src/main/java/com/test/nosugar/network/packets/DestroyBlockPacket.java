@@ -1,9 +1,9 @@
 package com.test.nosugar.network.packets;
 
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.BlessingUtils;
+import com.test.nosugar.items.ModItems;
+import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.DestroyMode;
-import com.test.nosugar.utils.WorldDestroyerUtils;
+import com.test.nosugar.utils.item.WorldDestroyerUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

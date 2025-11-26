@@ -1,6 +1,6 @@
 package com.test.nosugar.utils;
 
-import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
+import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 

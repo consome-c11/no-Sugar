@@ -1,7 +1,6 @@
 package com.test.nosugar.entity;
 
-import com.test.nosugar.additional.ModEntities;
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.intercafes.ILivingEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;

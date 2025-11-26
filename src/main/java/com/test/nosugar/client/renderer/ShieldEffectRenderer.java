@@ -3,7 +3,7 @@ package com.test.nosugar.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.utils.RenderUtils;
+import com.test.nosugar.utils.render.RenderUtils;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

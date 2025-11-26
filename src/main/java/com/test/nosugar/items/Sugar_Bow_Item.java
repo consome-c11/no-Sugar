@@ -1,12 +1,8 @@
 package com.test.nosugar.items;
 
-import com.test.nosugar.additional.ModEntities;
-import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.entity.HomingArrowEntity;
-import com.test.nosugar.network.PacketHandler;
-import com.test.nosugar.network.packets.SugarBowSetModePacket;
-import com.test.nosugar.network.packets.WorldDestroyerChangeModePacket;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import com.test.nosugar.utils.ShootMode;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -14,7 +10,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;

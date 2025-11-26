@@ -4,7 +4,7 @@ import com.test.nosugar.gui.BagMenu;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.SyncBagPagesPacket;
 import com.test.nosugar.utils.BagSavedData;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;

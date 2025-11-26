@@ -1,10 +1,14 @@
 package com.test.nosugar;
 
 import com.mojang.logging.LogUtils;
-import com.test.nosugar.additional.*;
-import com.test.nosugar.additional.tconstruct.TConstruct;
+import com.test.nosugar.compact.spells.ModSpells;
+import com.test.nosugar.compact.tconstruct.TConstruct;
+import com.test.nosugar.client.ModCreativeTabs;
+import com.test.nosugar.entity.ModEntities;
+import com.test.nosugar.gui.ModMenus;
+import com.test.nosugar.items.ModItems;
 import com.test.nosugar.network.ModPackets;
-import com.test.nosugar.utils.InventorySpecialItemsHolder;
+import com.test.nosugar.utils.intercafes.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;

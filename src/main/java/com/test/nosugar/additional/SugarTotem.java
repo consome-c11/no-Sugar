@@ -1,8 +1,7 @@
 package com.test.nosugar.additional;
 
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.items.ModItems;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;

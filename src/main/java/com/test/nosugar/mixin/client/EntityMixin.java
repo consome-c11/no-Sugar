@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.items.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +25,7 @@ public class EntityMixin {
         Player localPlayer = Minecraft.getInstance().player;
         if (localPlayer == null) return;
 
-        if (localPlayer.isShiftKeyDown() && localPlayer.getMainHandItem().getItem() == ModItems.ERASER_ITEM.get() && entity != localPlayer) {
+        if (localPlayer.isShiftKeyDown() && localPlayer.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get() && entity != localPlayer) {
             double radius = 10.0;
             AABB inflatedPlayerAABB = localPlayer.getBoundingBox().inflate(radius);
 
@@ -44,7 +44,7 @@ public class EntityMixin {
         if (GlowFlagHolder.isGlowingContext() && ((Object)this) instanceof Entity entity && entity instanceof LivingEntity living) {
             LocalPlayer localPlayer = Minecraft.getInstance().player;
             if(localPlayer == null) return;
-            if (localPlayer.isShiftKeyDown() && localPlayer.getMainHandItem().getItem() == ModItems.ERASER_ITEM.get()) {
+            if (localPlayer.isShiftKeyDown() && localPlayer.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()) {
                 double radius = 10.0;
                 AABB inflatedPlayerAABB = localPlayer.getBoundingBox().inflate(radius);
 

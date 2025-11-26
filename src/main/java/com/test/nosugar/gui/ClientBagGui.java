@@ -4,7 +4,7 @@ import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.ChangeBagPagePacket;
 import com.test.nosugar.network.packets.SortBagPacket;
 import com.test.nosugar.utils.ClientBagCache;
-import com.test.nosugar.utils.CustomItemStackHandler;
+import com.test.nosugar.utils.network.CustomItemStackHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;

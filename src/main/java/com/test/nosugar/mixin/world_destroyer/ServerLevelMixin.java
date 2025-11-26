@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.world_destroyer;
 
-import com.test.nosugar.utils.ILevelChunk;
-import com.test.nosugar.utils.IServerLevel;
+import com.test.nosugar.utils.intercafes.ILevelChunk;
+import com.test.nosugar.utils.intercafes.IServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

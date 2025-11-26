@@ -1,8 +1,8 @@
 package com.test.nosugar.mixin.sugar_totem;
 
 import com.test.nosugar.additional.SugarTotem;
-import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
-import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
+import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
+import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;

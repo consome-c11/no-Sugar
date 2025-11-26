@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.world_destroyer;
 
-import com.test.nosugar.utils.ILevelChunkSection;
+import com.test.nosugar.utils.intercafes.ILevelChunkSection;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import org.spongepowered.asm.mixin.Mixin;

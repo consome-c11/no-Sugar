@@ -1,6 +1,6 @@
 package com.test.nosugar.network.packets;
 
-import com.test.nosugar.utils.ILivingEntity;
+import com.test.nosugar.utils.intercafes.ILivingEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

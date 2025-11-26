@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.common;
 
-import com.test.nosugar.utils.InventorySpecialItemsHolder;
+import com.test.nosugar.utils.intercafes.InventorySpecialItemsHolder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

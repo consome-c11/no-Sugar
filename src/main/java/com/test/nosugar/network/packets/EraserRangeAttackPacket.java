@@ -1,7 +1,7 @@
 package com.test.nosugar.network.packets;
 
-import com.test.nosugar.utils.ILivingEntity;
-import com.test.nosugar.utils.Eraser_Utils;
+import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;

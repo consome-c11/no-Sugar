@@ -1,9 +1,9 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
-import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
-import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
-import com.test.nosugar.utils.ISynchedEntityDataItem;
+import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
+import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataAccessor;
+import com.test.nosugar.utils.intercafes.ISynchedEntityDataItem;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
@@ -14,10 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.BlessingUtils;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.items.ModItems;
+import com.test.nosugar.utils.item.BlessingUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.ShootMode;
 import net.minecraft.ChatFormatting;
@@ -67,10 +67,9 @@ public abstract class ItemStackDisplayMixin {
         List<Component> tooltip = cir.getReturnValue();
         ItemStack stack = (ItemStack) (Object) this;
 
-        boolean isEraserOrWorld = stack.getItem() == ModItems.ERASER_ITEM.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
+        boolean isEraserOrWorld = stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
         boolean isSnackProtector = stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
-        //my brain is disabled and suck and shit and hate
-        if (isEraserOrWorld || isSnackProtector) {
+        if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessedAndMatchesType(stack)/*うわ忘れてた*/) {
             String attackKeyStr = Component.translatable("attribute.name.generic.attack_damage").getString();
             String armorKeyStr = Component.translatable("attribute.name.generic.armor").getString();
             String toughnessKeyStr = Component.translatable("attribute.name.generic.armor_toughness").getString();
@@ -90,7 +89,7 @@ public abstract class ItemStackDisplayMixin {
                     tooltip.set(i, buildInfinityLine(attrComp));
                 }
             }
-            if (stack.getItem() == ModItems.ERASER_ITEM.get()) {
+            if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
                 tooltip.add(Component.translatable("item.erasers.use")
                         .withStyle(ChatFormatting.GRAY));
 
@@ -117,16 +116,16 @@ public abstract class ItemStackDisplayMixin {
                 String sneakText = " Get Cookie x64";
                 tooltip.add(makeWaveLine(sneakText, false));
             }
-            if(BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.TOOL) ||  BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.SWORD)) {
+            if(BlessingUtils.isBlessedAndMatchesType(stack)) {
                 tooltip.add(makeWaveLine("Sugar Blessing", true));
-                System.out.println("hmmmmmmmmmmm");
+                //System.out.println("hmmmmmmmmmmm");
             }
             cir.setReturnValue(tooltip);
         }
     }
 
     private boolean applycolorname(ItemStack stack) {//hate my brain
-        return stack.getItem() == ModItems.ERASER_ITEM.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get()  || stack.getItem() == ModItems.SUGAR_BOW.get();
+        return stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get()  || stack.getItem() == ModItems.SUGAR_BOW.get();
     }
 
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)

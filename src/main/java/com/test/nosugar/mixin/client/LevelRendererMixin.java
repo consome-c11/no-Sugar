@@ -2,8 +2,8 @@ package com.test.nosugar.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.ColorUtils;
+import com.test.nosugar.items.ModItems;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -33,7 +33,7 @@ public class LevelRendererMixin{
             LocalPlayer player = mc.player;
             Level level = mc.level;
             ItemStack mainHand = player.getMainHandItem();
-            if (player == null || level == null || !player.isShiftKeyDown() || mainHand.getItem() != ModItems.ERASER_ITEM.get()) {
+            if (player == null || level == null || !player.isShiftKeyDown() || mainHand.getItem() != ModItems.SUGAR_SWORD.get()) {
                 return originalColor;
             }
 

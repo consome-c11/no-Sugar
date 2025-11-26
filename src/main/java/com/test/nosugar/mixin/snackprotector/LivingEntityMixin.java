@@ -1,16 +1,12 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
-import com.test.nosugar.mixin.eraser.LivingEntityAccessor;
-import com.test.nosugar.mixin.eraser.SynchedEntityDataAccessor;
-import com.test.nosugar.utils.SynchedEntityDataUtil;
-import net.minecraft.network.syncher.EntityDataAccessor;
+import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -99,4 +95,5 @@ public abstract class LivingEntityMixin {
         }
         return original;
     }
+
 }
