@@ -1,4 +1,4 @@
-package com.test.nosugar.compact.spells;
+package com.test.nosugar.compat.spells;
 
 import com.test.nosugar.NoSugar;
 import io.redspace.ironsspellbooks.api.registry.SpellRegistry;

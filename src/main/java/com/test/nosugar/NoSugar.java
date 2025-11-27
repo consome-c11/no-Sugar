@@ -1,8 +1,8 @@
 package com.test.nosugar;
 
 import com.mojang.logging.LogUtils;
-import com.test.nosugar.compact.spells.ModSpells;
-import com.test.nosugar.compact.tconstruct.TConstruct;
+import com.test.nosugar.compat.spells.ModSpells;
+import com.test.nosugar.compat.tconstruct.TConstruct;
 import com.test.nosugar.client.ModCreativeTabs;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.gui.ModMenus;

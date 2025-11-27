@@ -1,4 +1,4 @@
-package com.test.nosugar.compact.spells;
+package com.test.nosugar.compat.spells;
 
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.intercafes.ILivingEntity;

@@ -1,4 +1,4 @@
-package com.test.nosugar.compact.tconstruct;
+package com.test.nosugar.compat.tconstruct;
 
 import com.test.nosugar.NoSugar;
 import net.minecraftforge.eventbus.api.IEventBus;
