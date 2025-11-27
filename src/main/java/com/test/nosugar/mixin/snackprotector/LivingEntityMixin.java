@@ -96,4 +96,11 @@ public abstract class LivingEntityMixin {
         return original;
     }
 
+    @Inject(method = "baseTick", at = @At("HEAD"), cancellable = true)
+    private void onbaseTick(CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            player.setAirSupply(player.getMaxAirSupply());
+        }
+    }
 }

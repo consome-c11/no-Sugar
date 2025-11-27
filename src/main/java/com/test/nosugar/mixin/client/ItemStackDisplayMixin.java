@@ -83,7 +83,7 @@ public abstract class ItemStackDisplayMixin {
 
                 if (lineStr.contains(attackKeyStr)) {
                     Component attrComp = Component.translatable("attribute.name.generic.attack_damage");
-                    tooltip.set(i, buildInfinityLine(attrComp));
+                    if(!BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.TOOL))tooltip.set(i, buildInfinityLine(attrComp));
                 } else if (lineStr.contains(armorKeyStr)) {
                     Component attrComp = Component.translatable("attribute.name.generic.armor");
                     tooltip.set(i, buildInfinityLine(attrComp));
