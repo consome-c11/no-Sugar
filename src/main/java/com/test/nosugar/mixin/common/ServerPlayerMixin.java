@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.common;
 
-import com.test.nosugar.utils.intercafes.InventorySpecialItemsHolder;
+import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import org.spongepowered.asm.mixin.Mixin;

@@ -16,6 +16,7 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -50,34 +51,30 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     private boolean Fullset = false;
 
     @Unique
-    private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {
+    private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {//サンキューチャッピー
         Class<?> c = self.getClass();
         List<Entity> list = byClass.get(c);
         if (list != null) {
             list.remove(self);
-            if (list.isEmpty()) byClass.remove(c);
+            if (list.isEmpty()) {
+                byClass.remove(c);
+            }
         }
+        List<Class<?>> keysToRemove = new java.util.ArrayList<>();
+
         for (Map.Entry<Class<?>, List<Entity>> e : byClass.entrySet()) {
             List<Entity> l = e.getValue();
             if (l != null && !l.isEmpty()) {
                 l.remove(self);
-                if (l.isEmpty()) byClass.remove(e.getKey());
-            }
-        }
-    }
-
-    @Unique
-    public boolean hardRemove(Object entity, ClassInstanceMultiMap<Entity> map) {
-        boolean flag = false;
-
-        for (Map.Entry<Class<?>, List<Entity>> entry : ((ClassInstanceMultiMapAccessor<Entity>) map).getByClass().entrySet()) {
-            if (entry.getKey().isInstance(entity)) {
-                List<Entity> list = entry.getValue();
-                flag |= list.remove(entity);
+                if (l.isEmpty()) {
+                    keysToRemove.add(e.getKey());
+                }
             }
         }
 
-        return flag;
+        for (Class<?> key : keysToRemove) {
+            byClass.remove(key);
+        }
     }
 
     @Override
@@ -122,19 +119,20 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
         DamageSource eraseSrc = ModDamageSources.erase(self, attacker);
-
+        EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
         if (Config.isNormalDieEntity(self)) {
 
-            self.setHealth(0);
+            self.getEntityData().set(healthId, 0.f);
             if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
             self.getCombatTracker().recordDamage(eraseSrc, 0);
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
-            EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
+
             //self.hurt(eraseSrc,Float.MAX_VALUE);
-            SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.0F);
+            self.getEntityData().set(healthId, 0.f);
+            if(self.getEntityData().get(healthId) > 0.f)SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.0F);
             if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
@@ -168,11 +166,10 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             }*/
             LivingEntity killer = self.getKillCredit();
             if (killer != null) {
-                /*if (self.getKillCredit() instanceof ServerPlayer player)
+                if (self.getKillCredit() instanceof ServerPlayer player)
                     player.awardStat(Stats.ENTITY_KILLED_BY.get(killer.getType()));
-                killer.awardKillScore(self, 0, source);*/
-                DamageSource eraseSrc = ModDamageSources.erase(self, killer);
-                ((LivingEntityAccessor) self).callDie(eraseSrc);
+                killer.awardKillScore(self, 0, source);
+                //((LivingEntityAccessor) self).callDie(source);
             }
             ((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
             //((LivingEntityAccessor)self).invokedropFromLootTable(source,false);
@@ -250,8 +247,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 ClassInstanceMultiMap<Entity> multiMap =
                         ((EntitySectionAccessor<Entity>) section2).getStorage();
                 Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-                hardRemove(self, byClass);
-                hardRemove(self, multiMap);
+                if(byClass != null)hardRemove(self, byClass);
                 if (debug)
                     System.out.println("[NoSugerMod] forceErase: removed entity id=" + self.getId() + " from LevelEntityGetter section storage");
             }
@@ -264,8 +260,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 ((EntitySectionAccessor) section).getStorage().remove(self);
                 ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section).getStorage();
                 Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-                hardRemove(self, byClass);
-                hardRemove(self, multiMap);
+                if(byClass != null)hardRemove(self, byClass);
             }
             ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
             Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();

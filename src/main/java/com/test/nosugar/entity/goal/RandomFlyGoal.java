@@ -1,4 +1,4 @@
-package com.test.nosugar.entity.Utils;
+package com.test.nosugar.entity.goal;
 
 import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.ai.goal.Goal;

@@ -1,13 +1,16 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.compat.slashblade.SugarBladeItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -18,6 +21,9 @@ public class ModItems {
 
     public static final DeferredRegister<Item> ADDON_ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
+
+    public static final DeferredRegister<Item> SLASH_BLADE_ITEMS =
+             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
     public static final RegistryObject<Item> SUGAR_SWORD =
             ITEMS.register("sugar_sword", () -> new SugarSword_Item(new Item.Properties().stacksTo(1)));
@@ -57,6 +63,8 @@ public class ModItems {
     public static final RegistryObject<Item> SUGAR_TOTEM =
             ITEMS.register("sugar_totem", () -> new Sugar_Totem_Item());
 
+    /*public static final RegistryObject<Item> SUGAR_BLADE =
+            SLASH_BLADE_ITEMS.register("sugar_blade", () -> new SugarBladeItem());*/
 
     //f*cking bakedmodel load :(
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY1 =
@@ -66,8 +74,11 @@ public class ModItems {
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY3 =
             DUMMY_ITEMS.register("sugar_bow_pulling_2", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
 
-    public static List<Item> getAllItems() {
-        return ITEMS.getEntries().stream()
+    public static List<Item> getAllItems() {//サンキューチャッピー
+        return Stream.of(
+                        ITEMS.getEntries().stream()
+                )
+                .flatMap(Function.identity())
                 .map(RegistryObject::get)
                 .collect(Collectors.toList());
     }

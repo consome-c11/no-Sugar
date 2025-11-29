@@ -41,13 +41,6 @@ public class ServerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onLivingHurt(LivingHurtEvent event) {
-        if (event.getSource().is(ModDamageTypes.ERASE)) {
-            Entity attacker = event.getSource().getEntity();
-            if (attacker instanceof Player player) {
-                if (event.getEntity() instanceof ILivingEntity player_) player_.instantKill();
-            } else if (attacker instanceof ILivingEntity player_) player_.instantKill();
-            event.setCanceled(true);
-        }
         Entity direct = event.getSource().getDirectEntity();
         if (direct instanceof HomingArrowEntity homing) {
             event.setAmount(0);
@@ -113,9 +106,9 @@ public class ServerEvents {
         Entity player = event.getSource().getEntity();
         if (player instanceof LivingEntity player_) {
             ItemStack stack = player_.getMainHandItem();
-            if (stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
+            //if (stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
                 event.setCanceled(true);
-            }
+            //}
         }
     }
 
@@ -187,21 +180,25 @@ public class ServerEvents {
     }
 
     @SubscribeEvent
-    public static void onTick(LivingEvent.LivingTickEvent e) {
-        if(e.getEntity() instanceof Player player) {
-            AttributeInstance instance = player.getAttribute(Attributes.MOVEMENT_SPEED);
+    public static void onTick(TickEvent.PlayerTickEvent e) {
+            AttributeInstance instance = e.player.getAttribute(Attributes.MOVEMENT_SPEED);
             if (instance != null) {
                 UUID modifierId = UUID.fromString("8c19a0a5-4c3d-4d35-9a5c-8a5c9e5a9c5a");
 
-                if (SnackArmor.SnackProtector.isFullSet(player) && player.isSprinting()) {
+                if (SnackArmor.SnackProtector.isFullSet(e.player) && e.player.isSprinting()) {
                     if (instance.getModifier(modifierId) == null) {
                         instance.addTransientModifier(new AttributeModifier(
                                 modifierId,
                                 "snackprotector_speed",
-                                0.035777,
+                                0.015777,
                                 AttributeModifier.Operation.ADDITION
                         ));
                     }
+                    Vec3 lookVec = e.player.getLookAngle().normalize();
+                    double amount = e.player.onGround() ?  0.05 : 0.01;
+                    Vec3 additionalVelocity = lookVec.scale(amount);
+                    e.player.setDeltaMovement(
+                            e.player.getDeltaMovement().add(additionalVelocity.x, 0, additionalVelocity.z));
                 } else {
                     AttributeModifier existingModifier = instance.getModifier(modifierId);
                     if (existingModifier != null) {
@@ -209,7 +206,6 @@ public class ServerEvents {
                     }
                 }
             }
-        }
     }
 
     @SubscribeEvent

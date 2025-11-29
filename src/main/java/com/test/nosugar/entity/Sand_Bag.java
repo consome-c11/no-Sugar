@@ -1,6 +1,6 @@
 package com.test.nosugar.entity;
 
-import com.test.nosugar.entity.Utils.RandomFlyGoal;
+import com.test.nosugar.entity.goal.RandomFlyGoal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;

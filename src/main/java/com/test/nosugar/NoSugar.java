@@ -1,6 +1,7 @@
 package com.test.nosugar;
 
 import com.mojang.logging.LogUtils;
+import com.test.nosugar.compat.slashblade.SERegister;
 import com.test.nosugar.compat.spells.ModSpells;
 import com.test.nosugar.compat.tconstruct.TConstruct;
 import com.test.nosugar.client.ModCreativeTabs;
@@ -8,7 +9,7 @@ import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.items.ModItems;
 import com.test.nosugar.network.ModPackets;
-import com.test.nosugar.utils.intercafes.InventorySpecialItemsHolder;
+import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -23,14 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.test.nosugar.utils.Deets.IRONS_SPELLBOOKS;
-import static com.test.nosugar.utils.Deets.require;
+import static com.test.nosugar.utils.Deets.*;
 
 @SuppressWarnings("removal")
 @Mod(NoSugar.MODID)
 public class NoSugar {
     public static final String MODID = "nosugar";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public NoSugar() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -50,6 +50,10 @@ public class NoSugar {
 
         require(IRONS_SPELLBOOKS).run(() -> {
             ModSpells.register(modEventBus);
+        });
+        require(SLASHBLADE).run(() -> {
+           ModItems.SLASH_BLADE_ITEMS.register(modEventBus);
+            SERegister.register(modEventBus);
         });
         new TConstruct(modEventBus,FMLJavaModLoadingContext.get());
     }

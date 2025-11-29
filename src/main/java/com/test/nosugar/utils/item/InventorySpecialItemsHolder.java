@@ -1,4 +1,4 @@
-package com.test.nosugar.utils.intercafes;
+package com.test.nosugar.utils.item;
 
 import net.minecraft.world.item.Item;
 
