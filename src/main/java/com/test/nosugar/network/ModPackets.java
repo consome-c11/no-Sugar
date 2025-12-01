@@ -5,6 +5,7 @@ import net.minecraftforge.network.NetworkDirection;
 
 import java.util.Optional;
 
+
 public class ModPackets {
     private static int id = 0;
 
@@ -85,6 +86,14 @@ public class ModPackets {
                 SugarBowSetModePacket::decode,
                 SugarBowSetModePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        PacketHandler.CHANNEL.registerMessage(
+                id++,
+                SyncPacket.class,
+                SyncPacket::encode,
+                SyncPacket::decode,
+                SyncPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
     }
 }

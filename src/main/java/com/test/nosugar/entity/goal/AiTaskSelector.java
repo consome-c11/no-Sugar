@@ -1,8 +1,7 @@
 package com.test.nosugar.entity.goal;
 
-import com.test.nosugar.entity.Valine3xg;
 import com.google.common.collect.Lists;
-import com.test.nosugar.entity.goal.AiTask;
+import com.test.nosugar.entity.Sand_Bag_v2;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -10,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class AiTaskSelector {
-    private final Valine3xg owner;
+    private final Sand_Bag_v2 owner;
     private final List<AiTask> tasks = Lists.newArrayList();
     private AiTask currentTask = null;
 
@@ -19,7 +18,7 @@ public class AiTaskSelector {
     int targetSearchCooldown = 0;
     private static final int TARGET_SEARCH_INTERVAL = 40; //2sec
 
-    public AiTaskSelector(Valine3xg owner) {
+    public AiTaskSelector(Sand_Bag_v2 owner) {
         this.owner = owner;
     }
 

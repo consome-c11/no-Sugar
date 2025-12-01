@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 
-@Mixin(value = LivingEntity.class)
+@Mixin(value = LivingEntity.class, priority = Integer.MAX_VALUE)
 public abstract class LivingEntityMixin implements ILivingEntity {
 
 
@@ -323,35 +323,35 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     }
 
-    @Inject(method = "getHealth", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getHealth", at = @At("TAIL"), cancellable = true, require = 1)
     private void overrideGetHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
+        if (this.isErased(self.getUUID())) {
             cir.setReturnValue(0.0F);
         }
     }
 
-    @Inject(method = "getMaxHealth", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getMaxHealth", at = @At("TAIL"), cancellable = true, require = 1)
     private void overridegetMaxHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
 
-        if (this.isErased()) {
+        if (this.isErased(self.getUUID())) {
             cir.setReturnValue(0F);
         }
     }
 
-    @Inject(method = "isAlive", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "isAlive", at = @At("TAIL"), cancellable = true, require = 1)
     private void eraser$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
+        if (this.isErased(self.getUUID())) {
             cir.setReturnValue(false);
         }
     }
 
-    @Inject(method = "isDeadOrDying", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "isDeadOrDying", at = @At("TAIL"), cancellable = true, require = 1)
     private void eraser$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
+        if (this.isErased(self.getUUID())) {
             cir.setReturnValue(true);
         }
     }

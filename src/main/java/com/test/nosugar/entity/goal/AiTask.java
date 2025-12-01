@@ -1,19 +1,19 @@
 package com.test.nosugar.entity.goal;
 
-import com.test.nosugar.entity.Valine3xg;
+
+import com.test.nosugar.entity.Sand_Bag_v2;
 
 public interface AiTask {
-    boolean canUse(Valine3xg entity, AiTaskSelector selector);
+    boolean canUse(Sand_Bag_v2 entity, AiTaskSelector selector);
 
-    boolean canContinue(Valine3xg entity, AiTaskSelector selector);
+    boolean canContinue(Sand_Bag_v2 entity, AiTaskSelector selector);
 
-    void start(Valine3xg entity, AiTaskSelector selector);
+    void start(Sand_Bag_v2 entity, AiTaskSelector selector);
 
-    void stop(Valine3xg entity, AiTaskSelector selector);
+    void stop(Sand_Bag_v2 entity, AiTaskSelector selector);
 
-    void tick(Valine3xg entity, AiTaskSelector selector);
+    void tick(Sand_Bag_v2 entity, AiTaskSelector selector);
 
-    //小さいほど優先
     default int getPriority() {
         return Integer.MAX_VALUE;
     }

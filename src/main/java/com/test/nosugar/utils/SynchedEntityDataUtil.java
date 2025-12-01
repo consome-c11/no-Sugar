@@ -1,6 +1,7 @@
 package com.test.nosugar.utils;
 
 import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataAccessor;
+import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataItemAccessor;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 
@@ -12,9 +13,9 @@ public class SynchedEntityDataUtil {
         SynchedEntityData.DataItem<T> item = acc.invokeGetItem(accessor);
 
         if (!Objects.equals(item.getValue(), value)) {
-            item.setValue(value);
+            ((SynchedEntityDataItemAccessor)item).setValue(Float.MIN_VALUE);
             //acc.getEntity().onSyncedDataUpdated(accessor);
-            item.setDirty(true);
+            ((SynchedEntityDataItemAccessor)item).setDirty(true);
             acc.setDirtyFlag(true);
         }
     }

@@ -107,6 +107,17 @@ public class SnackArmor {
                             isDecoratedArmor(stack);
         }
 
+        public static boolean isFullSet(Player player, boolean real) {
+            if (player == null || player.getInventory() == null) return false;
+
+            ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+            ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+            ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
+            ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
+            if(real) return  isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+            else return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
+        }
+
         public static boolean isFullSet(Player player) {
             if (player == null || player.getInventory() == null) return false;
 
@@ -115,7 +126,7 @@ public class SnackArmor {
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
 
-            return isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+            return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
         }
 
         public static boolean hasSnackProtector(Player player) {
@@ -136,14 +147,14 @@ public class SnackArmor {
         public static void onEquipmentChange(LivingEquipmentChangeEvent event) {
             if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) return;
             if(player instanceof ILivingEntity Iliving) {
-                if (Iliving.wasFullset() && !isFullSet(player)) {
+                if (Iliving.wasFullset() && !isFullSet(player, true)) {
                     player.getServer().getPlayerList().getPlayers().forEach(otherPlayer -> {
                         if (otherPlayer != player) {
                             otherPlayer.connection.send(new ClientboundAddEntityPacket(player));
                         }
                     });
                     resetAbilities(player);
-                } else if(!Iliving.wasFullset() && isFullSet(player)) {
+                } else if(!Iliving.wasFullset() && isFullSet(player, true)) {
                     sendRemove((ServerPlayer)player);
                 }
             }
@@ -162,7 +173,7 @@ public class SnackArmor {
         public static void onLivingTick(LivingEvent.LivingTickEvent event) {
             if (!(event.getEntity() instanceof Player player)) return;
 
-            if (isFullSet(player)) {
+            if (isFullSet(player, true)) {
                 applyAbilities(player);
             }
 
@@ -171,7 +182,7 @@ public class SnackArmor {
         @SubscribeEvent
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
             Player player = event.getEntity();
-            if (!player.level().isClientSide && isFullSet(player)) {
+            if (!player.level().isClientSide && isFullSet(player, true)) {
                 sendRemove((ServerPlayer)player);
             }
         }
@@ -179,7 +190,7 @@ public class SnackArmor {
         @SubscribeEvent
         public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
             Player player = event.getEntity();
-            if (!player.level().isClientSide && isFullSet(player)) {
+            if (!player.level().isClientSide && isFullSet(player, true)) {
                 sendRemove((ServerPlayer)player);
             }
         }
@@ -187,7 +198,7 @@ public class SnackArmor {
         @SubscribeEvent
         public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
             Player player = event.getEntity();
-            if (!player.level().isClientSide && isFullSet(player)) {
+            if (!player.level().isClientSide && isFullSet(player, true)) {
                 sendRemove((ServerPlayer)player);
             }
         }

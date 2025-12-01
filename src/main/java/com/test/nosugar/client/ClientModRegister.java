@@ -1,10 +1,10 @@
 package com.test.nosugar.client;
 
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.client.renderer.SandBagRenderer;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.gui.ModMenus;
-import com.test.nosugar.client.renderer.SandBagRenderer;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.gui.ClientBagGui;
 import com.test.nosugar.utils.Res;
@@ -32,6 +32,7 @@ public class ClientModRegister {
                 });
 
         event.registerEntityRenderer(ModEntities.SAND_BAG.get(), SandBagRenderer::new);
+
     }
 
     @SubscribeEvent

@@ -1,5 +1,7 @@
 package com.test.nosugar.events;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageTypes;
 import com.test.nosugar.items.ModItems;
@@ -7,11 +9,15 @@ import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -32,6 +38,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
@@ -167,6 +174,72 @@ public class ServerEvents {
 
         event.setOutput(output);
         event.setCost(totalCost);
+        event.setMaterialCost(1);
+    }
+
+    @SubscribeEvent
+    public static void onAnvilUpdate2(AnvilUpdateEvent event) {
+        if (event.getPlayer().level().isClientSide()) {
+            return;
+        }
+
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+
+        if (!ModItems.getAllItems().contains(left.getItem())) {
+            return;
+        }
+
+        ItemStack output = left.copy();
+
+        ListTag outputModifiers =
+                output.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            Multimap<Attribute, AttributeModifier> rightModifiers =
+                    right.getAttributeModifiers(slot);
+
+            for (var entry : rightModifiers.entries()) {
+                Attribute attr = entry.getKey();
+                AttributeModifier mod = entry.getValue();
+
+                if (attr.equals(Attributes.ATTACK_SPEED)) {
+                    continue;
+                }
+
+                boolean merged = false;
+                for (int i = 0; i < outputModifiers.size(); i++) {
+                    CompoundTag existing = outputModifiers.getCompound(i);
+                    if (existing.getString("AttributeName")
+                            .equals(BuiltInRegistries.ATTRIBUTE.getKey(attr).toString())
+                            && existing.getString("Name").equals(mod.getName())
+                            && existing.getInt("Operation") == mod.getOperation().toValue()
+                            && existing.getString("Slot").equals(slot.getName())) {
+
+                        double current = existing.getDouble("Amount");
+                        existing.putDouble("Amount", current + mod.getAmount());
+                        merged = true;
+                        break;
+                    }
+                }
+
+                if (!merged) {
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("AttributeName", BuiltInRegistries.ATTRIBUTE.getKey(attr).toString());
+                    tag.putString("Name", mod.getName());
+                    tag.putDouble("Amount", mod.getAmount());
+                    tag.putInt("Operation", mod.getOperation().toValue());
+                    tag.putUUID("UUID", UUID.randomUUID());
+                    tag.putString("Slot", slot.getName());
+                    outputModifiers.add(tag);
+                }
+            }
+        }
+
+        output.getOrCreateTag().put("AttributeModifiers", outputModifiers);
+
+        event.setOutput(output);
+        event.setCost(1);
         event.setMaterialCost(1);
     }
 

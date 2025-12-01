@@ -27,7 +27,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void snackProtector$getHealth(CallbackInfoReturnable<Float>  cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             cir.setReturnValue(player.getMaxHealth());
             cir.cancel();
         }
@@ -72,6 +72,7 @@ public abstract class LivingEntityMixin {
         if (entity instanceof Player player) {
 
             if (SnackArmor.SnackProtector.isFullSet(player)) {
+                entity.hurtTime = 0;
                 ci.cancel();
             }
         }
@@ -83,7 +84,7 @@ public abstract class LivingEntityMixin {
             argsOnly = true
     )
     private MobEffectInstance modifyEffectInstance(MobEffectInstance original) {
-        if((Object)this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+        if((Object)this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             return new MobEffectInstance(
                     original.getEffect(),
                     (original.getDuration() * 7),
@@ -101,6 +102,19 @@ public abstract class LivingEntityMixin {
         LivingEntity self = (LivingEntity) (Object) this;
         if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             player.setAirSupply(player.getMaxAirSupply());
+            player.hurtTime = 0;
+            player.hurtMarked = false;
         }
     }
+
+    @Inject(method = "animateHurt", at = @At("HEAD"), cancellable = true)
+    private void onAnimateHurt(float flt, CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            player.hurtTime = 0;
+            player.hurtMarked = false;
+            ci.cancel();
+        }
+    }
+
 }

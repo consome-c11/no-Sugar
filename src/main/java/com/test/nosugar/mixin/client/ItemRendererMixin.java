@@ -3,16 +3,20 @@ package com.test.nosugar.mixin.client;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import com.test.nosugar.items.ModItems;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.RegistryObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -100,6 +104,41 @@ public abstract class ItemRendererMixin {
         }
     }*/
 
+    @Inject(method = "render", at = @At("HEAD"))
+    private void eraser$transformFirstPersonHeld(ItemStack stack, ItemDisplayContext context, boolean leftHand,
+                                                 PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                                                 int packedOverlay, BakedModel model, CallbackInfo ci) {
+        if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+                && stack.getItem() == ModItems.SUGAR_SWORD.get()) {
+            Minecraft mc =  Minecraft.getInstance();
+            if(mc == null) return;
+            Player player = Minecraft.getInstance().player;
+            if (player != null && player.isUsingItem() && player.getUseItem() == stack) {
+                poseStack.pushPose();
+                //なんでポーズ変えても三人称視点だと適用されるのに一人称視点だと適用されないんやこれ　あー意味分からん
+                poseStack.translate(0.0, 0.0, -0.02);
+
+                poseStack.mulPose(Axis.YP.rotationDegrees(55.0F));//うあああああめんどくさい
+                poseStack.mulPose(Axis.XP.rotationDegrees(-75.0F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(25.0F));
+            }
+        }
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void eraser$popTransformFirstPersonHeldUsing(ItemStack stack, ItemDisplayContext context, boolean leftHand,
+                                                         PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                                                         int packedOverlay, BakedModel model, CallbackInfo ci) {
+        if (context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND) {
+            if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
+                Player player = Minecraft.getInstance().player;
+
+                if (player != null && player.isUsingItem() && player.getUseItem() == stack) {
+                    poseStack.popPose();
+                }
+            }
+        }
+    }
     @Unique
     public List<String> getAffectedItemIds() {
         return AFFECTED_ITEM_IDS;

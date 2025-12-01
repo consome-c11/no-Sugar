@@ -1,11 +1,17 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
+import com.test.nosugar.client.renderer.SugarSwordItemRenderProperties;
+import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.utils.render.ColorUtils;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -17,9 +23,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
 
@@ -134,6 +142,23 @@ public class SugarSword_Item extends SwordItem {
     public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
         return false;
     }*/
+
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        player.startUsingItem(hand);
+
+        return InteractionResultHolder.consume(stack);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 72000;
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new SugarSwordItemRenderProperties());
+    }
 
     public Component getName(ItemStack stack) {
         String text = Component.translatable("item.nosugar.sugar_sword.name").getString();

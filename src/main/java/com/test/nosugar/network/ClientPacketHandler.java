@@ -1,9 +1,14 @@
 package com.test.nosugar.network;
 
+import com.test.nosugar.NoSugar;
+import com.test.nosugar.client.renderer.ClientEntityCache;
+import com.test.nosugar.entity.Sand_Bag_v2;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.utils.TaskScheduler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +44,42 @@ public class ClientPacketHandler {
                 }
 
             }
+        }
+    }
+
+    public static void handleSyncPacket(int entityId, double x, double y, double z,
+                                        float yRot, float xRot, boolean isAttacking) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(entityId);
+
+        if (entity == null) {
+            entity = createClientEntity(level, entityId);
+            if (entity != null) {
+                level.addFreshEntity(entity);
+            }
+        }
+
+        if (entity != null) {
+            // 位置と回転を更新
+            entity.setPos(x, y, z);
+            entity.setYRot(yRot);
+            entity.setXRot(xRot);
+
+            if (entity instanceof LivingEntity livingEntity) {
+                //livingEntity.getEntityData().set(ClientEntityCache.ClientEntityData.IS_ATTACKING, isAttacking);
+            }
+        }
+    }
+
+    private static Entity createClientEntity(ClientLevel level, int entityId) {
+        try {
+            return null;
+            //return new Sand_Bag_v2(level, BlockPos.ZERO);
+        } catch (Exception e) {
+            NoSugar.LOGGER.error("Failed to create client entity for ID: {}", entityId, e);
+            return null;
         }
     }
 

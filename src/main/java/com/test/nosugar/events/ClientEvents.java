@@ -1,6 +1,8 @@
 package com.test.nosugar.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.test.nosugar.client.renderer.ClientEntityCache;
+import com.test.nosugar.client.renderer.PlayerModelDrawer;
 import com.test.nosugar.client.utils.RenderQueue;
 import com.test.nosugar.items.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
@@ -350,5 +352,25 @@ public class ClientEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onRenderWorld(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
+
+        PoseStack poseStack = event.getPoseStack();
+        float partialTick = event.getPartialTick();
+
+        for (var entry : ClientEntityCache.entityCache.entrySet()) {
+            var data = entry.getValue();
+            if (data.entity != null && System.currentTimeMillis() - data.lastUpdate < 5000) {
+                PlayerModelDrawer.renderEntity(
+                        data.entity,
+                        poseStack,
+                        0, 0, 0,
+                        1.0f,
+                        partialTick
+                );
+            }
+        }
+    }
 }
 

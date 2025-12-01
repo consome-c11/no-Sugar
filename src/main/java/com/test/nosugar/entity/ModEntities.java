@@ -1,6 +1,8 @@
 package com.test.nosugar.entity;
 
+import com.mojang.authlib.GameProfile;
 import com.test.nosugar.NoSugar;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,4 +27,5 @@ public class ModEntities {
                             .sized(0.6F, 1.95F)
                             .clientTrackingRange(8)
                             .build("sand_bag"));
+
 }

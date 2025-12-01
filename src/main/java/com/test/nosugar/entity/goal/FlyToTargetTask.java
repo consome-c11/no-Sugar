@@ -1,6 +1,6 @@
 package com.test.nosugar.entity.goal;
 
-import com.test.nosugar.entity.Valine3xg;
+import com.test.nosugar.entity.Sand_Bag_v2;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -11,7 +11,7 @@ public class FlyToTargetTask implements AiTask {
     private static final double ATTACK_RANGE = 4.0;
 
     @Override
-    public boolean canUse(Valine3xg entity, AiTaskSelector selector) {
+    public boolean canUse(Sand_Bag_v2 entity, AiTaskSelector selector) {
         Player target = selector.getTargetPlayer();
         if (target == null) return false;
 
@@ -20,7 +20,7 @@ public class FlyToTargetTask implements AiTask {
     }
 
     @Override
-    public boolean canContinue(Valine3xg entity, AiTaskSelector selector) {
+    public boolean canContinue(Sand_Bag_v2 entity, AiTaskSelector selector) {
         Player target = selector.getTargetPlayer();
         if (target == null) return false;
 
@@ -29,16 +29,16 @@ public class FlyToTargetTask implements AiTask {
     }
 
     @Override
-    public void start(Valine3xg entity, AiTaskSelector selector) {
+    public void start(Sand_Bag_v2 entity, AiTaskSelector selector) {
     }
 
     @Override
-    public void stop(Valine3xg entity, AiTaskSelector selector) {
+    public void stop(Sand_Bag_v2 entity, AiTaskSelector selector) {
         entity.setDeltaMovement(0, 0, 0);
     }
 
     @Override
-    public void tick(Valine3xg entity, AiTaskSelector selector) {
+    public void tick(Sand_Bag_v2 entity, AiTaskSelector selector) {
         Player target = selector.getTargetPlayer();
         if (target == null) return;
 
