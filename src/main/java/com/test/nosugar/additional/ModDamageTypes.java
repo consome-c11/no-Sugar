@@ -9,4 +9,6 @@ import net.minecraft.world.damagesource.DamageType;
 public class ModDamageTypes {
     public static final ResourceKey<DamageType> ERASE =
             ResourceKey.create(Registries.DAMAGE_TYPE, Res.getResource(NoSugar.MODID, "erase"));
+    public static final ResourceKey<DamageType> EXPLOSIVE =
+            ResourceKey.create(Registries.DAMAGE_TYPE, Res.getResource(NoSugar.MODID, "explosive"));
 }

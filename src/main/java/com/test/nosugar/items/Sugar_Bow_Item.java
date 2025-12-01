@@ -30,11 +30,11 @@ public class Sugar_Bow_Item extends BowItem {
         super(prop);
     }
 
-    public static float pull;
+    public static ItemStack THIS;
     @Override
     public AbstractArrow customArrow(AbstractArrow arrow) {
         Level level = arrow.level();
-        HomingArrowEntity homingArrow = new HomingArrowEntity(ModEntities.HOMING_ARROW.get(), level);
+        HomingArrowEntity homingArrow = new HomingArrowEntity(ModEntities.HOMING_ARROW.get(), level, ShootMode.getMode(THIS) == ShootMode.EXPLOSIVES);
         homingArrow.setOwner(arrow.getOwner());
 
         homingArrow.copyPosition(arrow);
@@ -91,7 +91,7 @@ public class Sugar_Bow_Item extends BowItem {
                 for (int i = 0; i < arrowamount; i++) {
 
                     Arrow vanillaArrow = new Arrow(level, player);
-
+                    THIS = stack;
                     AbstractArrow customArrow = this.customArrow(vanillaArrow);
 
                     customArrow.shootFromRotation(player, player.getXRot(),player.getYRot(), 0.0F, 3,1.0F);

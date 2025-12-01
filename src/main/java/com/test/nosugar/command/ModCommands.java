@@ -2,6 +2,7 @@ package com.test.nosugar.command;
 
 import com.mojang.brigadier.Command;
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -20,7 +21,7 @@ public class ModCommands {
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
                             if (source.getPlayer() instanceof ILivingEntity player) {
-                                player.instantKill(source.getPlayer(), false);
+                                player.instantKill(source.getPlayer(), false, ModDamageSources.erase(source.getPlayer(), source.getPlayer()));
                             }
 
                             return Command.SINGLE_SUCCESS;

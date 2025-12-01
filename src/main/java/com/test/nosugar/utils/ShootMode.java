@@ -5,7 +5,8 @@ import net.minecraft.world.item.ItemStack;
 
 public enum ShootMode {
     SINGLE("Single Shot", 1),
-    MULTI("Multi Shot (16)", 16);
+    MULTI("Multi Shot (16)", 16),
+    EXPLOSIVES("Explosives", 8);
 
     private static final String KEY = "SugarBowShootMode";
     private final String displayName;

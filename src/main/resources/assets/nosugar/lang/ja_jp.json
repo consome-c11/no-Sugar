@@ -1,6 +1,8 @@
 {
   "death.attack.erase": "%1$s は砂糖になった",
   "death.attack.erase.player": "%1$s は %2$s に砂糖にされた",
+  "death.attack.explosive": "%1$は消し炭になった",
+  "death.attack.explosive.player": "%1$は%2$sに消し炭にされた",
   "item.nosuger.null_ingot": "?インゴット",
   "item.nosuger.null_ingot.desc": "うぇええええええええええええええええええい",
   "item.nosuger.sugar_sword.desc": "致死量のお砂糖をどうぞ",

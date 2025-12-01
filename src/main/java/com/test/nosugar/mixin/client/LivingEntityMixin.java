@@ -24,7 +24,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         Minecraft mc = Minecraft.getInstance();
         if(self == mc.player) return;
         //((ILivingEntity) self).setErased(false);
-        //((ILivingEntity) self).unmarkErased(self.getUUID());
+        ((ILivingEntity) self).unmarkErased(self.getUUID());
         ClientLevel clientLevel = mc.level;
         self.setPose(Pose.DYING);
         self.deathTime = 1;

@@ -1,5 +1,6 @@
 package com.test.nosugar.utils.intercafes;
 
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.UUID;
@@ -9,9 +10,11 @@ public interface ILivingEntity {
 
     void setErased(boolean erased);
 
-    void instantKill(LivingEntity attacker, boolean SkipAnimation);
+    void instantKill(LivingEntity attacker, boolean SkipAnimation, DamageSource src);
 
     void instantKill();
+
+    void instantKill(DamageSource source);
 
     void forceErase();
 

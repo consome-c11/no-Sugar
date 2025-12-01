@@ -1,6 +1,8 @@
 package com.test.nosugar.entity;
 
+import com.test.nosugar.utils.SugarExplosion;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,6 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Final;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,13 +30,17 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
     private static final double MAX_ANGLE_COS = Math.cos(Math.toRadians(MAX_ANGLE_DEGREES));
     private LivingEntity homingTarget;
     private static final EntityDataAccessor<Integer> CHARGE_LEVEL = SynchedEntityData.defineId(HomingArrowEntity.class, EntityDataSerializers.INT);
-
+    private boolean explosive;
     public HomingArrowEntity(EntityType<? extends HomingArrowEntity> type, Level level) {
         super(type, level);
     }
-
-    public HomingArrowEntity(Level level, LivingEntity shooter) {
+    public HomingArrowEntity(EntityType<? extends HomingArrowEntity> type, Level level, boolean explosives) {
+        super(type, level);
+        explosive = explosives;
+    }
+    public HomingArrowEntity(Level level, LivingEntity shooter, boolean explosives) {
         super(ModEntities.HOMING_ARROW.get(), shooter, level);
+        explosive = explosives;
     }
 
     private static boolean hasLineOfSight(Player player, Entity target) {
@@ -93,7 +100,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
             homingTarget = null;
         }
 
-        if (homingTarget != null) {
+        if (homingTarget != null && !explosive) {
             applyHomingTowards(homingTarget);
             return;
         }
@@ -120,7 +127,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
                         .orElse(null);
             }
 
-            if (found != null) {
+            if (found != null && !explosive) {
                 homingTarget = found;
                 applyHomingTowards(homingTarget);
             }
@@ -188,11 +195,19 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
             return;
         }
 
-        if (hit instanceof LivingEntity living && living instanceof ILivingEntity hit_ && this.getOwner() instanceof Player owner)
-            hit_.instantKill(owner, false);
+        if (hit instanceof LivingEntity living && this.getOwner() instanceof Player owner)
+            Eraser_Utils.killIfParentFound(living,owner,16);
 
         //this.remove(RemovalReason.DISCARDED);//removeしないと消えるまで永遠にホーミングする
         super.onHitEntity(result);
     }
 
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        if(explosive) {
+            SugarExplosion explosion = new SugarExplosion(this.level(), getOwner(), this.getX(), this.getY(), this.getZ(), 60);
+            //どっかーん☆
+            explosion.explode();
+        }
+    }
 }

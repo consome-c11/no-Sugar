@@ -113,20 +113,22 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Override
-    public void instantKill(LivingEntity attacker, boolean SkipAnimation) {
+    public void instantKill(LivingEntity attacker, boolean SkipAnimation, DamageSource src) {
         LivingEntity self = (LivingEntity) (Object) this;
         //self.setPose(Pose.DYING);
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
-        DamageSource eraseSrc = ModDamageSources.erase(self, attacker);
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
-        if (Config.isNormalDieEntity(self)) {
+        if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f);
             if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
-            self.getCombatTracker().recordDamage(eraseSrc, 0);
+            self.getCombatTracker().recordDamage(src, 0);
+            if(self instanceof Player) {
+                forcedie(src);
+            }
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
 
@@ -136,13 +138,13 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
             ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
-            self.getCombatTracker().recordDamage(eraseSrc, 0);
+            self.getCombatTracker().recordDamage(src, 0);
             markErased(self.getUUID());
             for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
             }
             this.setErased(true);
-            forcedie(eraseSrc);
+            forcedie(src);
             if (self instanceof ServerPlayer) return;
             if (!SkipAnimation && !Config.SKIP_DEATH_ANIMATION.get()) {
                 TaskScheduler.schedule(this::forceErase, 21);
@@ -179,7 +181,14 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     @Override
     public void instantKill() {
-        instantKill(null, false);
+        LivingEntity self = (LivingEntity) (Object) this;
+        instantKill(null, false, ModDamageSources.erase(self,null));
+    }
+
+    @Override
+    public void instantKill(DamageSource source) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        instantKill(null, false, source);
     }
 
     @Unique

@@ -28,4 +28,11 @@ public class ModEntities {
                             .clientTrackingRange(8)
                             .build("sand_bag"));
 
+
+    public static final RegistryObject<EntityType<BlockSugerEntity>> BLOCK_SUGER_ENTITY =
+            ENTITIES.register("block_suger_entity", () ->
+                    EntityType.Builder.<BlockSugerEntity>of(BlockSugerEntity::new, MobCategory.MISC)
+                            .sized(0.25F, 0.25F)
+                            .build("block_suger_entity")
+            );
 }

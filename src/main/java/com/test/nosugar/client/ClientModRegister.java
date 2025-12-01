@@ -7,9 +7,11 @@ import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.gui.ClientBagGui;
+import com.test.nosugar.items.ModItems;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -33,6 +35,10 @@ public class ClientModRegister {
 
         event.registerEntityRenderer(ModEntities.SAND_BAG.get(), SandBagRenderer::new);
 
+        event.registerEntityRenderer(
+                ModEntities.BLOCK_SUGER_ENTITY.get(),
+                context -> new ThrownItemRenderer<>(context)
+        );
     }
 
     @SubscribeEvent

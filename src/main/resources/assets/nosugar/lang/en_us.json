@@ -1,6 +1,8 @@
 {
   "death.attack.erase": "%1$has turned into sugar",
   "death.attack.erase.player": "%1$was turned into sugar by %2$s",
+  "death.attack.explosive": "%1$has turned to ashes",
+  "death.attack.explosive.player": "%1$was reduced to ashes by %2$s",
   "item.nosugar.null_ingot": "? Ingot",
   "item.nosugar.null_ingot.desc": "yeeeeeeeeeeeeeeeeeeeeeeeeee",
   "item.nosugar.sugar_sword.desc": "Here, take a lethal dose of sugar :) ",

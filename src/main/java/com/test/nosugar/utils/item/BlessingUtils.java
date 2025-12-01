@@ -54,7 +54,7 @@ public class BlessingUtils {
         };
     }
 
-    public static boolean isBlessedAndMatchesType(ItemStack stack) {
+    public static boolean isBlessed(ItemStack stack) {
         if (stack.isEmpty()) {
             return false;
         }

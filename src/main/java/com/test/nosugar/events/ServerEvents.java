@@ -1,19 +1,16 @@
 package com.test.nosugar.events;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.additional.ModDamageTypes;
 import com.test.nosugar.items.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
-import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -38,7 +34,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
@@ -147,12 +142,12 @@ public class ServerEvents {
                 left.getItem() instanceof ShovelItem;
 
         if (!isValidItem) {
-            return;
+            //return;
         }
 
         if (left.hasTag() && left.getTag().contains("Blessing_of_Sugar") && left.getTag().getBoolean("Blessing_of_Sugar")) {
-            event.setCost(40);
-            event.setOutput(ItemStack.EMPTY);
+            //event.setCost(40);
+            //event.setOutput(ItemStack.EMPTY);
             return;
         }
 
@@ -186,7 +181,7 @@ public class ServerEvents {
         ItemStack left = event.getLeft();
         ItemStack right = event.getRight();
 
-        if (!ModItems.getAllItems().contains(left.getItem())) {
+        if (!ModItems.getAllItems().contains(left.getItem()) && !BlessingUtils.isBlessed(left)) {
             return;
         }
 
@@ -195,44 +190,37 @@ public class ServerEvents {
         ListTag outputModifiers =
                 output.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
 
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            Multimap<Attribute, AttributeModifier> rightModifiers =
-                    right.getAttributeModifiers(slot);
+        ListTag rightModifiers =
+                right.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
 
-            for (var entry : rightModifiers.entries()) {
-                Attribute attr = entry.getKey();
-                AttributeModifier mod = entry.getValue();
+        for (int i = 0; i < rightModifiers.size(); i++) {
+            CompoundTag rightMod = rightModifiers.getCompound(i);
 
-                if (attr.equals(Attributes.ATTACK_SPEED)) {
-                    continue;
+            String attrName = rightMod.getString("AttributeName");
+            String modName = rightMod.getString("Name");
+            int operation = rightMod.getInt("Operation");
+            double amount = rightMod.getDouble("Amount");
+            String slot = rightMod.getString("Slot");
+
+            boolean merged = false;
+            for (int j = 0; j < outputModifiers.size(); j++) {
+                CompoundTag existing = outputModifiers.getCompound(j);
+                if (existing.getString("AttributeName").equals(attrName)
+                        && existing.getString("Name").equals(modName)
+                        && existing.getInt("Operation") == operation
+                        && existing.getString("Slot").equals(slot)) {
+
+                    double current = existing.getDouble("Amount");
+                    existing.putDouble("Amount", current + amount);
+                    merged = true;
+                    break;
                 }
+            }
 
-                boolean merged = false;
-                for (int i = 0; i < outputModifiers.size(); i++) {
-                    CompoundTag existing = outputModifiers.getCompound(i);
-                    if (existing.getString("AttributeName")
-                            .equals(BuiltInRegistries.ATTRIBUTE.getKey(attr).toString())
-                            && existing.getString("Name").equals(mod.getName())
-                            && existing.getInt("Operation") == mod.getOperation().toValue()
-                            && existing.getString("Slot").equals(slot.getName())) {
-
-                        double current = existing.getDouble("Amount");
-                        existing.putDouble("Amount", current + mod.getAmount());
-                        merged = true;
-                        break;
-                    }
-                }
-
-                if (!merged) {
-                    CompoundTag tag = new CompoundTag();
-                    tag.putString("AttributeName", BuiltInRegistries.ATTRIBUTE.getKey(attr).toString());
-                    tag.putString("Name", mod.getName());
-                    tag.putDouble("Amount", mod.getAmount());
-                    tag.putInt("Operation", mod.getOperation().toValue());
-                    tag.putUUID("UUID", UUID.randomUUID());
-                    tag.putString("Slot", slot.getName());
-                    outputModifiers.add(tag);
-                }
+            if (!merged) {
+                CompoundTag newTag = rightMod.copy();
+                newTag.putUUID("UUID", UUID.randomUUID());
+                outputModifiers.add(newTag);
             }
         }
 
@@ -284,7 +272,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
         if(!(event.getSource().getEntity() instanceof LivingEntity living) ||  living.getMainHandItem().getItem() != ModItems.SUGAR_SWORD.get()) return;
-        if(event.getEntity() instanceof ILivingEntity Iliving)Iliving.instantKill();
+        //if(event.getEntity() instanceof ILivingEntity Iliving)Iliving.instantKill();
         System.out.println("Target: " + event.getEntity().getName().getString() + "Attacker: " + event.getSource().getEntity().getName().getString());
     }
 

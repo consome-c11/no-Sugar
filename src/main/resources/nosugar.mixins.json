@@ -64,6 +64,7 @@
     "sugar_totem.SynchedEntityDataItemMixin",
     "sugar_totem.LivingEntityMixin",
     "sugar_totem.ServerPlayerMixin",
+    "sugar_bow.ExplosionAccessor",
     "common.InventoryMixin",
     "common.ServerPlayerMixin"
   ],

@@ -69,8 +69,8 @@ public abstract class ItemStackDisplayMixin {
 
         boolean isEraserOrWorld = stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
         boolean isSnackProtector = stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
-        if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessedAndMatchesType(stack)/*うわ忘れてた*/) {
-            if(BlessingUtils.isBlessedAndMatchesType(stack)) {
+        if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessed(stack)/*うわ忘れてた*/) {
+            if(BlessingUtils.isBlessed(stack)) {
                 tooltip.add(makeWaveLine("Sugar Blessing", true));
             }
             String attackKeyStr = Component.translatable("attribute.name.generic.attack_damage").getString();
