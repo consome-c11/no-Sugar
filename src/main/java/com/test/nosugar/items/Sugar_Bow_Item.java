@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -115,11 +116,11 @@ public class Sugar_Bow_Item extends BowItem {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
-        if (player.isShiftKeyDown() && !level.isClientSide) {
+        /*if (player.isShiftKeyDown() && !level.isClientSide) {
             //PacketHandler.CHANNEL.sendToServer(new SugarBowSetModePacket(ShootMode.cycleMode(stack)));
             ShootMode.cycleMode(stack);
             return InteractionResultHolder.pass(stack);
-        }
+        }*/
 
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(stack);

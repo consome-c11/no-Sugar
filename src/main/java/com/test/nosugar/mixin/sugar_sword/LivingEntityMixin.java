@@ -23,6 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.*;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -123,8 +124,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             self.getEntityData().set(healthId, 0.f);
             if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
-            ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
-            ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
+            self.hurt(src, Float.MAX_VALUE);
+            self.setDeltaMovement(Vec3.ZERO);
             self.getCombatTracker().recordDamage(src, 0);
             if(self instanceof Player) {
                 forcedie(src);
@@ -132,13 +133,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
 
-            //self.hurt(eraseSrc,Float.MAX_VALUE);
-            self.getEntityData().set(healthId, 0.f);
-            if(self.getEntityData().get(healthId) > 0.f)SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.0F);
-            if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
-            ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
-            ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);
-            self.getCombatTracker().recordDamage(src, 0);
+            self.hurt(src, Float.MAX_VALUE);
+            SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
             markErased(self.getUUID());
             for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));

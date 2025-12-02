@@ -6,12 +6,9 @@ import com.test.nosugar.client.renderer.PlayerModelDrawer;
 import com.test.nosugar.client.utils.RenderQueue;
 import com.test.nosugar.items.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
+import com.test.nosugar.network.packets.*;
 import com.test.nosugar.utils.*;
 import com.test.nosugar.network.PacketHandler;
-import com.test.nosugar.network.packets.DestroyBlockPacket;
-import com.test.nosugar.network.packets.EraserRangeAttackPacket;
-import com.test.nosugar.network.packets.RayCastPacket;
-import com.test.nosugar.network.packets.WorldDestroyerChangeModePacket;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.client.Minecraft;
@@ -152,6 +149,14 @@ public class ClientEvents {
 
                     PacketHandler.CHANNEL.sendToServer(new WorldDestroyerChangeModePacket(next, silk));
                 }
+            }
+        }
+
+        if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
+            if (ModKeyBindings.TOGGLE_SHOOT_MODE.consumeClick()) {
+                ShootMode current = ShootMode.getMode(mc.player.getMainHandItem());
+                ShootMode next = ShootMode.values()[(current.ordinal() + 1) % ShootMode.values().length];
+                PacketHandler.CHANNEL.sendToServer(new SugarBowSetModePacket(next));
             }
         }
 

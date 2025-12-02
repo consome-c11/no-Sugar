@@ -24,5 +24,7 @@
   "item.nosugar.block_sugar.name": "block sugar",
   "item.nosugar.block_sugar.desc": "Cube!",
 
-  "item.nosugar.sugar_sword.name": "Sugar Sword"
+  "item.nosugar.sugar_sword.name": "Sugar Sword",
+  "key.categories.nosugar": "NoSugar",
+  "key.sugarbow.toggle_mode": "Toggle Shoot Mode"
 }

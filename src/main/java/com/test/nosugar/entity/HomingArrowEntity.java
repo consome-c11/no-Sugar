@@ -208,6 +208,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
             SugarExplosion explosion = new SugarExplosion(this.level(), getOwner(), this.getX(), this.getY(), this.getZ(), 60);
             //どっかーん☆
             explosion.explode();
+            this.discard();
         }
     }
 }
