@@ -149,6 +149,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     }
 
+    @Unique
     private void forcedie(DamageSource source) {
         LivingEntity self = (LivingEntity) (Object) this;
         //if(!(self instanceof ServerPlayer)) { self.die(source);}

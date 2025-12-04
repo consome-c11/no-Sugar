@@ -62,7 +62,7 @@
     "world_destroyer.LevelChunkSectionMixin",
     "world_destroyer.BlockStateBaseMixin",
     "sugar_totem.SynchedEntityDataItemMixin",
-    "sugar_totem.LivingEntityMixin",
+    "sugar_totem.EntityMixin",
     "sugar_totem.ServerPlayerMixin",
     "sugar_bow.ExplosionAccessor",
     "common.InventoryMixin",

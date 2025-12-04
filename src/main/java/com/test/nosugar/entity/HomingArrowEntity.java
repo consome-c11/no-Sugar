@@ -1,7 +1,6 @@
 package com.test.nosugar.entity;
 
 import com.test.nosugar.utils.SugarExplosion;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -18,7 +17,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.spongepowered.asm.mixin.Final;
 
 import java.util.Comparator;
 import java.util.List;

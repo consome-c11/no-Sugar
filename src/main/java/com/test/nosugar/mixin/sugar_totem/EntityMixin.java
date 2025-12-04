@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = LivingEntity.class, priority = 0)
-public abstract class LivingEntityMixin implements ILivingEntity {
+public abstract class EntityMixin implements ILivingEntity {
 
     @Unique private static long LastDeathTime = 0L;
     @Unique private static int DeathCount = 0;

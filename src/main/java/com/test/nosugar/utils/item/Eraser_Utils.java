@@ -37,7 +37,7 @@ public class Eraser_Utils {
         DamageSource src = ModDamageSources.erase(self, attacker);
         if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
-                entity.instantKill(player, false,src);
+                entity.instantKill(player, false, src);
                 return true;
             }
         }
@@ -55,16 +55,16 @@ public class Eraser_Utils {
                 return true;
             }
         }
-        if (self instanceof ILivingEntity entity && attacker instanceof Player player)
-            entity.instantKill(player, skipAnimation,src);
-
+        if (self instanceof ILivingEntity entity && attacker instanceof Player player) {
+            entity.instantKill(player, skipAnimation, src);
+        }
         return false;
     }
 
-    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius,DamageSource src) {
+    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, DamageSource src) {
         if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
-                entity.instantKill(player, false,src);
+                entity.instantKill(player, false, src);
                 return true;
             }
         }
@@ -74,17 +74,16 @@ public class Eraser_Utils {
         return false;
     }
 
-    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, boolean skipAnimation,DamageSource src) {
+    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, boolean skipAnimation, DamageSource src) {
         if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
                 entity.instantKill(player, false, src);
                 return true;
             }
         }
-        if (self instanceof ILivingEntity entity && attacker instanceof Player player)
-            entity.instantKill(player, skipAnimation,src);
-
+        if (self instanceof ILivingEntity entity && attacker instanceof Player player) {
+            entity.instantKill(player, skipAnimation, src);
+        }
         return false;
     }
 }
-

@@ -24,6 +24,14 @@ public abstract class LivingEntityMixin {
         }
     }
 
+    @Inject(method = "handleDamageEvent", at = @At("HEAD"), cancellable = true)
+    private void snackProtector$handleDamageEvent(DamageSource source, CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void snackProtector$getHealth(CallbackInfoReturnable<Float>  cir) {
         LivingEntity self = (LivingEntity) (Object) this;

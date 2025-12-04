@@ -1,14 +1,11 @@
 package com.test.nosugar.network;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.client.renderer.ClientEntityCache;
-import com.test.nosugar.entity.Sand_Bag_v2;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.utils.TaskScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
