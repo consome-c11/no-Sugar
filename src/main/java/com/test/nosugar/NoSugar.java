@@ -56,6 +56,14 @@ public class NoSugar {
             SERegister.register(modEventBus);
         });
         new TConstruct(modEventBus,FMLJavaModLoadingContext.get());
+        boolean agentLoaded = com.test.nosugar.coremod.NoSugarAgent.isAgentLoaded;
+        LOGGER.info("NoSugar Mod: Agent Loaded Status = {}", agentLoaded);
+
+        if (agentLoaded) {
+            LOGGER.info("CoreMod is confirmed to be loaded. :)");
+        } else {
+            LOGGER.warn("CoreMod might not have loaded correctly! :(");
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

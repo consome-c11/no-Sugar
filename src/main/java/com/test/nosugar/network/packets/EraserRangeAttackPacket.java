@@ -1,5 +1,6 @@
 package com.test.nosugar.network.packets;
 
+import com.test.nosugar.items.ModItems;
 import com.test.nosugar.utils.intercafes.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,7 +26,7 @@ public class EraserRangeAttackPacket {
     public static void handle(EraserRangeAttackPacket msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
+            if (player != null && (player.getMainHandItem().is(ModItems.SUGAR_SWORD.get()) || player.getOffhandItem().is(ModItems.SUGAR_SWORD.get()))) {
                 double radius = 10.0;
                 AABB area = player.getBoundingBox().inflate(radius);
 

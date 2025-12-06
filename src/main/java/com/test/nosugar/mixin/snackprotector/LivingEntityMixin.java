@@ -32,14 +32,15 @@ public abstract class LivingEntityMixin {
         }
     }
 
-    @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
-    private void snackProtector$getHealth(CallbackInfoReturnable<Float>  cir) {
+    /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
+    private void snackProtector$getHealth2(CallbackInfoReturnable<Float>  cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             cir.setReturnValue(player.getMaxHealth());
+            System.out.println("Health: " + cir.getReturnValue());
             cir.cancel();
         }
-    }
+    }*/
 
     @Inject(method = "die", at = @At("HEAD"), cancellable = true)
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
@@ -51,7 +52,7 @@ public abstract class LivingEntityMixin {
         }
     }
 
-    @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
     private void snackProtector$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
@@ -67,7 +68,7 @@ public abstract class LivingEntityMixin {
             cir.setReturnValue(false);
             cir.cancel();
         }
-    }
+    }*/
 
     @Inject(
             method = "knockback(DDD)V",

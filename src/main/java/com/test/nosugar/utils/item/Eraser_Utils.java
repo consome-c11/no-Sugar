@@ -11,31 +11,18 @@ import net.minecraftforge.entity.PartEntity;
 import java.util.List;
 
 public class Eraser_Utils {
-    public static Entity findParentEntity(Entity self, double searchRadius) {
+    public static Entity findParentEntity(Entity self) {//変えるのめんどくさかったんや許してくれ
         if (self == null || self.level() == null) return null;
 
-        AABB box = self.getBoundingBox().inflate(searchRadius);
-        List<Entity> nearby = self.level().getEntities(self, box);
-
-        for (Entity e : nearby) {
-            if (e == self) continue;
-
-            PartEntity<?>[] parts = e.getParts();
-            if (parts != null) {
-                for (PartEntity<?> part : parts) {
-                    if (part == self) {
-                        return e;
-                    }
-                }
-            }
+        if (self instanceof PartEntity part) {
+            return part.getParent();
         }
-
         return null;
     }
 
-    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius) {
+    public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius) {//ここらへんはEraserとかが使ってるから互換性用に残しとく
         DamageSource src = ModDamageSources.erase(self, attacker);
-        if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
+        if (findParentEntity(self) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
                 entity.instantKill(player, false, src);
                 return true;
@@ -49,7 +36,7 @@ public class Eraser_Utils {
 
     public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, boolean skipAnimation) {
         DamageSource src = ModDamageSources.erase(self, attacker);
-        if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
+        if (findParentEntity(self) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
                 entity.instantKill(player, false, src);
                 return true;
@@ -62,7 +49,7 @@ public class Eraser_Utils {
     }
 
     public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, DamageSource src) {
-        if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
+        if (findParentEntity(self) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
                 entity.instantKill(player, false, src);
                 return true;
@@ -75,7 +62,7 @@ public class Eraser_Utils {
     }
 
     public static boolean killIfParentFound(Entity self, Entity attacker, double searchRadius, boolean skipAnimation, DamageSource src) {
-        if (findParentEntity(self, searchRadius) instanceof ILivingEntity entity) {
+        if (findParentEntity(self) instanceof ILivingEntity entity) {
             if (attacker instanceof Player player) {
                 entity.instantKill(player, false, src);
                 return true;
