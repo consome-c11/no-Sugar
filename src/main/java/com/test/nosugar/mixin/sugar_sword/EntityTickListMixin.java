@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityTickList;
 import org.spongepowered.asm.mixin.Mixin;

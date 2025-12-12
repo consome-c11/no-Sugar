@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.level.entity.EntityAccess;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import org.spongepowered.asm.mixin.Mixin;

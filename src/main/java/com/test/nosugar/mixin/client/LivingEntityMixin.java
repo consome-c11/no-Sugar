@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.client;
 
 import com.test.nosugar.events.ClientEvents;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.mixin.sugar_sword.EntityAccessor;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.HandleErasePacket;

@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;

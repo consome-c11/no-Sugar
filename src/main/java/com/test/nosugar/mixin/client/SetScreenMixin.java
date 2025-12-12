@@ -2,7 +2,7 @@ package com.test.nosugar.mixin.client;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.additional.SugarTotem;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;

@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.additional.ModDamageTypes;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;

@@ -1,4 +1,4 @@
-package com.test.nosugar.utils.intercafes;
+package com.test.nosugar.utils.interfaces;
 
 public interface ISynchedEntityDataItem {
     void CheckData();

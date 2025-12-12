@@ -1,7 +1,7 @@
 package com.test.nosugar.compat.spells;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import com.test.nosugar.utils.Res;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;

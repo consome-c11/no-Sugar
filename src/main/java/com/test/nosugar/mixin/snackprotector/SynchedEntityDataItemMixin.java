@@ -3,7 +3,7 @@ package com.test.nosugar.mixin.snackprotector;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
 import com.test.nosugar.mixin.sugar_sword.SynchedEntityDataAccessor;
-import com.test.nosugar.utils.intercafes.ISynchedEntityDataItem;
+import com.test.nosugar.utils.interfaces.ISynchedEntityDataItem;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;

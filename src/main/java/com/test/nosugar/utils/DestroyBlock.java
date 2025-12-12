@@ -1,7 +1,7 @@
 package com.test.nosugar.utils;
 
 import com.test.nosugar.client.utils.RenderQueue;
-import com.test.nosugar.utils.intercafes.IServerLevel;
+import com.test.nosugar.utils.interfaces.IServerLevel;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

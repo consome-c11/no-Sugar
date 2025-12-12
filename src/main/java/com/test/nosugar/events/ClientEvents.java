@@ -9,7 +9,7 @@ import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.network.packets.*;
 import com.test.nosugar.utils.*;
 import com.test.nosugar.network.PacketHandler;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

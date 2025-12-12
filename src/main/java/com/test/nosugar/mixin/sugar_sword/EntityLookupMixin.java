@@ -1,8 +1,8 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.google.common.collect.Maps;
-import com.test.nosugar.utils.intercafes.EraseEntityLookupBridge;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.level.entity.EntityAccess;

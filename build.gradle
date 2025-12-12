@@ -4,6 +4,7 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 	id 'org.spongepowered.mixin' version '0.7.+'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version = mod_version
@@ -88,6 +89,19 @@ dependencies {
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         jarJar.ranged(it, "[0.5.0,)")
+    }
+    implementation 'net.bytebuddy:byte-buddy-agent:1.14.12'
+    compileOnly 'net.bytebuddy:byte-buddy-agent:1.14.12'
+    runtimeOnly 'net.bytebuddy:byte-buddy-agent:1.14.12'
+    implementation 'org.ow2.asm:asm:9.7'
+    implementation 'org.ow2.asm:asm-commons:9.7'
+    implementation 'org.ow2.asm:asm-tree:9.7'
+    implementation 'org.javassist:javassist:3.29.2-GA'
+    implementation(jarJar('org.javassist:javassist:3.29.2-GA')){
+        jarJar.ranged(it, "[3.29.2-GA,)")
+    }
+    implementation(jarJar('net.bytebuddy:byte-buddy-agent:1.14.12')){
+        jarJar.ranged(it, "[1.14.12,)")
     }
     minecraftLibrary "io.github.llamalad7:mixinextras-common:0.5.0"
 }

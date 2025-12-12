@@ -1,4 +1,4 @@
-package com.test.nosugar.utils.intercafes;
+package com.test.nosugar.utils.interfaces;
 
 import net.minecraft.world.level.entity.EntityAccess;
 import org.spongepowered.asm.mixin.Unique;

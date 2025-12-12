@@ -1,14 +1,11 @@
 package com.test.nosugar.utils.item;
 
 import com.test.nosugar.additional.ModDamageSources;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
 import net.minecraftforge.entity.PartEntity;
-
-import java.util.List;
 
 public class Eraser_Utils {
     public static Entity findParentEntity(Entity self) {//変えるのめんどくさかったんや許してくれ

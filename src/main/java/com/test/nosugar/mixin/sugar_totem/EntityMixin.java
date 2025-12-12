@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.sugar_totem;
 
 import com.test.nosugar.additional.SugarTotem;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;

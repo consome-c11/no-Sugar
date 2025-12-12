@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.Config;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ClassInstanceMultiMap;

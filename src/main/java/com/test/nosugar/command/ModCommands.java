@@ -3,7 +3,7 @@ package com.test.nosugar.command;
 import com.mojang.brigadier.Command;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageSources;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.event.RegisterCommandsEvent;

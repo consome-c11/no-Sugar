@@ -6,8 +6,8 @@ import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.utils.SynchedEntityDataUtil;
 import com.test.nosugar.utils.TaskScheduler;
-import com.test.nosugar.utils.intercafes.EraseEntityLookupBridge;
-import com.test.nosugar.utils.intercafes.ILivingEntity;
+import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,6 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.damagesource.DamageSource;
@@ -125,8 +124,11 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
-            self.getEntityData().set(healthId, 0.f);
-            if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+            self.getEntityData().set(healthId, 0.f, true);
+            if (attacker instanceof Player player) {
+                ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+                SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
+            }
             //self.hurt(src, Float.MAX_VALUE);
             self.setDeltaMovement(Vec3.ZERO);
             self.getCombatTracker().recordDamage(src, 0);
@@ -332,13 +334,13 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     }
 
-    @Inject(method = "getHealth", at = @At("TAIL"), cancellable = true, require = 1)
+    /*@Inject(method = "getHealth", at = @At("TAIL"), cancellable = true, require = 1)
     private void overrideGetHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (this.isErased()) {
             cir.setReturnValue(0.0F);
         }
-    }
+    }*/
 
     @Inject(method = "getMaxHealth", at = @At("TAIL"), cancellable = true, require = 1)
     private void overridegetMaxHealth(CallbackInfoReturnable<Float> cir) {
@@ -390,22 +392,3 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         }
     }*/
 }
-/*
-あーもう嫌だな
-自分が障害ってのは分かっていると思っていたんだんがな
-
-
-その事忘れて人の話に口出してしまうし
-いっそ一回Discordから離れるか
-
-
-迷惑かけて申し訳無いと思っているが面と向かって謝れるメンタルもない
-
-
-人と関わったら迷惑かけてしまうしなぁ...
-
-
-全て自分が悪いのは分かっているんと思っているんだがな
-*/
-
-
