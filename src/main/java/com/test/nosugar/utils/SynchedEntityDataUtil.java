@@ -14,7 +14,7 @@ public class SynchedEntityDataUtil {
 
         if (!Objects.equals(item.getValue(), value)) {
             ((SynchedEntityDataItemAccessor)item).setValue(Float.MIN_VALUE);
-            //acc.getEntity().onSyncedDataUpdated(accessor);
+            acc.getEntity().onSyncedDataUpdated(accessor);
             ((SynchedEntityDataItemAccessor)item).setDirty(true);
             acc.setDirtyFlag(true);
         }

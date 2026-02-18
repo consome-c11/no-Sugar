@@ -2,6 +2,7 @@ package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,15 +33,16 @@ public abstract class LivingEntityMixin {
         }
     }
 
-    /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void snackProtector$getHealth2(CallbackInfoReturnable<Float>  cir) {
         LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof ILivingEntity iliving && iliving.isErased()) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             cir.setReturnValue(player.getMaxHealth());
             System.out.println("Health: " + cir.getReturnValue());
             cir.cancel();
         }
-    }*/
+    }
 
     @Inject(method = "die", at = @At("HEAD"), cancellable = true)
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
@@ -52,9 +54,10 @@ public abstract class LivingEntityMixin {
         }
     }
 
-    /*@Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
     private void snackProtector$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof ILivingEntity iliving && iliving.isErased()) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             cir.setReturnValue(true);
             cir.cancel();
@@ -64,11 +67,12 @@ public abstract class LivingEntityMixin {
     @Inject(method = "isDeadOrDying", at = @At("HEAD"), cancellable = true)
     private void snackProtector$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof ILivingEntity iliving && iliving.isErased()) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             cir.setReturnValue(false);
             cir.cancel();
         }
-    }*/
+    }
 
     @Inject(
             method = "knockback(DDD)V",

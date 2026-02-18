@@ -7,6 +7,8 @@ import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.HandleErasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -23,34 +25,34 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         LivingEntity self = (LivingEntity) (Object) this;
         Minecraft mc = Minecraft.getInstance();
         if(self == mc.player) return;
-        //((ILivingEntity) self).setErased(false);
-        ((ILivingEntity) self).unmarkErased(self.getUUID());
+        if (self instanceof Player) {
+            PacketHandler.CHANNEL.sendToServer(new HandleErasePacket());
+            ((ILivingEntity) self).setErased(false);
+            ((ILivingEntity) self).unmarkErased(self.getUUID());
+            return;
+        }
+
         ClientLevel clientLevel = mc.level;
         self.setPose(Pose.DYING);
-        self.deathTime = 1;
+        //self.deathTime = 1;
         /*TransientEntitySectionManager<Entity> tManager = ((ClientLevelAccessor) clientLevel).getTransientEntityManager();
         self.onClientRemoval();*/
 
         ((EntityAccessor) (self)).setRemovalReason(Entity.RemovalReason.KILLED);
         //removeFromOtherIndexes(self.getUUID(), clientLevel, tManager);
         clientLevel.removeEntity(self.getId(), Entity.RemovalReason.KILLED);
-        //self.remove(Entity.RemovalReason.KILLED);
-        self.invalidateCaps();
+        self.remove(Entity.RemovalReason.KILLED);
+        //self.invalidateCaps();
         Entity e = clientLevel.getEntity(self.getId());
         /*List<Entity> snapshot = StreamSupport.stream(((LevelEntityGetterAdapterAccessor<Entity>) tManager.getEntityGetter()).getVisibleEntities().getAllEntities().spliterator(), false)
                 .collect(Collectors.toList());*/
-        if (self instanceof Player) PacketHandler.CHANNEL.sendToServer(new HandleErasePacket());
 
-        if (e != null) {
-            //LOGGER.info("[EraserMod] failed to fully remove client entity id=" + self.getId());
-            /*ClientboundRemoveEntitiesPacket packet =
-                    new ClientboundRemoveEntitiesPacket(self.getId());
-            ClientPacketListener connection = mc.getConnection();
-            packet.handle(connection);*/
-            ClientEvents.erasedEntities.add(self);
-        } else {
-            //LOGGER.info("[EraserMod] successfully removed client entity id=" + self.getId());
-        }
+
+        ClientboundRemoveEntitiesPacket packet =
+                new ClientboundRemoveEntitiesPacket(self.getId());
+        ClientPacketListener connection = mc.getConnection();
+        packet.handle(connection);
+        ClientEvents.erasedEntities.add(self);
     }
 
     /*@Inject(method = "tick", at = @At("HEAD"), cancellable = true)

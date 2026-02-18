@@ -152,15 +152,15 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
         if (cir.getReturnValue().value() instanceof Float newHealth && this.value instanceof Float oldHealth && newHealth < oldHealth) {
             SynchedEntityData.DataValue<T> safeDataValue = SynchedEntityData.DataValue.create(getAccessor(), oldValue);
             this.value = oldValue;
-            cir.cancel();
             cir.setReturnValue(safeDataValue);
+            cir.cancel();
         }
     }
 
     @Override
     public void CheckData() {
         if (oldValue instanceof Float oldHealth && this.value instanceof Float newHealth) {
-            //System.out.println("Old Health: " + oldHealth + " New Health: " + newHealth);
+            System.out.println("Old Health: " + oldHealth + " New Health: " + newHealth);
             if (newHealth <= oldHealth) {
                 this.value = oldValue;
             }

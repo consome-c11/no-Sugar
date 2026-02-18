@@ -35,6 +35,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -301,7 +302,7 @@ public class ClientEvents {
     }*/
 
     public static boolean erase() {
-        Minecraft mc = Minecraft.getInstance();
+        /*Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
         int[] ids = erasedEntities.stream()
                 .mapToInt(Entity::getId)
@@ -319,7 +320,7 @@ public class ClientEvents {
                 return true;
             }
 
-        }
+        }*/
         return false;
     }
 
@@ -375,6 +376,13 @@ public class ClientEvents {
                         partialTick
                 );
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderLivingEntity(RenderLivingEvent event){
+        if(event.getEntity() instanceof ILivingEntity iliving && (iliving.isErased() || iliving.isErased(event.getEntity().getUUID())) && erasedEntities.equals(event.getEntity())){
+            event.setCanceled(true);
         }
     }
 }

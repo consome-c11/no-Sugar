@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 
-@Mixin(value = LivingEntity.class, priority = Integer.MAX_VALUE)
+@Mixin(value = LivingEntity.class, priority = 0)
 public abstract class LivingEntityMixin implements ILivingEntity {
 
 
@@ -125,16 +125,18 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
-            if (attacker instanceof Player player) {
-                ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+            if (self instanceof Player player) {
                 SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
+                forcedie(src);
+                this.setErased(true);
+                for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
+                }
             }
+            if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             //self.hurt(src, Float.MAX_VALUE);
             self.setDeltaMovement(Vec3.ZERO);
             self.getCombatTracker().recordDamage(src, 0);
-            if(self instanceof Player) {
-                forcedie(src);
-            }
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
 
@@ -155,6 +157,11 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Unique
+    void unMarkErased(){
+        LivingEntity self = (LivingEntity) (Object) this;
+        this.unmarkErased(self.getUUID());
+    }
+    @Unique
     private void forcedie(DamageSource source) {
         LivingEntity self = (LivingEntity) (Object) this;
         //if(!(self instanceof ServerPlayer)) { self.die(source);}
@@ -165,8 +172,10 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
-                sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
-                //if (self.isDeadOrDying()) sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
+                if(self.isDeadOrDying()) {
+                    sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
+                     //sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
+                }
                 ((LivingEntityAccessor) self).callDie(source);
             }
             LivingEntity killer = self.getKillCredit();
@@ -334,36 +343,38 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     }
 
-    /*@Inject(method = "getHealth", at = @At("TAIL"), cancellable = true, require = 1)
+    @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true, require = 1)
     private void overrideGetHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
+        if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(0.0F);
+            cir.cancel();
         }
-    }*/
+    }
 
-    @Inject(method = "getMaxHealth", at = @At("TAIL"), cancellable = true, require = 1)
+    @Inject(method = "getMaxHealth", at = @At("HEAD"), cancellable = true, require = 1)
     private void overridegetMaxHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-
-        if (this.isErased()) {
+        if (self instanceof ILivingEntity iLiving && iLiving.isErased()) {
             cir.setReturnValue(0F);
         }
     }
 
-    @Inject(method = "isAlive", at = @At("TAIL"), cancellable = true, require = 1)
+    @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true, require = 1)
     private void eraser$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased(self.getUUID())) {
+        if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(false);
+            cir.cancel();
         }
     }
 
-    @Inject(method = "isDeadOrDying", at = @At("TAIL"), cancellable = true, require = 1)
+    @Inject(method = "isDeadOrDying", at = @At("HEAD"), cancellable = true, require = 1)
     private void eraser$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased(self.getUUID())) {
+        if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 

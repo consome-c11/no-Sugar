@@ -59,6 +59,8 @@ minecraft {
     }
 }
 
+configurations.create('sugarlibShadow')
+
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
@@ -67,43 +69,41 @@ repositories {
 	maven { url "https://maven.theillusivec4.top/" } // Caelus, Curios
     maven { url "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" } // GeckoLib
     maven { url 'https://jitpack.io' }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
-   
+
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-	
-	compileOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
-    //runtimeOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
-    compileOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
-    //runtimeOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
-    compileOnly fg.deobf(files("libs/TConstruct.jar"))
-    //runtimeOnly fg.deobf(files("libs/TConstruct.jar"))
-    compileOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
-    //runtimeOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
-    compileOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
-    //runtimeOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
+    compileOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
+    runtimeOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
+    compileOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
+    runtimeOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
+    compileOnly fg.deobf(files("libs/TConstruct.jar"))
+    runtimeOnly fg.deobf(files("libs/TConstruct.jar"))
+    compileOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
+    runtimeOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
+    compileOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
+    runtimeOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
+    compileOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
+    runtimeOnly fg.deobf(files("libs/sugarlib.jar"))
+    compileOnly fg.deobf(files("libs/sugarlib.jar"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         jarJar.ranged(it, "[0.5.0,)")
     }
-    implementation 'net.bytebuddy:byte-buddy-agent:1.14.12'
-    compileOnly 'net.bytebuddy:byte-buddy-agent:1.14.12'
-    runtimeOnly 'net.bytebuddy:byte-buddy-agent:1.14.12'
-    implementation 'org.ow2.asm:asm:9.7'
-    implementation 'org.ow2.asm:asm-commons:9.7'
-    implementation 'org.ow2.asm:asm-tree:9.7'
-    implementation 'org.javassist:javassist:3.29.2-GA'
-    implementation(jarJar('org.javassist:javassist:3.29.2-GA')){
-        jarJar.ranged(it, "[3.29.2-GA,)")
+    compileOnly(annotationProcessor('net.bytebuddy:byte-buddy:1.14.17'))
+    implementation(jarJar('net.bytebuddy:byte-buddy:1.14.17')) {
+        jarJar.ranged(it, "[1.14.17,)")
     }
-    implementation(jarJar('net.bytebuddy:byte-buddy-agent:1.14.12')){
-        jarJar.ranged(it, "[1.14.12,)")
-    }
-    minecraftLibrary "io.github.llamalad7:mixinextras-common:0.5.0"
+    /*implementation(jarJar("com.test:sugarlib:1.0")) {
+        jarJar.ranged(it, "[1.0,)")
+    }*/
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -158,3 +158,34 @@ mixin {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+shadowJar {
+    archiveClassifier.set('')
+
+    configurations = [project.configurations.sugarlibShadow]
+
+    relocate 'com.test.sugarlib', 'shaded.com.test.sugarlib'
+    mergeServiceFiles()
+    zip64 true
+
+    doFirst {
+        println "Shadowing configurations: ${configurations.join(", ")}"
+        configurations.forEach { config ->
+            println "Files in $config:"
+            config.files.each { file ->
+                println "  - $file"
+            }
+        }
+    }
+}
+
+jar {
+    enabled = true
+    archiveClassifier.set('slim')
+}
+
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
+    finalizedBy 'reobfJar'
+}
+
+build.dependsOn shadowJar
