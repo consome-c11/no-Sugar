@@ -21,6 +21,7 @@ build
 eclipse
 run
 run-data
+libs
 .vscode
 .cursor
 
