@@ -100,17 +100,6 @@ public class ServerEvents {
     }
 
     @SubscribeEvent
-    public void onAttackEntity(LivingAttackEvent event) {
-        Entity player = event.getSource().getEntity();
-        if (player instanceof LivingEntity player_) {
-            ItemStack stack = player_.getMainHandItem();
-            //if (stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
-                event.setCanceled(true);
-            //}
-        }
-    }
-
-    @SubscribeEvent
     public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ILivingEntity living) {
             living.setErased(false);

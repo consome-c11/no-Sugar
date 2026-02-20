@@ -40,7 +40,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
     }
 
     @Inject(method = "setValue", at = @At("HEAD"), cancellable = true)
-    private void captureOldValueAndProtect(T newValue, CallbackInfo ci) {
+    private void nosugar$setValue(T newValue, CallbackInfo ci) {
         if(oldValue == null) oldValue = newValue;
         if (getAccessor() == HEALTH_ID) {
 
@@ -73,7 +73,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
     }
 
     @Inject(method = "setDirty", at = @At("HEAD"), cancellable = true)
-    private void postProtectHealthUpdate(boolean dirty, CallbackInfo ci) {
+    private void nosugar$setDirty(boolean dirty, CallbackInfo ci) {
         if (getAccessor() != HEALTH_ID || oldValue == null) {
             return;
         }
@@ -106,7 +106,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
     }
 
     @Inject(method = "isDirty", at = @At("RETURN"), cancellable = true)
-    private void snackProtector$isDirty(CallbackInfoReturnable<Boolean> cir) {
+    private void nosugar$isDirty(CallbackInfoReturnable<Boolean> cir) {
         if (getAccessor() != HEALTH_ID || oldValue == null) {
             return;
         }
@@ -131,7 +131,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
     }
 
     @Inject(method = "value", at = @At("RETURN"), cancellable = true)//idk
-    private void protectValueForWrite(CallbackInfoReturnable<SynchedEntityData.DataValue<T>> cir) {
+    private void nosugar$value(CallbackInfoReturnable<SynchedEntityData.DataValue<T>> cir) {
         if (getAccessor() != HEALTH_ID || oldValue == null) {
             return;
         }
@@ -160,7 +160,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
     @Override
     public void CheckData() {
         if (oldValue instanceof Float oldHealth && this.value instanceof Float newHealth) {
-            System.out.println("Old Health: " + oldHealth + " New Health: " + newHealth);
+            //System.out.println("Old Health: " + oldHealth + " New Health: " + newHealth);//あぁ～コンソールスパムの音ぉ～
             if (newHealth <= oldHealth) {
                 this.value = oldValue;
             }

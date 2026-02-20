@@ -79,7 +79,7 @@ public abstract class LivingEntityMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void onKnockback(double strength, double ratioX, double ratioZ, CallbackInfo ci) {
+    private void snackProtector$onKnockback(double strength, double ratioX, double ratioZ, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
 
         if (entity instanceof Player player) {
@@ -96,11 +96,11 @@ public abstract class LivingEntityMixin {
             at = @At("HEAD"),
             argsOnly = true
     )
-    private MobEffectInstance modifyEffectInstance(MobEffectInstance original) {
+    private MobEffectInstance snackProtector$modifyEffectInstance(MobEffectInstance original) {
         if((Object)this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             return new MobEffectInstance(
                     original.getEffect(),
-                    (original.getDuration() * 7),
+                    (original.getDuration() * 7),//効果7倍! アンパソマソ!
                     original.getAmplifier(),
                     original.isAmbient(),
                     original.isVisible(),
@@ -111,7 +111,7 @@ public abstract class LivingEntityMixin {
     }
 
     @Inject(method = "baseTick", at = @At("HEAD"), cancellable = true)
-    private void onbaseTick(CallbackInfo ci) {
+    private void snackProtector$onbaseTick(CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             player.setAirSupply(player.getMaxAirSupply());
@@ -121,7 +121,7 @@ public abstract class LivingEntityMixin {
     }
 
     @Inject(method = "animateHurt", at = @At("HEAD"), cancellable = true)
-    private void onAnimateHurt(float flt, CallbackInfo ci) {
+    private void snackProtector$onAnimateHurt(float flt, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             player.hurtTime = 0;

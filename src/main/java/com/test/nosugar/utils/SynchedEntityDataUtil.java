@@ -13,7 +13,7 @@ public class SynchedEntityDataUtil {
         SynchedEntityData.DataItem<T> item = acc.invokeGetItem(accessor);
 
         if (!Objects.equals(item.getValue(), value)) {
-            ((SynchedEntityDataItemAccessor)item).setValue(Float.MIN_VALUE);
+            ((SynchedEntityDataItemAccessor)item).setValue(value);
             acc.getEntity().onSyncedDataUpdated(accessor);
             ((SynchedEntityDataItemAccessor)item).setDirty(true);
             acc.setDirtyFlag(true);

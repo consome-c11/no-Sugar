@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ChunkSerializer.class)
 public class ChunkSerializerMixin {
 
-    @Inject(method = "write", at = @At("HEAD"))
+    /*@Inject(method = "write", at = @At("HEAD"))//一応
     private static void onWrite(ServerLevel level, ChunkAccess chunk, CallbackInfoReturnable<CompoundTag> cir) {
         PersistentEntitySectionManager<Entity> manager =
                 ((ServerLevelAccessor) level).getEntityManager();
@@ -47,7 +47,7 @@ public class ChunkSerializerMixin {
             return (e instanceof ILivingEntity living) && living.isErased();
         });
 
-    }
+    }*/
 
     @Inject(method = "read", at = @At("HEAD"))
     private static void onRead(ServerLevel level, PoiManager poiManager, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {

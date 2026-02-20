@@ -13,16 +13,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 
-@Mixin(value = Entity.class, priority = 500)
+@Mixin(value = Entity.class)
 public class EntityMixin {
 
-    @Inject(method = "shouldBeSaved", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "shouldBeSaved", at = @At("HEAD"), cancellable = true)//なんかあったら怖いし一応?
     private void eraseGuard(CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
         if (self instanceof ILivingEntity erase && erase.isErased()) {
             cir.setReturnValue(false);
         }
-    }
+    }*/
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableto(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
@@ -32,21 +32,6 @@ public class EntityMixin {
             cir.setReturnValue(false);
             cir.cancel();
         }
-    }
-
-    @Inject(
-            method = "changeDimension(Lnet/minecraft/server/level/ServerLevel;)Lnet/minecraft/world/entity/Entity;",
-            at = @At("HEAD"),
-            cancellable = false
-    )
-    private void onChangeDimensionHead(ServerLevel pDestination, CallbackInfoReturnable<Entity> cir) {
-        Entity ent = (Entity) (Object) this;
-
-        if (ent.level().isClientSide()) return;
-        if (!(ent instanceof LivingEntity living)) return;
-        if (!(ent instanceof ILivingEntity self)) {
-        }
-        //if(self.isErased()) living.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
@@ -62,15 +47,5 @@ public class EntityMixin {
             cir.setReturnValue(true);
         }
     }
-
-    /*@Inject(method = "getId", at = @At("HEAD"), cancellable = true)
-    private void overridegetId(CallbackInfoReturnable<Integer> cir) {
-        Entity ent = (Entity) (Object) this;
-        if (!(ent instanceof LivingEntity living)) return;
-        if (!(living instanceof ILivingEntity self)) return;
-        if (self.isErased() || (self.isErased() && self instanceof Player player && !SnackArmor.SnackProtector.isFullSet(player))) {
-            cir.setReturnValue(-1);
-        }
-    }*/
 
 }

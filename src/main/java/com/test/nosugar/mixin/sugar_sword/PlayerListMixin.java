@@ -16,6 +16,7 @@ public class PlayerListMixin {
     private void onrespawn(ServerPlayer player, boolean keepinventory, CallbackInfoReturnable<ServerPlayer> cir) {
         if (player instanceof ILivingEntity iliving && (iliving.isErased() || iliving.isErased(player.getUUID()))) {
             iliving.unmarkErased(player.getUUID());
+            iliving.setErased(false);
         }
         return;
     }

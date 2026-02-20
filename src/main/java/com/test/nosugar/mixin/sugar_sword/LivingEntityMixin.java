@@ -135,7 +135,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             }
             if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
             //self.hurt(src, Float.MAX_VALUE);
-            self.setDeltaMovement(Vec3.ZERO);
             self.getCombatTracker().recordDamage(src, 0);
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
@@ -172,7 +171,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
-                if(self.isDeadOrDying()) {
+                if(self.isDeadOrDying() && !self.isAlive()) {
                     sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
                      //sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
                 }
@@ -296,24 +295,24 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                         || (vis2 != null && vis2.getEntity(originalUuid) != null)
                         || (acc != null && acc.getKnownUuids().contains(originalUuid))) {
 
-                    System.out.println("[EraserMod] failed to fully remove entity id=" + id + " uuid=" + originalUuid);
+                    System.out.println("[NoSugar] failed to fully remove entity id=" + id + " uuid=" + originalUuid);
 
                     if (serverLevel.getEntity(originalUuid) != null) {
-                        System.out.println("[EraserMod]  - still in ServerLevel.getEntity(UUID)");
+                        System.out.println("[NoSugar]  - still in ServerLevel.getEntity(UUID)");
                     }
                     if (vis != null && vis.getEntity(originalUuid) != null) {
-                        System.out.println("[EraserMod]  - still in visibleEntityStorage (acc.getVisibleEntityStorage())");
+                        System.out.println("[NoSugar]  - still in visibleEntityStorage (acc.getVisibleEntityStorage())");
                     }
                     if (vis2 != null && vis2.getEntity(originalUuid) != null) {
-                        System.out.println("[EraserMod]  - still in getter.visibleEntities (LevelEntityGetter adapter)");
+                        System.out.println("[NoSugar]  - still in getter.visibleEntities (LevelEntityGetter adapter)");
                     }
                     if (acc != null && acc.getKnownUuids().contains(originalUuid)) {
-                        System.out.println("[EraserMod]  - still in PersistentEntitySectionManager.knownUuids");
+                        System.out.println("[NoSugar]  - still in PersistentEntitySectionManager.knownUuids");
                     }
 
                     ChunkMap debugchunkMap = serverLevel.getChunkSource().chunkMap;
                     if (((ChunkMapAccessor) debugchunkMap).getEntityMap().containsKey(self.getId())) {
-                        System.out.println("[EraserMod]  - still in ChunkMap.entityMap");
+                        System.out.println("[NoSugar]  - still in ChunkMap.entityMap");
                     }
 
 
@@ -321,7 +320,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                         SectionPos sp = SectionPos.of(self);
                         EntitySection<Entity> s2 = storage2.getSection(sp.asLong());
                         if (s2 != null && ((EntitySectionAccessor<?>) s2).getStorage().contains(self)) {
-                            System.out.println("[EraserMod]  - still in LevelEntityGetter.sectionStorage section");
+                            System.out.println("[NoSugar]  - still in LevelEntityGetter.sectionStorage section");
                         }
                     }
 
@@ -330,13 +329,13 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                         SectionPos sp = SectionPos.of(self);
                         EntitySection<Entity> s = storage.getSection(sp.asLong());
                         if (s != null && ((EntitySectionAccessor<?>) s).getStorage().contains(self)) {
-                            System.out.println("[EraserMod]  - still in PersistentEntitySectionManager.sectionStorage section");
+                            System.out.println("[NoSugar]  - still in PersistentEntitySectionManager.sectionStorage section");
                         }
                     }
 
 
                 } else {
-                    System.out.println("[EraserMod] successfully removed entity id=" + id + " uuid=" + originalUuid);
+                    System.out.println("[NoSugar] successfully removed entity id=" + id + " uuid=" + originalUuid);
                 }
             }
         }
@@ -344,7 +343,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true, require = 1)
-    private void overrideGetHealth(CallbackInfoReturnable<Float> cir) {
+    private void nosugar$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(0.0F);
@@ -353,7 +352,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Inject(method = "getMaxHealth", at = @At("HEAD"), cancellable = true, require = 1)
-    private void overridegetMaxHealth(CallbackInfoReturnable<Float> cir) {
+    private void nosugar$getMaxHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && iLiving.isErased()) {
             cir.setReturnValue(0F);
@@ -361,7 +360,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true, require = 1)
-    private void eraser$isAlive(CallbackInfoReturnable<Boolean> cir) {
+    private void nosugar$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(false);
@@ -370,7 +369,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Inject(method = "isDeadOrDying", at = @At("HEAD"), cancellable = true, require = 1)
-    private void eraser$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
+    private void nosugar$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(true);
@@ -378,28 +377,4 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         }
     }
 
-
-    @Inject(method = "die", at = @At("HEAD"), cancellable = true)
-    private void eraser$die(CallbackInfo ci) {
-        LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
-            //ci.cancel();
-        }
-    }
-
-    /*@Inject(method = "baseTick", at = @At("HEAD"), cancellable = true)
-    private void eraser$baseTick(CallbackInfo ci) {
-        LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
-            ci.cancel();
-        }
-    }*/
-
-    /*@Inject(method = "tickDeath", at = @At("HEAD"), cancellable = true)
-    private void eraser$tickDeath(CallbackInfo ci) {
-        LivingEntity self = (LivingEntity) (Object) this;
-        if (this.isErased()) {
-            ci.cancel();
-        }
-    }*/
 }
