@@ -4,6 +4,7 @@ import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.entity.PartEntity;
 
@@ -54,6 +55,28 @@ public class Eraser_Utils {
         }
         if (self instanceof ILivingEntity entity && attacker instanceof Player player) {
             entity.instantKill(player, false, src);
+        }
+        return false;
+    }
+
+    public static boolean killIfParentFound(LivingEntity self, LivingEntity attacker, boolean skipAnimation) {
+        DamageSource src = ModDamageSources.erase(self, attacker);
+        if (findParentEntity(self) instanceof ILivingEntity entity) {
+            if (attacker instanceof Player player) {
+                entity.instantKill(player, false, src);
+                return true;
+            }
+        }
+        if (self instanceof ILivingEntity entity && attacker instanceof Player player) {
+            entity.instantKill(player, skipAnimation, src);
+        }
+        return false;
+    }
+
+    public static boolean killIfParentFound(LivingEntity self, LivingEntity attacker) {
+        DamageSource src = ModDamageSources.erase(self, attacker);
+        if (self instanceof ILivingEntity entity) {
+            entity.instantKill(self, false, src);
         }
         return false;
     }

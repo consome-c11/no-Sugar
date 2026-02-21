@@ -48,22 +48,22 @@ public class LivingEntityTransformer implements ITransformerModule {
     @Override
     public boolean transform(Phase phase, ClassNode classNode, MethodNode method) {
         boolean modified = false;
-        System.out.println("[NoSugar] transforming: " + method.name);
+        //System.out.println("[NoSugar] transforming: " + method.name);
         for (AbstractInsnNode insn : method.instructions) {
 
             if (GET_HEALTH.matches(method) && insn.getOpcode() == Opcodes.FRETURN) {
                 injectInterfaceHook(method, insn, "getHealth", "(FLnet/minecraft/world/entity/LivingEntity;)F");
                 modified = true;
-                System.out.println("[NoSugar] transforming getHealth...");
+                //System.out.println("[NoSugar] transforming getHealth...");
             } else if (insn.getOpcode() == Opcodes.IRETURN) {
                 if (IS_DEAD_OR_DYING.matches(method)) {
                     injectInterfaceHook(method, insn, "isDeadOrDying", "(ZLnet/minecraft/world/entity/LivingEntity;)Z");
                     modified = true;
-                    System.out.println("[NoSugar] transforming isDeadOrDying...");
+                    //System.out.println("[NoSugar] transforming isDeadOrDying...");
                 } else if (IS_ALIVE.matches(method)) {
                     injectInterfaceHook(method, insn, "isAlive", "(ZLnet/minecraft/world/entity/Entity;)Z");
                     modified = true;
-                    System.out.println("[NoSugar] transforming isAlive...");
+                    //System.out.println("[NoSugar] transforming isAlive...");
                 }
             }
         }

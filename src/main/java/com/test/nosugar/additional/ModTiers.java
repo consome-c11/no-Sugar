@@ -24,5 +24,13 @@ public class ModTiers {
             BlockTags.NEEDS_DIAMOND_TOOL,
             () -> Ingredient.EMPTY
     );
-
+    public static final Tier TAIL_OF_NINE_TIER = new ForgeTier(
+            999,
+            0,
+            35.0F,
+            8,
+            30,
+            BlockTags.NEEDS_DIAMOND_TOOL,
+            () -> Ingredient.EMPTY
+    );
 }

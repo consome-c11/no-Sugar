@@ -48,11 +48,11 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 .collect(Collectors.toList());*/
 
 
-        ClientboundRemoveEntitiesPacket packet =
+        /*ClientboundRemoveEntitiesPacket packet =
                 new ClientboundRemoveEntitiesPacket(self.getId());
         ClientPacketListener connection = mc.getConnection();
         packet.handle(connection);
-        ClientEvents.erasedEntities.add(self);
+        ClientEvents.erasedEntities.add(self);*/
     }
 
     /*@Inject(method = "tick", at = @At("HEAD"), cancellable = true)

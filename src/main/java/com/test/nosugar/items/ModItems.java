@@ -63,6 +63,8 @@ public class ModItems {
     public static final RegistryObject<Item> SUGAR_TOTEM =
             ITEMS.register("sugar_totem", () -> new Sugar_Totem_Item());
 
+    public static final RegistryObject<Item> TAIL_OF_NINE =
+            ITEMS.register("tail_of_nine", () -> new Tail_of_Nine_Item(new Item.Properties().stacksTo(1)));
     /*public static final RegistryObject<Item> SUGAR_BLADE =
             SLASH_BLADE_ITEMS.register("sugar_blade", () -> new SugarBladeItem());*/
 
