@@ -29,7 +29,6 @@ public interface ExplosionAccessor {
     @Accessor("source")
     Entity getSource();
 
-    @Final
-    @Accessor("position")//?????????? なんで見つからん言われてるんやコレ
+    @Final @Accessor(value = "position", remap = false)//:(
     Vec3 getPosition();
 }

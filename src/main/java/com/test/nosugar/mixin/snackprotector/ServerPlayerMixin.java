@@ -2,6 +2,7 @@ package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,7 @@ public class ServerPlayerMixin {
     @Inject(method = "die", at = @At("HEAD"), cancellable = true)
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             ((LivingEntityAccessor)self).setDeadFlag(false);
             ci.cancel();

@@ -20,7 +20,7 @@ public class SetScreenMixin {//for witherzilla
         if (Minecraft.getInstance() == null) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
-        if (((SnackArmor.SnackProtector.isFullSet(mc.player) || SugarTotem.hasTotem(mc.player)) && !((ILivingEntity) mc.player).isErased(((LivingEntity)mc.player).getUUID())))
+        if (((!((ILivingEntity) mc.player).isErased(((LivingEntity)mc.player).getUUID()) && (SnackArmor.SnackProtector.isFullSet(mc.player) || SugarTotem.hasTotem(mc.player)))))
             if (screen instanceof DeathScreen) {
                 ci.cancel();
             }

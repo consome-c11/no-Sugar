@@ -26,7 +26,7 @@ public abstract class EntityTickListMixin {
     )
     private boolean onforEach(Consumer<Entity> consumer, Object entityObj) {//実行される時はObjectになるんかぁ   めんどくせ()
         if (entityObj instanceof Entity entity) {
-            return !(entity instanceof ILivingEntity erase && erase.isErased());
+            return entity.level().isClientSide || !(entity instanceof ILivingEntity erase && erase.isErased());
         }
         return true;
     }

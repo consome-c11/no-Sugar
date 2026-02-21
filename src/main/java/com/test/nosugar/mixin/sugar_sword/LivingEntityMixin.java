@@ -122,6 +122,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
+        if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+        else if(attacker != null)((LivingEntityAccessor) self).setLastHurtByMob(attacker);
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
@@ -133,7 +135,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
                 }
             }
-            if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+
             //self.hurt(src, Float.MAX_VALUE);
             self.getCombatTracker().recordDamage(src, 0);
             //((LivingEntityAccessor) self).callDie(eraseSrc);
@@ -167,15 +169,19 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         ((LivingEntityAccessor) self).setDeadFlag(true);
         self.deathTime = 1;
         ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
+
         if (!self.level().isClientSide) {
 
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
-                if(self.isDeadOrDying() && !self.isAlive()) {
+
+                //チェック無いと夢幻終焉とかでMixinが上書きされてる時に酷い事になる :(
+                if(self.isDeadOrDying() && !self.isAlive() && self.getHealth() <= 0.f) {
                     sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
                      //sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
                 }
-                ((LivingEntityAccessor) self).callDie(source);
+                //((LivingEntityAccessor) self).callDie(source);
+                sp.die(source);
             }
             LivingEntity killer = self.getKillCredit();
             if (killer != null) {
@@ -342,7 +348,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     }
 
-    @Inject(method = "getHealth", at = @At("HEAD"), cancellable = true, require = 1)
+    /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void nosugar$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
@@ -351,7 +357,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         }
     }
 
-    @Inject(method = "getMaxHealth", at = @At("HEAD"), cancellable = true, require = 1)
+    @Inject(method = "getMaxHealth", at = @At("HEAD"), cancellable = true)
     private void nosugar$getMaxHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && iLiving.isErased()) {
@@ -359,7 +365,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         }
     }
 
-    @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true, require = 1)
+    @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
     private void nosugar$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
@@ -368,13 +374,13 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         }
     }
 
-    @Inject(method = "isDeadOrDying", at = @At("HEAD"), cancellable = true, require = 1)
+    @Inject(method = "isDeadOrDying", at = @At("HEAD"), cancellable = true)
     private void nosugar$isDeadOrDying(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iLiving && (iLiving.isErased(self.getUUID()) || iLiving.isErased())) {
             cir.setReturnValue(true);
             cir.cancel();
         }
-    }
+    }*/
 
 }

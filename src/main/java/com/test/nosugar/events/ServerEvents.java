@@ -4,6 +4,7 @@ import com.test.nosugar.NoSugar;
 import com.test.nosugar.items.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
+import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -30,6 +31,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
@@ -254,12 +256,6 @@ public class ServerEvents {
             }
     }
 
-    @SubscribeEvent
-    public static void onLivingAttack(LivingAttackEvent event) {
-        if(!(event.getSource().getEntity() instanceof LivingEntity living) ||  living.getMainHandItem().getItem() != ModItems.SUGAR_SWORD.get()) return;
-        //if(event.getEntity() instanceof ILivingEntity Iliving)Iliving.instantKill();
-        System.out.println("Target: " + event.getEntity().getName().getString() + "Attacker: " + event.getSource().getEntity().getName().getString());
-    }
 
 }
 

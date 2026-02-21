@@ -32,9 +32,8 @@ public class ClientPacketHandler {
 
             if (((LivingEntity)e) instanceof ILivingEntity erased) {
                 //LOGGER.info("[NoSugar] Received EraseEntityPacket for: " + e.getName().getString());
-
-                //erased.setErased(true);
-                if(!(e instanceof Player)) {
+                erased.setErased(true);
+                if(!(e instanceof Player player)) {
                     erased.markErased(e.getUUID());
                 }
 

@@ -379,11 +379,12 @@ public class ClientEvents {
         }
     }
 
-    @SubscribeEvent
+
+    /*@SubscribeEvent
     public static void onRenderLivingEntity(RenderLivingEvent event){
         if(event.getEntity() instanceof ILivingEntity iliving && (iliving.isErased() || iliving.isErased(event.getEntity().getUUID())) && erasedEntities.equals(event.getEntity())){
-            event.setCanceled(true);
+            //event.setCanceled(true);
         }
-    }
+    }*/
 }
 

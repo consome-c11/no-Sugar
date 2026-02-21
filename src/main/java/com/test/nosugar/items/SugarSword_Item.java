@@ -61,6 +61,7 @@ public class SugarSword_Item extends SwordItem {
         return true;
     }
 
+    @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
             if (player.isSleeping()) {
