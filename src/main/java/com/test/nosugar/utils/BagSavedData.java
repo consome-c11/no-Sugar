@@ -76,7 +76,9 @@ public class BagSavedData extends SavedData {
             if (i < allEntries.size()) {
                 BagItemEntry entry = allEntries.get(i);
                 if (entry.count() > 0 && entry.item() != net.minecraft.world.item.Items.AIR) {
-                    itemStacks.add(entry.toItemStack());
+                    ItemStack stack = entry.toItemStack();
+                    stack.setCount(1);
+                    itemStacks.add(stack);
                 } else {
                     itemStacks.add(ItemStack.EMPTY);
                 }

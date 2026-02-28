@@ -10,17 +10,17 @@ public class LivingEntityTransformer implements ITransformerModule {
 
     private static final MethodMatcher GET_HEALTH = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
-            "m_21223_", "getHealth", "()F"
+            "m_21223_", "getHealth", "()F", false
     );
 
     private static final MethodMatcher IS_DEAD_OR_DYING = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
-            "m_21224_", "isDeadOrDying", "()Z"
+            "m_21224_", "isDeadOrDying", "()Z", false
     );
 
     private static final MethodMatcher IS_ALIVE = MethodMatcher.of(
             "net/minecraft/world/entity/Entity",
-            "m_6084_", "isAlive", "()Z"
+            "m_6084_", "isAlive", "()Z", false
     );
 
     private static final String HOOK_CLASS = "com/test/nosugar/transformer/hook/livingentity/LivingEntityMethodsImpl";
@@ -35,13 +35,12 @@ public class LivingEntityTransformer implements ITransformerModule {
 
     @Override
     public boolean matchesMethod(String className, MethodNode method) {
-        if ("net/minecraft/world/entity/LivingEntity".equals(className)) {
-            if (GET_HEALTH.matches(method)) return true;
-            if (IS_DEAD_OR_DYING.matches(method)) return true;
-        }
-        if ("net/minecraft/world/entity/Entity".equals(className)) {
-            if (IS_ALIVE.matches(method)) return true;
-        }
+        //if ("net/minecraft/world/entity/LivingEntity".equals(className)) {
+            if (GET_HEALTH.matches(method, className)||
+                    IS_DEAD_OR_DYING.matches(method, className) ||
+                    IS_ALIVE.matches(method, className)) return true;
+            //return false;
+        //}
         return false;
     }
 
@@ -51,19 +50,19 @@ public class LivingEntityTransformer implements ITransformerModule {
         //System.out.println("[NoSugar] transforming: " + method.name);
         for (AbstractInsnNode insn : method.instructions) {
 
-            if (GET_HEALTH.matches(method) && insn.getOpcode() == Opcodes.FRETURN) {
+            if (GET_HEALTH.matches(method, classNode.name) && insn.getOpcode() == Opcodes.FRETURN) {
                 injectInterfaceHook(method, insn, "getHealth", "(FLnet/minecraft/world/entity/LivingEntity;)F");
                 modified = true;
-                //System.out.println("[NoSugar] transforming getHealth...");
+                System.out.println("[NoSugar] transforming getHealth... \n Class: " + classNode.name);
             } else if (insn.getOpcode() == Opcodes.IRETURN) {
-                if (IS_DEAD_OR_DYING.matches(method)) {
+                if (IS_DEAD_OR_DYING.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isDeadOrDying", "(ZLnet/minecraft/world/entity/LivingEntity;)Z");
                     modified = true;
-                    //System.out.println("[NoSugar] transforming isDeadOrDying...");
-                } else if (IS_ALIVE.matches(method)) {
+                    System.out.println("[NoSugar] transforming isDeadOrDying...\n Class: " + classNode.name);
+                } else if (IS_ALIVE.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isAlive", "(ZLnet/minecraft/world/entity/Entity;)Z");
                     modified = true;
-                    //System.out.println("[NoSugar] transforming isAlive...");
+                    System.out.println("[NoSugar] transforming isAlive...\n Class: " + classNode.name);
                 }
             }
         }

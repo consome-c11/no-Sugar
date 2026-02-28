@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.world_destroyer;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;

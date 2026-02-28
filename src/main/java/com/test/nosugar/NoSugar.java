@@ -7,7 +7,7 @@ import com.test.nosugar.compat.tconstruct.TConstruct;
 import com.test.nosugar.client.ModCreativeTabs;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.gui.ModMenus;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.network.ModPackets;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;

@@ -129,45 +129,63 @@ public class BagMenu extends AbstractContainerMenu {
             int playerInvStart = 54;
             int hotbarEnd = 89;
 
+            boolean didAction = false;
+            //サンキューチャッピー 動けばええねん動けば
             if (index >= bagStart && index <= bagEnd) {
-                if (!this.moveItemStackTo(stackInSlot, playerInvStart, hotbarEnd + 1, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (index >= playerInvStart && index <= hotbarEnd) {
-                if (!this.moveItemStackTo(stackInSlot, bagStart, bagEnd + 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else {
-                return ItemStack.EMPTY;
-            }
+                ItemStack copyStack = stackInSlot.copy();
+                copyStack.setCount(copyStack.getMaxStackSize());
+                for (int i = playerInvStart; i <= hotbarEnd; i++) {
+                    Slot targetSlot = this.slots.get(i);
+                    ItemStack existingStack = targetSlot.getItem();
 
-            if (stackInSlot.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
+                    if (existingStack.isEmpty()) {
+                        if (targetSlot.mayPlace(copyStack)) {
+                            targetSlot.set(copyStack.copy());
+                            targetSlot.setChanged();
+                            didAction = true;
+                            break;
+                        }
+                    } else if (ItemStack.isSameItemSameTags(existingStack, copyStack) && targetSlot.mayPlace(copyStack) &&
+                            (existingStack.getCount() + copyStack.getCount() < existingStack.getMaxStackSize())) {
+                        int maxStackSize = Math.min(copyStack.getMaxStackSize(), targetSlot.getMaxStackSize(copyStack));
+                        int space = maxStackSize - existingStack.getCount();
 
-            ItemStack cursorStack = player.containerMenu.getCarried();
-            if (!cursorStack.isEmpty() && index >= bagStart && index <= bagEnd) {
-                if (ItemStack.isSameItemSameTags(originalItemstack, cursorStack)) {
-                    if (this.moveItemStackTo(cursorStack, bagStart, bagEnd + 1, false)) {
+                        if (space > 0) {
+                            ItemStack newStack = existingStack.copy();
+                            newStack.setCount(newStack.getMaxStackSize());
+                            int amountToAdd = Math.min(space, copyStack.getCount());
+                            newStack.grow(amountToAdd);
+                            targetSlot.set(newStack);
+                            targetSlot.setChanged();
+                            didAction = true;
+                            break;
+                        }
                     }
                 }
             }
-
-            if (!player.level().isClientSide) {
-                BagSavedData data = BagSavedData.get(player.level());
-                List<ItemStack> itemsToSave = new ArrayList<>();
-                for (int i = 0; i < this.customItemHandler.getSlots(); i++) {
-                    ItemStack stack = this.customItemHandler.getStackInSlot(i);
-                    itemsToSave.add(stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
+            else if (index >= playerInvStart && index <= hotbarEnd) {
+                if (this.moveItemStackTo(stackInSlot, bagStart, bagEnd + 1, false)) {
+                    didAction = true;
                 }
-                data.setPage(this.bagId, this.page, itemsToSave);
-                data.setDirty();
+            }
+
+            if (didAction) {
+                slot.setChanged();
+
+                if (!player.level().isClientSide) {
+                    BagSavedData data = BagSavedData.get(player.level());
+                    List<ItemStack> itemsToSave = new ArrayList<>();
+                    for (int i = 0; i < this.customItemHandler.getSlots(); i++) {
+                        ItemStack stack = this.customItemHandler.getStackInSlot(i);
+                        itemsToSave.add(stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
+                    }
+                    data.setPage(this.bagId, this.page, itemsToSave);
+                    data.setDirty();
+                }
             }
         }
 
-        return originalItemstack;
+        return ItemStack.EMPTY;
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "net.minecraft.server.level.ServerLevel$EntityCallbacks", priority = 0)
 public class ServerLevelEntityCallbacksMixin {
     @Inject(method = "onTrackingStart", at = @At("HEAD"), cancellable = true)
-    private void onTrackingStart(Entity entity, CallbackInfo ci) {
+    private void nosugar$onTrackingStart(Entity entity, CallbackInfo ci) {
         if (entity instanceof ILivingEntity erase && erase.isErased()) {
             ci.cancel();
         }

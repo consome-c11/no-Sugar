@@ -21,7 +21,7 @@ public class ModDamageSources {
             return new DamageSource(holder, attacker);
         }
 
-        return new DamageSource(holder, attacker);
+        return new DamageSource(holder);
     }
 
     public static DamageSource explosive(Entity target, @Nullable Entity attacker) {
@@ -33,6 +33,6 @@ public class ModDamageSources {
             return new DamageSource(holder, attacker);
         }
 
-        return new DamageSource(holder, attacker);
+        return new DamageSource(holder);
     }
 }

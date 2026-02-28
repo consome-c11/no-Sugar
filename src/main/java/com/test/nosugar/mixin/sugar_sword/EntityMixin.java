@@ -25,7 +25,7 @@ public class EntityMixin {
     }*/
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
-    private void isInvulnerableto(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+    private void nosugar$isInvulnerableto(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
         boolean iserase = source.is(ModDamageTypes.ERASE);
         if (iserase) {
@@ -35,14 +35,14 @@ public class EntityMixin {
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    private void onTick(CallbackInfo ci) {
+    private void nosugar$onTick(CallbackInfo ci) {
         if ((Object) this instanceof ILivingEntity living && living.isErased()) {
             //if (!Config.isNormalDieEntity(((Entity)((Object)this))))ci.cancel();
         }
     }
 
     @Inject(method = "isRemoved", at = @At("HEAD"), cancellable = true)
-    private void onisRemoved(CallbackInfoReturnable<Boolean> cir) {
+    private void nosugar$onisRemoved(CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
         if (!self.level().isClientSide && self instanceof ILivingEntity living && living.isErased()) {
             cir.setReturnValue(true);

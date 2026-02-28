@@ -1,6 +1,6 @@
 package com.test.nosugar.network.packets;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.network.FriendlyByteBuf;

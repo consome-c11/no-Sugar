@@ -1,7 +1,6 @@
 package com.test.nosugar.entity;
 
-import com.test.nosugar.items.Block_Suger_Item;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.SugarExplosion;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;

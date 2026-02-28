@@ -19,7 +19,6 @@ public class ServerPlayerMixin {
         LivingEntity self = (LivingEntity) (Object) this;
         if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
-            ((LivingEntityAccessor)self).setDeadFlag(false);
             ci.cancel();
         }
     }

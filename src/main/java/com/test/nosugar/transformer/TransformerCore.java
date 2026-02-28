@@ -6,11 +6,15 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TransformerCore {
 
     private static final List<ITransformerModule> MODULES = new ArrayList<>();
     private static boolean initialized = false;
+
+    private static final Map<String, ClassNode> classNodeCache = new ConcurrentHashMap<>();
 
     public enum Phase {
         BEFORE,
@@ -21,6 +25,10 @@ public class TransformerCore {
     static {
         registerModule(new LivingEntityTransformer());
         MODULES.sort(Comparator.comparingInt(ITransformerModule::getPriority));
+    }
+
+    public static ClassNode getCachedClassNode(String className) {
+        return classNodeCache.get(className);
     }
 
     public static void registerModule(ITransformerModule module) {
@@ -46,8 +54,10 @@ public class TransformerCore {
             }
         } catch (Throwable e) {
             com.test.nosugar.NoSugar.LOGGER.error(
-                    "Transformer error in class: " + classNode.name, e);
+                    "[NoSugar] Transformer error in class: " + classNode.name, e);
             return false;
+        } finally {
+            classNodeCache.remove(classNode.name);
         }
         return modified;
     }

@@ -1,5 +1,6 @@
 package com.test.nosugar.items;
 
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.utils.render.ColorUtils;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Predicate;
 

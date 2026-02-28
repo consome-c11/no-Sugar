@@ -7,7 +7,6 @@ import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.gui.ClientBagGui;
-import com.test.nosugar.items.ModItems;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.ArrowRenderer;

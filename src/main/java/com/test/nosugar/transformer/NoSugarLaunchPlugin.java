@@ -41,7 +41,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
             return TransformerCore.transform(corePhase, classNode);
         } catch (Throwable e) {
             com.test.nosugar.NoSugar.LOGGER.error(
-                    "NoSugarTransformer error in class: " + classNode.name, e);
+                    "[NoSugar] Transformer error in class: " + classNode.name, e);
             return false;
         }
     }

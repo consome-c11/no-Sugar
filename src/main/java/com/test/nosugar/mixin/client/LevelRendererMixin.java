@@ -2,7 +2,7 @@ package com.test.nosugar.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

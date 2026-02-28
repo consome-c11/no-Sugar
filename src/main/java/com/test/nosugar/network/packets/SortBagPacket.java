@@ -57,6 +57,7 @@ public class SortBagPacket {
 
                     if (existingEntry != null) {
                         long newCount = existingEntry.count() + entryToCheck.count();
+                        newCount = 1;
                         consolidatedMap.remove(existingEntry);
                         BagItemEntry newEntry = new BagItemEntry(existingEntry.item(), newCount, existingEntry.tag());
                         consolidatedMap.put(newEntry, newEntry);

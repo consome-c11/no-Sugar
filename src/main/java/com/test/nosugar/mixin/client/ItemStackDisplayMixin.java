@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.render.ColorUtils;
 import com.test.nosugar.utils.DestroyMode;

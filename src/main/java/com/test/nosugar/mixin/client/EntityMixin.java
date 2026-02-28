@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

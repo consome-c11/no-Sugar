@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

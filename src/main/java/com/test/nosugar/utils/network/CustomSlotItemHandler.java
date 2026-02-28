@@ -1,5 +1,6 @@
 package com.test.nosugar.utils.network;
 
+import com.test.nosugar.items.UltimaCanteen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -13,12 +14,20 @@ public class CustomSlotItemHandler extends SlotItemHandler {
 
     @Override
     public int getMaxStackSize() {
-        return Integer.MAX_VALUE; // GUI表示や操作時の上限を設定
+        return Integer.MAX_VALUE;
     }
 
     @Override
     public int getMaxStackSize(@NotNull ItemStack stack) {
-        return Integer.MAX_VALUE;
+        return 1;
+    }
+
+    @Override
+    public boolean mayPlace(ItemStack stack) {
+        if (stack.getItem() instanceof UltimaCanteen) {
+            return false;
+        }
+        return super.mayPlace(stack);
     }
 
 }

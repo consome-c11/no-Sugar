@@ -1,6 +1,5 @@
 package com.test.nosugar.additional;
 
-import com.test.nosugar.items.ModItems;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -150,7 +149,7 @@ public class SnackArmor {
                 if (Iliving.wasFullset() && !isFullSet(player, true)) {
                     player.getServer().getPlayerList().getPlayers().forEach(otherPlayer -> {
                         if (otherPlayer != player) {
-                            otherPlayer.connection.send(new ClientboundAddEntityPacket(player));
+                            //otherPlayer.connection.send(new ClientboundAddEntityPacket(player));
                         }
                     });
                     resetAbilities(player);
@@ -164,7 +163,7 @@ public class SnackArmor {
             if (player == null) return;
             player.getServer().getPlayerList().getPlayers().forEach(otherPlayer -> {
                 if (otherPlayer != player) {
-                    otherPlayer.connection.send(new ClientboundRemoveEntitiesPacket(player.getId()));
+                    //otherPlayer.connection.send(new ClientboundRemoveEntitiesPacket(player.getId()));
                 }
             });
         }
@@ -221,13 +220,13 @@ public class SnackArmor {
         }*/
 
         private static void applyAbilities(Player player) {
-
+            player.getAbilities().mayfly = true;
             //player.getAbilities().invulnerable = true;
-            if (!player.getAbilities().mayfly) {
-                player.getAbilities().mayfly = true;
-                if (!player.onGround()) player.getAbilities().flying = true;
+            /*if (!player.getAbilities().mayfly) {
+
+                //if (!player.onGround()) player.getAbilities().flying = true;
                 player.onUpdateAbilities();
-            }
+            }*/
             player.getFoodData().setFoodLevel(20);
             player.getFoodData().setSaturation(20.0F);
             player.clearFire();

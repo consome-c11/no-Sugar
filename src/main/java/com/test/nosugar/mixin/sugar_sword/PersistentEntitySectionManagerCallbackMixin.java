@@ -15,9 +15,8 @@ public abstract class PersistentEntitySectionManagerCallbackMixin {
     private Entity realEntity;
 
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true, remap = true)
-    private void onMoveGuard(CallbackInfo ci) {
+    private void nosugar$onMoveGuard(CallbackInfo ci) {
         if (realEntity instanceof ILivingEntity erased && erased.isErased()) {
-            //System.out.println("[NoSugar] Prevented moving entity in PersistentEntitySectionManager");
             ci.cancel();
         }
     }

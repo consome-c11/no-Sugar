@@ -1,6 +1,6 @@
 package com.test.nosugar.utils.item;
 
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.DestroyBlock;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.Res;

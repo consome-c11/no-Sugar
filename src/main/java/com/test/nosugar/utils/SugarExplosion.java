@@ -1,7 +1,7 @@
 package com.test.nosugar.utils;
 
 import com.test.nosugar.additional.ModDamageSources;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.mixin.sugar_bow.ExplosionAccessor;
 import com.test.nosugar.utils.interfaces.IServerLevel;
 import com.test.nosugar.utils.item.Eraser_Utils;

@@ -1,11 +1,12 @@
 package com.test.nosugar.utils;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.world.entity.LivingEntity;
 
 public class Tail_of_Nine_Handler {
-    private static final String NBT_KEY_COUNT = "nosugar:tail_of_nine_count";
+    private static final String NBT_KEY_COUNT = NoSugar.MODID + ":tail_of_nine_count";
     private static final int MAX_HITS = 9;
 
     public static boolean applyHit(LivingEntity target, LivingEntity attacker) {

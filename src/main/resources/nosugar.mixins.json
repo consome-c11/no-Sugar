@@ -52,6 +52,7 @@
     "sugar_sword.LivingEntityAccessor",
     "sugar_sword.LivingEntityMixin",
     "sugar_sword.PersistentEntitySectionManagerAccessor",
+    "sugar_sword.PersistentEntitySectionManagerCallbackAccessor",
     "sugar_sword.PersistentEntitySectionManagerCallbackMixin",
     "sugar_sword.PlayerListMixin",
     "sugar_sword.ServerLevelAccessor",

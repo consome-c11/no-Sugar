@@ -123,21 +123,22 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         if (this.isErased() || self.level().isClientSide) return;
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
         if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
-        else if(attacker != null)((LivingEntityAccessor) self).setLastHurtByMob(attacker);
+        if(attacker != null)((LivingEntityAccessor) self).setLastHurtByMob(attacker);
+        self.getCombatTracker().recordDamage(src, 0);
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
-            if (self instanceof Player player) {
+            if (self instanceof ServerPlayer player) {
+                this.setErased(true);
                 SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
                 forcedie(src);
-                this.setErased(true);
                 for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
                     PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
                 }
             }
 
             //self.hurt(src, Float.MAX_VALUE);
-            self.getCombatTracker().recordDamage(src, 0);
+
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
 
@@ -149,7 +150,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             }
             this.setErased(true);
             forcedie(src);
-            if (self instanceof ServerPlayer) return;
             if (!SkipAnimation && !Config.SKIP_DEATH_ANIMATION.get()) {
                 TaskScheduler.schedule(this::forceErase, 21);
             } else forceErase();
@@ -174,7 +174,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
-
+                System.out.println("death msg: " + deathMsg);
                 //チェック無いと夢幻終焉とかでMixinが上書きされてる時に酷い事になる :(
                 if(self.isDeadOrDying() && !self.isAlive() && self.getHealth() <= 0.f) {
                     sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
@@ -242,112 +242,84 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     public void forceErase() {
         LivingEntity self = (LivingEntity) (Object) this;
         self.level().broadcastEntityEvent(self, (byte) 60);
+
+        //LevelCallBack.onRemoveとかは呼ばれない
         ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
+
         if (self.level() instanceof ServerLevel serverLevel) {
             removeBossBar(serverLevel);
-            boolean debug = false;
+            boolean debug = true;
             self.stopRiding();
             self.invalidateCaps();
 
-            ((EntityAccessor) self).setlevelCallback(EntityInLevelCallback.NULL);
             EntityTickList tickList = ((ServerLevelAccessor) serverLevel).getEntityTickList();
+
             Int2ObjectMap<Entity> active = ((EntityTickListAccessor) tickList).getActive();
             active.remove(self.getId());
 
-            PersistentEntitySectionManager<Entity> manager =
-                    ((ServerLevelAccessor) serverLevel).getEntityManager();
-            PersistentEntitySectionManagerAccessor<Entity> acc =
-                    (PersistentEntitySectionManagerAccessor<Entity>) manager;
+            removefromSectionManager(serverLevel);
 
-            EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
-            ((EraseEntityLookupBridge<Entity>) vis).eraseEntity(self);
-
-            LevelEntityGetter<Entity> getter = acc.getEntityGetter();
-            EntityLookup<Entity> vis2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
-            ((EraseEntityLookupBridge<Entity>) vis2).eraseEntity(self);
-            EntitySectionStorage<Entity> storage2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getSectionStorage();
-            long sectionKey = SectionPos.asLong(self.blockPosition());
-            EntitySection<Entity> section2 = storage2.getSection(sectionKey);
-            if (section2 != null) {
-                ClassInstanceMultiMap<Entity> multiMap =
-                        ((EntitySectionAccessor<Entity>) section2).getStorage();
-                Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-                if(byClass != null)hardRemove(self, byClass);
-                if (debug)
-                    System.out.println("[NoSugerMod] forceErase: removed entity id=" + self.getId() + " from LevelEntityGetter section storage");
-            }
-
-            acc.getKnownUuids().remove(self.getUUID());
-
-            EntitySectionStorage<Entity> storage = acc.getSectionStorage();
-            EntitySection<Entity> section = storage.getSection(sectionKey);
-            if (section != null) {
-                ((EntitySectionAccessor) section).getStorage().remove(self);
-                ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section).getStorage();
-                Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-                if(byClass != null)hardRemove(self, byClass);
-            }
             ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
+            ((ChunkMapAccessor)chunkMap).removeEntity(self);
             Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
             entityMap.remove(self.getId());
             if (self instanceof TrackedEntityAccessor accessor) {
                 accessor.invokeBroadcastRemoved();
             }
-            if (debug) {
-                UUID originalUuid = self.getUUID();
-                int id = self.getId();
-                if (serverLevel.getEntity(originalUuid) != null
-                        || (vis != null && vis.getEntity(originalUuid) != null)
-                        || (vis2 != null && vis2.getEntity(originalUuid) != null)
-                        || (acc != null && acc.getKnownUuids().contains(originalUuid))) {
-
-                    System.out.println("[NoSugar] failed to fully remove entity id=" + id + " uuid=" + originalUuid);
-
-                    if (serverLevel.getEntity(originalUuid) != null) {
-                        System.out.println("[NoSugar]  - still in ServerLevel.getEntity(UUID)");
-                    }
-                    if (vis != null && vis.getEntity(originalUuid) != null) {
-                        System.out.println("[NoSugar]  - still in visibleEntityStorage (acc.getVisibleEntityStorage())");
-                    }
-                    if (vis2 != null && vis2.getEntity(originalUuid) != null) {
-                        System.out.println("[NoSugar]  - still in getter.visibleEntities (LevelEntityGetter adapter)");
-                    }
-                    if (acc != null && acc.getKnownUuids().contains(originalUuid)) {
-                        System.out.println("[NoSugar]  - still in PersistentEntitySectionManager.knownUuids");
-                    }
-
-                    ChunkMap debugchunkMap = serverLevel.getChunkSource().chunkMap;
-                    if (((ChunkMapAccessor) debugchunkMap).getEntityMap().containsKey(self.getId())) {
-                        System.out.println("[NoSugar]  - still in ChunkMap.entityMap");
-                    }
-
-
-                    if (storage2 != null) {
-                        SectionPos sp = SectionPos.of(self);
-                        EntitySection<Entity> s2 = storage2.getSection(sp.asLong());
-                        if (s2 != null && ((EntitySectionAccessor<?>) s2).getStorage().contains(self)) {
-                            System.out.println("[NoSugar]  - still in LevelEntityGetter.sectionStorage section");
-                        }
-                    }
-
-
-                    if (storage != null) {
-                        SectionPos sp = SectionPos.of(self);
-                        EntitySection<Entity> s = storage.getSection(sp.asLong());
-                        if (s != null && ((EntitySectionAccessor<?>) s).getStorage().contains(self)) {
-                            System.out.println("[NoSugar]  - still in PersistentEntitySectionManager.sectionStorage section");
-                        }
-                    }
-
-
-                } else {
-                    System.out.println("[NoSugar] successfully removed entity id=" + id + " uuid=" + originalUuid);
-                }
-            }
+            ((EntityAccessor) self).setlevelCallback(EntityInLevelCallback.NULL);
         }
 
     }
 
+    @Unique
+    public void removefromSectionManager(ServerLevel serverLevel){
+        LivingEntity self = (LivingEntity) (Object) this;
+        PersistentEntitySectionManager<Entity> manager =
+                ((ServerLevelAccessor) serverLevel).getEntityManager();
+        PersistentEntitySectionManagerAccessor<Entity> acc =
+                (PersistentEntitySectionManagerAccessor<Entity>) manager;
+
+        EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
+        ((EraseEntityLookupBridge<Entity>) vis).eraseEntity(self);
+
+        LevelEntityGetter<Entity> getter = acc.getEntityGetter();
+        EntityLookup<Entity> vis2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
+        ((EraseEntityLookupBridge<Entity>) vis2).eraseEntity(self);
+        EntitySectionStorage<Entity> storage2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getSectionStorage();
+        long sectionKey = SectionPos.asLong(self.blockPosition());
+        EntitySection<Entity> section2 = storage2.getSection(sectionKey);
+        if (section2 != null) {
+            ClassInstanceMultiMap<Entity> multiMap =
+                    ((EntitySectionAccessor<Entity>) section2).getStorage();
+            Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
+            if(byClass != null)hardRemove(self, byClass);
+        }
+
+        acc.getKnownUuids().remove(self.getUUID());
+
+        EntitySectionStorage<Entity> storage = acc.getSectionStorage();
+        EntitySection<Entity> section = storage.getSection(sectionKey);
+        if (section != null) {
+            //((EntitySectionAccessor) section).getStorage().remove(self);
+            ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section).getStorage();
+            Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
+            if(byClass != null)hardRemove(self, byClass);
+        }
+        EntitySection<Entity> section3 =
+                ((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSection();
+        if (section3 != null) {
+            //((EntitySectionAccessor) section3).getStorage().remove(self);
+            ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section3).getStorage();
+            Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
+            if(byClass != null)hardRemove(self, byClass);
+            //これは泣いた
+            if(((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSection().isEmpty())
+                ((PersistentEntitySectionManagerAccessor<?>) manager).getSectionStorage().remove(((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSectionKey());
+        }
+
+        acc.getCallbacks().onTrackingEnd(self);
+        acc.getCallbacks().onDestroyed(self);
+    }
     /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void nosugar$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;

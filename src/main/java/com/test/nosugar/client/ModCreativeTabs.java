@@ -1,7 +1,7 @@
 package com.test.nosugar.client;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.additional.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

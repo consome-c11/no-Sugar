@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
+import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -20,9 +21,7 @@ public class ModCommands {
                         .requires(source -> source.hasPermission(2))
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
-                            if (source.getPlayer() instanceof ILivingEntity player) {
-                                player.instantKill(source.getPlayer(), false, ModDamageSources.erase(source.getPlayer(), source.getPlayer()));
-                            }
+                            Eraser_Utils.killIfParentFound(source.getPlayer(), source.getPlayer());
 
                             return Command.SINGLE_SUCCESS;
                         })

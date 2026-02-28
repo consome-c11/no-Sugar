@@ -4,7 +4,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.test.nosugar.items.ModItems;
+import com.test.nosugar.compat.tconstruct.Mods;
+import com.test.nosugar.additional.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -16,13 +17,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.RegistryObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import slimeknights.tconstruct.library.tools.item.IModifiable;
+import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,14 +66,18 @@ public abstract class ItemRendererMixin {
                         ctx == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ||
                         ctx == ItemDisplayContext.THIRD_PERSON_LEFT_HAND ||
                         ctx == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
-
-        boolean inGui = ctx == ItemDisplayContext.GUI;
+        boolean issugar = false;
+        if (stack.getItem() instanceof IModifiable) {
+            ToolStack tool = ToolStack.from(stack);
+            issugar =  !tool.isBroken() && (tool.getModifierLevel(Mods.SUGAR.getId()) > 0 || tool.getModifierLevel(Mods.TAIL_OF_NINE.getId()) > 0);
+        }
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         List<Item> currentAffectedItems = getAffectedItems();
-        return (inHand || inGui) && (
-                ModItems.getAllItems().stream().anyMatch(stack::is) ||
-                        currentAffectedItems.stream().anyMatch(stack::is) || AFFECTED_ITEM_IDS.contains(itemId)
-        );
+        issugar = issugar || ModItems.getAllItems().stream().anyMatch(stack::is) ||
+                currentAffectedItems.stream().anyMatch(stack::is) || AFFECTED_ITEM_IDS.contains(itemId);
+        boolean inGui = ctx == ItemDisplayContext.GUI;
+
+        return (inHand || inGui) && issugar;
     }
 
     @Unique

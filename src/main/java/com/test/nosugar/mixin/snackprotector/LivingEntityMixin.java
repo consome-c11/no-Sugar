@@ -47,17 +47,6 @@ public abstract class LivingEntityMixin {
         }
     }
 
-    @Inject(method = "die", at = @At("HEAD"), cancellable = true)
-    private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
-        LivingEntity self = (LivingEntity) (Object) this;
-        if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
-        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
-            ((LivingEntityAccessor)self).setDeadFlag(false);
-            ci.cancel();
-            //self.setHealth(self.getMaxHealth());
-        }
-    }
-
     @Inject(method = "isAlive", at = @At("HEAD"), cancellable = true)
     private void snackProtector$isAlive(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
@@ -77,6 +66,18 @@ public abstract class LivingEntityMixin {
             cir.cancel();
         }
     }*/
+
+    @Inject(method = "die", at = @At("HEAD"), cancellable = true)
+    private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            ((LivingEntityAccessor)self).setDeadFlag(false);
+            ci.cancel();
+            //self.setHealth(self.getMaxHealth());
+        }
+    }
+
 
     @Inject(
             method = "knockback(DDD)V",

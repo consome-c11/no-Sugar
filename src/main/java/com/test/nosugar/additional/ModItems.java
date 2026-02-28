@@ -1,7 +1,7 @@
-package com.test.nosugar.items;
+package com.test.nosugar.additional;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.compat.slashblade.SugarBladeItem;
+import com.test.nosugar.items.*;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
