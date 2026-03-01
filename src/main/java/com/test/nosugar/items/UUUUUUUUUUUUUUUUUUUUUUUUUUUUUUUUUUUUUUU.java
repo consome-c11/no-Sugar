@@ -6,6 +6,8 @@ import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;
 import com.test.nosugar.mixin.sugar_sword.ServerLevelAccessor;
 import com.test.nosugar.utils.item.Eraser_Utils;
+import com.test.nosugar.utils.render.ColorUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -27,6 +29,20 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
     }
 
     @Override
+    public Component getName(ItemStack stack) {
+        String text = "うー☆";
+        var result = Component.empty();
+        long time = System.currentTimeMillis() / 50;
+
+        for (int i = 0; i < text.length(); i++) {
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            result = result.append(Component.literal(String.valueOf(text.charAt(i)))
+                    .withStyle(style -> style.withColor(color)));
+        }
+        return result;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
 
@@ -44,7 +60,7 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
         EntityLookup<Entity> vis = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
         ((EntityLookupAccessor)vis).getById().values().stream().forEach((ent) -> {
             if(ent instanceof LivingEntity living) {
-                if (living.getId() != player.getId()) Eraser_Utils.killIfParentFound(living, player);
+                if (living.getId() != player.getId()) Eraser_Utils.killIfParentFound(living, player, true);
             }
         });
 
