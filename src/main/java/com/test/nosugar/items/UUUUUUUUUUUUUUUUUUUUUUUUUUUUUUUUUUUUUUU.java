@@ -29,7 +29,7 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = "うー☆";
+        String text = "うー☆ ";
         var result = Component.empty();
         long time = System.currentTimeMillis() / 50;
 
