@@ -1,6 +1,5 @@
 package com.test.nosugar.items;
 
-import com.test.nosugar.NoSugar;
 import com.test.nosugar.mixin.sugar_sword.EntityLookupAccessor;
 import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;

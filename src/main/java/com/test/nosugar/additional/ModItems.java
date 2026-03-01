@@ -69,7 +69,7 @@ public class ModItems {
             SLASH_BLADE_ITEMS.register("sugar_blade", () -> new SugarBladeItem());*/
 
     public static final RegistryObject<Item> UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU =
-            ITEMS.register("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU", () -> new UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(new Item.Properties().stacksTo(1)));
+            ITEMS.register("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", () -> new UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(new Item.Properties().stacksTo(1)));
 
 
     //f*cking bakedmodel load :(
