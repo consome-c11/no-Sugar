@@ -68,6 +68,10 @@ public class ModItems {
     /*public static final RegistryObject<Item> SUGAR_BLADE =
             SLASH_BLADE_ITEMS.register("sugar_blade", () -> new SugarBladeItem());*/
 
+    public static final RegistryObject<Item> UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU =
+            ITEMS.register("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU", () -> new UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(new Item.Properties().stacksTo(1)));
+
+
     //f*cking bakedmodel load :(
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY1 =
             DUMMY_ITEMS.register("sugar_bow_pulling_0", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));

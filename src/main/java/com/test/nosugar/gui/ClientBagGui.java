@@ -1,5 +1,6 @@
 package com.test.nosugar.gui;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.ChangeBagPagePacket;
 import com.test.nosugar.network.packets.SortBagPacket;
@@ -85,7 +86,7 @@ public class ClientBagGui extends AbstractContainerScreen<BagMenu> {
             if (this.bagId != null && this.currentPage > 0) {
                 PacketHandler.CHANNEL.sendToServer(new ChangeBagPagePacket(this.bagId, this.currentPage - 1));
             } else {
-                System.out.println("Prev button pressed: bagId is null or currentPage <= 0. bagId: " + this.bagId + ", currentPage: " + this.currentPage);
+                NoSugar.LOGGER.debug("Prev button pressed: bagId is null or currentPage <= 0. bagId: " + this.bagId + ", currentPage: " + this.currentPage);
             }
         }).pos(prevButtonX, buttonY).size(buttonWidth, buttonHeight).build();
 
@@ -93,7 +94,7 @@ public class ClientBagGui extends AbstractContainerScreen<BagMenu> {
             if (this.bagId != null && this.currentPage < this.menu.getTotalPages() - 1) {
                 PacketHandler.CHANNEL.sendToServer(new ChangeBagPagePacket(this.bagId, this.currentPage + 1));
             } else {
-                System.out.println("Next button pressed: bagId is null or currentPage >= totalPages - 1. bagId: " + this.bagId + ", currentPage: " + this.currentPage + ", totalPages: " + this.menu.getTotalPages());
+                NoSugar.LOGGER.debug("Next button pressed: bagId is null or currentPage >= totalPages - 1. bagId: " + this.bagId + ", currentPage: " + this.currentPage + ", totalPages: " + this.menu.getTotalPages());
             }
         }).pos(nextButtonX, buttonY).size(buttonWidth, buttonHeight).build();
 

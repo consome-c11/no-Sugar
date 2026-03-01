@@ -56,7 +56,7 @@ public class NoSugar {
             SERegister.register(modEventBus);
         });
         new TConstruct(modEventBus,FMLJavaModLoadingContext.get());
-        System.out.println("[NoSugar] loaded");
+        NoSugar.LOGGER.debug("[NoSugar] loaded");
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

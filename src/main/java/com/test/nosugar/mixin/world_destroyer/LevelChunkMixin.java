@@ -31,11 +31,8 @@ public abstract class LevelChunkMixin implements ILevelChunk {
             return null;
         }
 
-        boolean wasEmpty = section.hasOnlyAir();
         boolean isEmpty = section.hasOnlyAir();
-        if (wasEmpty != isEmpty) {
-            level.getChunkSource().getLightEngine().updateSectionStatus(pos, isEmpty);
-        }
+        level.getChunkSource().getLightEngine().updateSectionStatus(pos, isEmpty);
         if (LightEngine.hasDifferentLightProperties(self, pos, oldState, newState)) {
             level.getChunkSource().getLightEngine().checkBlock(pos);
         }

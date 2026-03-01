@@ -123,6 +123,7 @@ public abstract class LivingEntityMixin {
             player.hurtTime = 0;
             player.hurtMarked = false;
         }
+
     }
 
     @Inject(method = "animateHurt", at = @At("HEAD"), cancellable = true)

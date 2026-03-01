@@ -1,6 +1,8 @@
 package com.test.nosugar.transformer;
 
+import com.test.nosugar.NoSugar;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -33,7 +35,7 @@ public class MethodMatcher {
     public boolean matches(MethodNode method, String classname) {
         if (!desc.equals(method.desc) ||
                 !obfName.equals(method.name) && !mappedName.equals(method.name)) return false;
-        return isSubclass(classname, owner);
+        return isSubclass(classname, owner)/* || isOverride(method, classname)*/;
     }
 
     //粉みかんさん感謝
@@ -56,7 +58,7 @@ public class MethodMatcher {
                 ClassReader classreader = new ClassReader(is);
                 currentName = classreader.getSuperName();
                 if (currentName.equals(superClass)) {
-                    System.out.println("[NoSugar] sub Class Found: " + superClass);
+                    NoSugar.LOGGER.debug("[NoSugar] sub Class Found: " + superClass);
                     return true;
                 }
             } catch (Throwable e) {
@@ -66,6 +68,8 @@ public class MethodMatcher {
 
         return false;
     }
+
+
 
     public static MethodMatcher of(String owner, String obfName, String mappedName, String desc, boolean isInterface) {
         return new MethodMatcher(owner, obfName, mappedName, desc, isInterface);

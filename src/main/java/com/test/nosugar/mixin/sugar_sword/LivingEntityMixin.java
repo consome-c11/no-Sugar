@@ -174,7 +174,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
-                System.out.println("death msg: " + deathMsg);
                 //チェック無いと夢幻終焉とかでMixinが上書きされてる時に酷い事になる :(
                 if(self.isDeadOrDying() && !self.isAlive() && self.getHealth() <= 0.f) {
                     sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));

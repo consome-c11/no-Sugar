@@ -1,5 +1,6 @@
 package com.test.nosugar.network.packets;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.gui.BagMenu;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.utils.BagSavedData;
@@ -40,12 +41,12 @@ public class ChangeBagPagePacket {
                 AbstractContainerMenu openContainer = player.containerMenu;
                 if (openContainer instanceof BagMenu bagMenu) {
                     if (bagMenu.getBagId().equals(pkt.bagId)) {
-                        bagMenu.setPage(pkt.newPage);//ｳﾜ-Packet作るのめんどくさくてChatGPT使ったのバレたー
+                        bagMenu.setPage(pkt.newPage);
                     } else {
-                        System.err.println("Player " + player.getName().getString() + " tried to change page for bag " + pkt.bagId + " but open menu is for " + bagMenu.getBagId());
+                        NoSugar.LOGGER.error("Player " + player.getName().getString() + " tried to change page for bag " + pkt.bagId + " but open menu is for " + bagMenu.getBagId());
                     }
                 } else {
-                    System.err.println("Player " + player.getName().getString() + " sent ChangeBagPagePacket but doesn't have BagMenu open.");
+                    NoSugar.LOGGER.error("Player " + player.getName().getString() + " sent ChangeBagPagePacket but doesn't have BagMenu open.");
                 }
 
                 BagSavedData data = BagSavedData.get(player.serverLevel());

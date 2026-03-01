@@ -1,5 +1,6 @@
 package com.test.nosugar.gui;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.BagSavedData;
 import com.test.nosugar.utils.network.CustomItemStackHandler;
 import com.test.nosugar.utils.network.CustomSlotItemHandler;
@@ -72,7 +73,7 @@ public class BagMenu extends AbstractContainerMenu {
                 customItemHandler.setStackInSlot(i, item);
             }
         } else {
-            System.err.println("Failed to get player in BagMenu.setPage, cannot update inventory.");
+            NoSugar.LOGGER.warn("Failed to get player in BagMenu.setPage, cannot update inventory.");
         }
     }
 

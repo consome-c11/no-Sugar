@@ -1,5 +1,6 @@
 package com.test.nosugar.mixin.plugin;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.NoSugarLaunchPlugin;
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
@@ -68,10 +69,10 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
 
             if (!map.containsKey(plugin.name())) {
                 map.put(plugin.name(), plugin);
-               System.out.println("[NoSugar] Transformer registered.");
+                NoSugar.LOGGER.debug("[NoSugar] Transformer registered.");
             }
         } catch (Exception e) {
-            System.out.println("[NoSugar] Failed to register Transformer: " + e);
+            NoSugar.LOGGER.debug("[NoSugar] Failed to register Transformer: " + e);
         }
     }
 }

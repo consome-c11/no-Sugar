@@ -1,5 +1,6 @@
 package com.test.nosugar.mixin.common;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Inventory;
@@ -73,7 +74,7 @@ public class InventoryMixin {
 
     private List<NonNullList<ItemStack>> getCompartments() {
         if (this.items == null || this.armor == null || this.offhand == null) {
-            System.out.println("Warning: Inventory compartments not initialized yet.");
+            NoSugar.LOGGER.debug("Warning: Inventory compartments not initialized yet.");
             return null;
         }
         return Arrays.asList(this.items, this.armor, this.offhand);

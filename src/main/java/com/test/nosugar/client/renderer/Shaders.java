@@ -37,7 +37,7 @@ public class Shaders {
                     }
             );
         } catch (IOException | RuntimeException e) {
-            System.out.println("Failed to register glint colored shader" + e);
+            NoSugar.LOGGER.debug("Failed to register glint colored shader" + e);
         }
     }
 }

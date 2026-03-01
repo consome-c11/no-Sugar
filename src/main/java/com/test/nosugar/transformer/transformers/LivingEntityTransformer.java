@@ -1,5 +1,6 @@
 package com.test.nosugar.transformer.transformers;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.MethodMatcher;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -29,8 +30,7 @@ public class LivingEntityTransformer implements ITransformerModule {
 
     @Override
     public boolean matchesClass(String className) {
-        return "net/minecraft/world/entity/LivingEntity".equals(className)
-                || "net/minecraft/world/entity/Entity".equals(className);
+        return true;
     }
 
     @Override
@@ -53,16 +53,16 @@ public class LivingEntityTransformer implements ITransformerModule {
             if (GET_HEALTH.matches(method, classNode.name) && insn.getOpcode() == Opcodes.FRETURN) {
                 injectInterfaceHook(method, insn, "getHealth", "(FLnet/minecraft/world/entity/LivingEntity;)F");
                 modified = true;
-                System.out.println("[NoSugar] transforming getHealth... \n Class: " + classNode.name);
+                NoSugar.LOGGER.debug("[NoSugar] transforming getHealth... \n Class: " + classNode.name);
             } else if (insn.getOpcode() == Opcodes.IRETURN) {
                 if (IS_DEAD_OR_DYING.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isDeadOrDying", "(ZLnet/minecraft/world/entity/LivingEntity;)Z");
                     modified = true;
-                    System.out.println("[NoSugar] transforming isDeadOrDying...\n Class: " + classNode.name);
+                    NoSugar.LOGGER.debug("[NoSugar] transforming isDeadOrDying...\n Class: " + classNode.name);
                 } else if (IS_ALIVE.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isAlive", "(ZLnet/minecraft/world/entity/Entity;)Z");
                     modified = true;
-                    System.out.println("[NoSugar] transforming isAlive...\n Class: " + classNode.name);
+                    NoSugar.LOGGER.debug("[NoSugar] transforming isAlive...\n Class: " + classNode.name);
                 }
             }
         }

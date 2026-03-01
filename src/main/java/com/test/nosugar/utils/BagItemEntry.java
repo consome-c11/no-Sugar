@@ -1,5 +1,6 @@
 package com.test.nosugar.utils;
 
+import com.test.nosugar.NoSugar;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -23,7 +24,7 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
         String itemId = nbt.getString("id");
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
         if (item == null) {
-            System.err.println("Unknown item ID: " + itemId);
+            NoSugar.LOGGER.warn("Unknown item ID: " + itemId);
             return new BagItemEntry(Items.AIR, 0, null);
         }
         long count = nbt.getLong("Count"); // getLong を使用
@@ -32,9 +33,7 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
         return new BagItemEntry(item, count, tag);
     }
 
-    // BagItemEntry.java
     public ItemStack toItemStack() {
-        // ログ: toItemStack が呼ばれた
         LOGGER.debug("BagItemEntry.toItemStack called. Item: {}, Long Count: {}, Tag: {}", this.item, this.count, this.tag);
 
         if (this.item == null || this.item == Items.AIR) {
@@ -44,7 +43,6 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
 
         int itemStackCount = (int) Math.min(this.count, Integer.MAX_VALUE);
 
-        // ログ: count が int に変換された値
         LOGGER.debug("BagItemEntry.count (long): {} converted to int count: {}", this.count, itemStackCount);
 
         if (itemStackCount <= 0) {
@@ -57,7 +55,6 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
             stack.setTag(this.tag.copy());
         }
 
-        // ログ: 最終的に作成された ItemStack の情報
         LOGGER.debug("BagItemEntry.toItemStack returning ItemStack: {} with count: {}", stack.getItem(), stack.getCount());
 
         return stack;

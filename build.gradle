@@ -94,10 +94,11 @@ dependencies {
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
     runtimeOnly fg.deobf(files("libs/sugarlib.jar"))
     compileOnly fg.deobf(files("libs/sugarlib.jar"))
+    runtimeOnly fg.deobf(files("libs/curios-forge-5.14.1+1.20.1.jar"))
+    compileOnly fg.deobf(files("libs/curios-forge-5.14.1+1.20.1.jar"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
         jarJar.ranged(it, "[0.5.0,)")
     }
-
 }
 
 tasks.named('processResources', ProcessResources).configure {

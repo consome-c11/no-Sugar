@@ -1,15 +1,22 @@
 package com.test.nosugar.events;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,7 +35,14 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosCapability;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
@@ -127,6 +141,7 @@ public class ServerEvents {
 
         if (!isValidItem) {
             //return;
+            //魔改造ぱーりない
         }
 
         if (left.hasTag() && left.getTag().contains("Blessing_of_Sugar") && left.getTag().getBoolean("Blessing_of_Sugar")) {
@@ -169,50 +184,150 @@ public class ServerEvents {
             return;
         }
 
+        if (!left.is(right.getItem())) {
+            return;
+        }
+
+        NoSugar.LOGGER.info("[NoSugar] Processing: {}", left.getDisplayName().getString());
+
         ItemStack output = left.copy();
 
-        ListTag outputModifiers =
-                output.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+        ListTag outputModifiers;
+        if (output.hasTag() && output.getTag().contains("SugarEffect", Tag.TAG_LIST)) {
+            outputModifiers = output.getTag().getList("SugarEffect", Tag.TAG_COMPOUND);
+            NoSugar.LOGGER.info("[NoSugar] Loaded {} existing SugarEffect from left", outputModifiers.size());
+        } else {
+            outputModifiers = new ListTag();
+            NoSugar.LOGGER.info("[NoSugar] No existing SugarEffect on left");
+        }
 
-        ListTag rightModifiers =
-                right.getOrCreateTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+        if (output.hasTag() && output.getTag().contains("AttributeModifiers", Tag.TAG_LIST)) {
+            ListTag leftAttrMods = output.getTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+            NoSugar.LOGGER.info("[NoSugar] Loaded {} AttributeModifiers from left", leftAttrMods.size());
+            mergeTagToList(leftAttrMods, outputModifiers);
+        }
 
-        for (int i = 0; i < rightModifiers.size(); i++) {
-            CompoundTag rightMod = rightModifiers.getCompound(i);
+        if (right.hasTag() && right.getTag().contains("SugarEffect", Tag.TAG_LIST)) {
+            ListTag rightSugarEffects = right.getTag().getList("SugarEffect", Tag.TAG_COMPOUND);
+            NoSugar.LOGGER.info("[NoSugar] Merging {} SugarEffect from right", rightSugarEffects.size());
+            mergeTagToList(rightSugarEffects, outputModifiers);
+        }
 
-            String attrName = rightMod.getString("AttributeName");
-            String modName = rightMod.getString("Name");
-            int operation = rightMod.getInt("Operation");
-            double amount = rightMod.getDouble("Amount");
-            String slot = rightMod.getString("Slot");
+        if (right.hasTag() && right.getTag().contains("AttributeModifiers", Tag.TAG_LIST)) {
+            ListTag rightAttrMods = right.getTag().getList("AttributeModifiers", Tag.TAG_COMPOUND);
+            NoSugar.LOGGER.info("[NoSugar] Merging {} AttributeModifiers from right", rightAttrMods.size());
+            mergeTagToList(rightAttrMods, outputModifiers);
+        }
+
+        mergeCurioAttributes(event.getPlayer(), left, outputModifiers);
+        mergeCurioAttributes(event.getPlayer(), right, outputModifiers);
+
+        output.getOrCreateTag().put("SugarEffect", outputModifiers);
+
+        output.getOrCreateTag().put("AttributeModifiers", outputModifiers);
+
+        int baseCost = left.getBaseRepairCost() + right.getBaseRepairCost();
+        event.setCost(AnvilMenu.calculateIncreasedRepairCost(baseCost));
+        event.setMaterialCost(1);
+        event.setOutput(output);
+
+        NoSugar.LOGGER.info("[NoSugar] Complete. Total modifiers: {}", outputModifiers.size());
+    }
+
+    private static void mergeTagToList(ListTag source, ListTag target) {
+        for (int i = 0; i < source.size(); i++) {
+            CompoundTag sourceTag = source.getCompound(i);
+
+            String attrName = sourceTag.getString("AttributeName");
+            String name = sourceTag.getString("Name");
+            int operation = sourceTag.getInt("Operation");
+            double amount = sourceTag.getDouble("Amount");
+            UUID uuid = sourceTag.getUUID("UUID");
 
             boolean merged = false;
-            for (int j = 0; j < outputModifiers.size(); j++) {
-                CompoundTag existing = outputModifiers.getCompound(j);
-                if (existing.getString("AttributeName").equals(attrName)
-                        && existing.getString("Name").equals(modName)
-                        && existing.getInt("Operation") == operation
-                        && existing.getString("Slot").equals(slot)) {
+            for (int j = 0; j < target.size(); j++) {
+                CompoundTag targetTag = target.getCompound(j);
 
-                    double current = existing.getDouble("Amount");
-                    existing.putDouble("Amount", current + amount);
+                if (targetTag.getUUID("UUID").equals(uuid)) {
+                    double currentAmount = targetTag.getDouble("Amount");
+                    targetTag.putDouble("Amount", currentAmount + amount);
+                    NoSugar.LOGGER.info("[NoSugar]   [MERGE] {} Amount: {} + {} = {}",
+                            attrName, currentAmount, amount, currentAmount + amount);
                     merged = true;
                     break;
                 }
             }
 
             if (!merged) {
-                CompoundTag newTag = rightMod.copy();
-                newTag.putUUID("UUID", UUID.randomUUID());
-                outputModifiers.add(newTag);
+                CompoundTag newTag = sourceTag.copy();
+                target.add(newTag);
+                NoSugar.LOGGER.info("[NoSugar]   [ADD] {} Amount: {} (UUID:{})",
+                        attrName, amount, uuid);
             }
         }
+    }
 
-        output.getOrCreateTag().put("AttributeModifiers", outputModifiers);
+    @SuppressWarnings("removal")
+    private static void mergeCurioAttributes(LivingEntity player, ItemStack stack, ListTag outputModifiers) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof ICurioItem curioItem)) {
+            return;
+        }
 
-        event.setOutput(output);
-        event.setCost(1);
-        event.setMaterialCost(1);
+        CuriosApi.getSlots(player.level()).forEach((identifier, slotType) -> {
+            SlotContext context = new SlotContext(identifier, player, 0, false, true);
+            UUID uuid = UUID.nameUUIDFromBytes((identifier + stack.getItem()).getBytes());
+
+            if (!curioItem.canEquip(context, stack)) {
+                return;
+            }
+
+            Multimap<Attribute, AttributeModifier> modifiers = curioItem.getAttributeModifiers(context, uuid, stack);
+            if (modifiers.isEmpty()) {
+                return;
+            }
+
+            modifiers.forEach((attribute, modifier) -> {
+                ResourceLocation attrId = BuiltInRegistries.ATTRIBUTE.getKey(attribute);
+                if (attrId == null) return;
+
+                String attrName = attrId.toString();
+                String name = modifier.getName();
+                int operation = modifier.getOperation().toValue();
+                double amount = modifier.getAmount();
+
+                boolean merged = false;
+                for (int i = 0; i < outputModifiers.size(); i++) {
+                    CompoundTag existing = outputModifiers.getCompound(i);
+
+                    if (!existing.getString("AttributeName").equals(attrName)) continue;
+                    if (!existing.getString("Name").equals(name)) continue;
+                    if (existing.getInt("Operation") != operation) continue;
+
+                    double currentAmount = existing.getDouble("Amount");
+                    existing.putDouble("Amount", currentAmount + amount);
+
+                    NoSugar.LOGGER.info("[NoSugar]   [MERGE-CURIO] {} Amount: {} + {} = {}",
+                            attrName, currentAmount, amount, currentAmount + amount);
+
+                    merged = true;
+                    break;
+                }
+
+                if (!merged) {
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("AttributeName", attrName);
+                    tag.putString("Name", name);
+                    tag.putDouble("Amount", amount);
+                    tag.putInt("Operation", operation);
+                    tag.putUUID("UUID", UUID.randomUUID());
+                    tag.putString("Slot", "");
+
+                    outputModifiers.add(tag);
+                    NoSugar.LOGGER.info("[NoSugar]   [ADD-CURIO] {} Amount: {} (UUID:{})",
+                            attrName, amount, tag.getUUID("UUID"));
+                }
+            });
+        });
     }
 
     private boolean isValidBaseItem(ItemStack stack) {

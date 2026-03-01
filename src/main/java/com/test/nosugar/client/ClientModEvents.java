@@ -43,7 +43,7 @@ public class ClientModEvents {
         BakedModel pulling0Model = modelRegistry.get(pulling0Location);
 
         if (pulling0Model == null) {
-            System.out.println("Warning: pulling_0 model not found in assets");
+            NoSugar.LOGGER.debug("Warning: pulling_0 model not found in assets");
         }
 
         ModelResourceLocation pulling1Location = new ModelResourceLocation(
@@ -52,7 +52,7 @@ public class ClientModEvents {
         BakedModel pulling1Model = modelRegistry.get(pulling1Location);
 
         if (pulling1Model == null) {
-            System.out.println("Warning: pulling_1 model not found in assets");
+            NoSugar.LOGGER.debug("Warning: pulling_1 model not found in assets");
         }
 
         ModelResourceLocation pulling2Location = new ModelResourceLocation(
@@ -60,7 +60,7 @@ public class ClientModEvents {
         BakedModel pulling2Model = modelRegistry.get(pulling2Location);
 
         if (pulling2Model == null) {
-            System.out.println("Warning: pulling_2 model not found in assets");
+            NoSugar.LOGGER.debug("Warning: pulling_2 model not found in assets");
         }
 
 
@@ -74,9 +74,9 @@ public class ClientModEvents {
 
             modelRegistry.put(originalModelLocation, customModel);
 
-            System.out.println("Successfully replaced model for: " + originalModelLocation);
+            NoSugar.LOGGER.debug("Successfully replaced model for: " + originalModelLocation);
         } else {
-            System.out.println("Original model not found for: " + originalModelLocation);
+            NoSugar.LOGGER.debug("Original model not found for: " + originalModelLocation);
         }
     }
 }

@@ -33,7 +33,7 @@ public class ShieldEffectRenderer {
 
             poseStack.pushPose();
             poseStack.translate(shield.pos.x, shield.pos.y, shield.pos.z);
-            System.out.println("x: " + shield.pos.x + "y: " + shield.pos.y + "y: " + shield.pos.z);
+            NoSugar.LOGGER.debug("x: " + shield.pos.x + "y: " + shield.pos.y + "y: " + shield.pos.z);
             poseStack.scale(5.5f, 5.5f, 5.5f);
 
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(NOISE_TEXTURE));

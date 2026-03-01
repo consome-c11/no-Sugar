@@ -26,6 +26,7 @@
   ],
   "mixins": [
     "common.InventoryMixin",
+    "common.ItemizedCurioCapabilityMixin",
     "common.ServerPlayerMixin",
     "snackprotector.EntityMixin",
     "snackprotector.InventoryAccessor",
