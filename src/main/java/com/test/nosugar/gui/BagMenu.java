@@ -163,8 +163,7 @@ public class BagMenu extends AbstractContainerMenu {
                         }
                     }
                 }
-            }
-            else if (index >= playerInvStart && index <= hotbarEnd) {
+            } else if (index >= playerInvStart && index <= hotbarEnd) {
                 if (this.moveItemStackTo(stackInSlot, bagStart, bagEnd + 1, false)) {
                     didAction = true;
                 }

@@ -72,5 +72,6 @@
     "world_destroyer.ServerLevelMixin"
   ],
   "injectors": {
-    "defaultRequire": 1 }
+    "defaultRequire": 1
+  }
 }

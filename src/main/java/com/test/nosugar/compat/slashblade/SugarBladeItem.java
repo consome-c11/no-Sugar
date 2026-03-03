@@ -2,7 +2,7 @@ package com.test.nosugar.compat.slashblade;
 
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.Res;
-import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
+import mods.flammpfeil.slashblade.capability.slashblade.NamedBladeStateCapabilityProvider;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.ItemTierSlashBlade;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import mods.flammpfeil.slashblade.capability.slashblade.NamedBladeStateCapabilityProvider;
 
 @SuppressWarnings("removal")
 public class SugarBladeItem extends ItemSlashBlade {
@@ -43,11 +42,28 @@ public class SugarBladeItem extends ItemSlashBlade {
         });
     }
 
+    private static void logResourcePaths(String context) {
+        NoSugar.LOGGER.info("[SugarBlade] {} - Texture Path: {}", context, TEXTURE);
+        NoSugar.LOGGER.info("[SugarBlade] {} - Model Path: {}", context, MODEL);
+        NoSugar.LOGGER.info("[SugarBlade] {} - Full Texture Resource: {}", context,
+                String.format("assets/%s/textures/%s.png", NoSugar.MODID, TEXTURE.getPath().replace(".png", "")));
+        NoSugar.LOGGER.info("[SugarBlade] {} - Full Model Resource: {}", context,
+                String.format("assets/%s/models/%s", NoSugar.MODID, MODEL.getPath()));
+
+        if (true) { //適当
+            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: Check if these files exist in your resources folder:");
+            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: {} -> should exist at: src/main/resources/assets/{}/textures/{}",
+                    TEXTURE, NoSugar.MODID, TEXTURE.getPath());
+            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: {} -> should exist at: src/main/resources/assets/{}/models/{}",
+                    MODEL, NoSugar.MODID, MODEL.getPath());
+        }
+    }
+
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (!level.isClientSide) init(stack);
         super.inventoryTick(stack, level, entity, slot, selected);
-        if(entity instanceof ServerPlayer player)logBladeState(stack, player);
+        if (entity instanceof ServerPlayer player) logBladeState(stack, player);
 
     }
 
@@ -69,22 +85,5 @@ public class SugarBladeItem extends ItemSlashBlade {
             NoSugar.LOGGER.info("[SugarBlade] Is Initialized: {}", stack.getTag().getBoolean("Initialized"));
 
         });
-    }
-
-    private static void logResourcePaths(String context) {
-        NoSugar.LOGGER.info("[SugarBlade] {} - Texture Path: {}", context, TEXTURE);
-        NoSugar.LOGGER.info("[SugarBlade] {} - Model Path: {}", context, MODEL);
-        NoSugar.LOGGER.info("[SugarBlade] {} - Full Texture Resource: {}", context,
-                String.format("assets/%s/textures/%s.png", NoSugar.MODID, TEXTURE.getPath().replace(".png", "")));
-        NoSugar.LOGGER.info("[SugarBlade] {} - Full Model Resource: {}", context,
-                String.format("assets/%s/models/%s", NoSugar.MODID, MODEL.getPath()));
-
-        if (true) { //適当
-            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: Check if these files exist in your resources folder:");
-            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: {} -> should exist at: src/main/resources/assets/{}/textures/{}",
-                    TEXTURE, NoSugar.MODID, TEXTURE.getPath());
-            NoSugar.LOGGER.warn("[SugarBlade] DEV MODE: {} -> should exist at: src/main/resources/assets/{}/models/{}",
-                    MODEL, NoSugar.MODID, MODEL.getPath());
-        }
     }
 }

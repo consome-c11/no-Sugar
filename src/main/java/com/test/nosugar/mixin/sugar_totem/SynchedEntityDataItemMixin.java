@@ -18,17 +18,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SynchedEntityData.DataItem.class)
 public abstract class SynchedEntityDataItemMixin<T> {
 
+    private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
+    @Unique
+    private static java.lang.reflect.Field this$0;
     @Shadow
     private T value;
+    @Unique
+    private T oldValue;
 
     @Shadow
     public abstract EntityDataAccessor<T> getAccessor();
-
-    @Unique
-    private T oldValue;
-    private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
-
-    @Unique private static java.lang.reflect.Field this$0;
 
     @Unique
     private SynchedEntityData getOuterSynchedData() {
@@ -68,10 +67,10 @@ public abstract class SynchedEntityDataItemMixin<T> {
 
     @Inject(method = "value", at = @At("RETURN"), cancellable = true)
     private void sugarTotem$protectValueForWrite(CallbackInfoReturnable<SynchedEntityData.DataValue<T>> cir) {
-        if (getAccessor() != HEALTH_ID ) {
+        if (getAccessor() != HEALTH_ID) {
             return;
         }
-        if(oldValue == null && cir.getReturnValue().value() != null) {
+        if (oldValue == null && cir.getReturnValue().value() != null) {
             oldValue = cir.getReturnValue().value();
         }
         SynchedEntityData synchedData = getOuterSynchedData();

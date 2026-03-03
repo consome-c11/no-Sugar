@@ -13,9 +13,9 @@ public class SynchedEntityDataUtil {
         SynchedEntityData.DataItem<T> item = acc.invokeGetItem(accessor);
 
         if (!Objects.equals(item.getValue(), value)) {
-            ((SynchedEntityDataItemAccessor)item).setValue(value);
+            ((SynchedEntityDataItemAccessor) item).setValue(value);
             acc.getEntity().onSyncedDataUpdated(accessor);
-            ((SynchedEntityDataItemAccessor)item).setDirty(true);
+            ((SynchedEntityDataItemAccessor) item).setDirty(true);
             acc.setDirtyFlag(true);
         }
     }

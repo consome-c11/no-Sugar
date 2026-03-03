@@ -1,14 +1,16 @@
 package com.test.nosugar.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.client.renderer.ClientEntityCache;
 import com.test.nosugar.client.renderer.PlayerModelDrawer;
 import com.test.nosugar.client.utils.RenderQueue;
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.additional.ModKeyBindings;
-import com.test.nosugar.network.packets.*;
-import com.test.nosugar.utils.*;
 import com.test.nosugar.network.PacketHandler;
+import com.test.nosugar.network.packets.*;
+import com.test.nosugar.utils.DestroyMode;
+import com.test.nosugar.utils.Res;
+import com.test.nosugar.utils.ShootMode;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.client.Minecraft;
@@ -89,23 +91,21 @@ public class ClientEvents {
 
         if (mc == null || mc.player == null || mc.level == null) return;
         HitResult hit = mc.hitResult;
+        BlockPos pos = getPlayerLookingAt(mc.player, 5).getBlockPos();
 
-        if (hit != null && hit.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult blockHit = (BlockHitResult) hit;
-            boolean same_id = DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID || DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID_ORE;
-            Predicate<BlockState> accept = state -> !state.isAir();
-            BlockState LookBlockState = mc.level.getBlockState(blockHit.getBlockPos());
-            if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID_ORE) {
-                TagKey<Block> FORGE_ORES = BlockTags.create(Res.getResource("forge", "ores"));
-                accept = state -> state.is(FORGE_ORES) || state.is(BlockTags.LOGS);
-            } else if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID) {
-                accept = state -> state.is(LookBlockState.getBlock());
-            }
-            if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.NORMAL || mc.player.getMainHandItem().getItem() != ModItems.WORLD_DESTROYER.get()) {
-                RenderQueue.clear();
-            } else
-                QueueRenderBreakBlock(mc.level, mc.player, blockHit.getBlockPos(), DestroyMode.getMode(mc.player.getMainHandItem()), same_id, 32, accept);
-        } else RenderQueue.clear();
+        boolean same_id = DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID || DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID_ORE;
+        Predicate<BlockState> accept = state -> !state.isAir();
+        BlockState LookBlockState = mc.level.getBlockState(pos);
+        if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID_ORE) {
+            TagKey<Block> FORGE_ORES = BlockTags.create(Res.getResource("forge", "ores"));
+            accept = state -> state.is(FORGE_ORES) || state.is(BlockTags.LOGS);
+        } else if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.SAME_ID) {
+            accept = state -> state.is(LookBlockState.getBlock());
+        }
+        if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.NORMAL || mc.player.getMainHandItem().getItem() != ModItems.WORLD_DESTROYER.get()) {
+            RenderQueue.clear();
+        } else
+            QueueRenderBreakBlock(mc.level, mc.player, pos, DestroyMode.getMode(mc.player.getMainHandItem()), same_id, 32, accept);
         erase();
         ItemStack stack = mc.player.getMainHandItem();
         if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
@@ -169,7 +169,6 @@ public class ClientEvents {
 
             if (hit.getType() == HitResult.Type.ENTITY) return;
 
-            BlockPos pos = getPlayerLookingAt(mc.player, 5).getBlockPos();
             DestroyMode mode = DestroyMode.getMode(player.getMainHandItem());
 
             PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
@@ -201,7 +200,7 @@ public class ClientEvents {
         if (player instanceof ServerPlayer serverPlayer) {
             if (player == null) return;
             ItemStack stack = serverPlayer.getMainHandItem();
-            if (isInGameWorld() && (stack.getItem() == ModItems.WORLD_DESTROYER.get()) ||  BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
+            if (isInGameWorld() && (stack.getItem() == ModItems.WORLD_DESTROYER.get()) || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
                 if (!player.isShiftKeyDown()) {
                     PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(event.getPos(), DestroyMode.NORMAL));
                 } else {
@@ -237,7 +236,7 @@ public class ClientEvents {
                 PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
             }
         }
-        if(isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.SWORD)) {
+        if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.SWORD)) {
             HitResult hit = mc.hitResult;
             if (hit != null && hit.getType() == HitResult.Type.ENTITY) {
                 EntityHitResult entityHit = (EntityHitResult) hit;
@@ -245,7 +244,7 @@ public class ClientEvents {
                 PacketHandler.CHANNEL.sendToServer(new RayCastPacket(id));
             }
         }
-        if(isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
+        if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) return;
 
@@ -341,20 +340,6 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof ILivingEntity living) {
-            if (living.isErased()) {
-                Minecraft mc = Minecraft.getInstance();
-                if (mc == null || mc.player == null || mc.level == null) {
-                }
-
-                //System.out.println(Component.literal("[NoSugar] Prevented joining erased entity to level: " + event.getEntity().toString()));
-                //event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onRenderWorld(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
 
@@ -371,6 +356,20 @@ public class ClientEvents {
                         1.0f,
                         partialTick
                 );
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof ILivingEntity living) {
+            if (living.isErased()) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc == null || mc.player == null || mc.level == null) {
+                }
+
+                //System.out.println(Component.literal("[NoSugar] Prevented joining erased entity to level: " + event.getEntity().toString()));
+                //event.setCanceled(true);
             }
         }
     }

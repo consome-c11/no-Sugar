@@ -22,7 +22,7 @@ import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import org.jetbrains.annotations.NotNull;
 
 
-public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
+public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item {
     public UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(Item.Properties props) {
         super(props);
     }
@@ -49,7 +49,7 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
             return InteractionResultHolder.fail(itemStack);
         }
         //これで取得できなかったら泣くぞ
-        ServerLevel serverLevel = (ServerLevel)level;
+        ServerLevel serverLevel = (ServerLevel) level;
         PersistentEntitySectionManager<Entity> manager =
                 ((ServerLevelAccessor) serverLevel).getEntityManager();
         PersistentEntitySectionManagerAccessor<Entity> acc =
@@ -57,8 +57,8 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item{
 
         LevelEntityGetter<Entity> getter = acc.getEntityGetter();
         EntityLookup<Entity> vis = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
-        ((EntityLookupAccessor)vis).getById().values().stream().forEach((ent) -> {
-            if(ent instanceof LivingEntity living) {
+        ((EntityLookupAccessor) vis).getById().values().stream().forEach((ent) -> {
+            if (ent instanceof LivingEntity living) {
                 if (living.getId() != player.getId()) Eraser_Utils.killIfParentFound(living, player, true);
             }
         });

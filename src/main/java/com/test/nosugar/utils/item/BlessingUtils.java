@@ -7,11 +7,6 @@ import net.minecraft.world.item.*;
 
 public class BlessingUtils {
 
-    public enum ItemType {
-        SWORD,
-        TOOL//ピッケル 斧 シャベル
-    }
-
     public static boolean hasBlessedItem(ItemType type) {
         Minecraft mc = Minecraft.getInstance();
 
@@ -29,11 +24,10 @@ public class BlessingUtils {
             return false;
         }
         boolean isBlessed = isBlessedAndMatchesType(mc.player.getMainHandItem(), type);
-        if(offhand) {
+        if (offhand) {
             return isBlessed ||
                     isBlessedAndMatchesType(mc.player.getOffhandItem(), type);
-        }
-        else return isBlessed;
+        } else return isBlessed;
     }
 
     public static boolean isBlessedAndMatchesType(ItemStack stack, ItemType type) {
@@ -60,11 +54,7 @@ public class BlessingUtils {
         }
 
         CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.getBoolean("Blessing_of_Sugar")) {
-            return false;
-        }
-
-        return true;
+        return tag != null && tag.getBoolean("Blessing_of_Sugar");
     }
 
     public static boolean hasBlessedItem(ServerPlayer player, ItemType type) {
@@ -81,10 +71,14 @@ public class BlessingUtils {
             return false;
         }
         boolean isBlessed = isBlessedAndMatchesType(player.getMainHandItem(), type);
-        if(offhand) {
+        if (offhand) {
             return isBlessed ||
                     isBlessedAndMatchesType(player.getOffhandItem(), type);
-        }
-        else return isBlessed;
+        } else return isBlessed;
+    }
+
+    public enum ItemType {
+        SWORD,
+        TOOL//ピッケル 斧 シャベル
     }
 }

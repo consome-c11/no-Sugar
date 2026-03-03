@@ -3,16 +3,19 @@ package com.test.nosugar.utils;
 import net.minecraft.world.entity.LivingEntity;
 
 public class LivingEntityUtils {
-    public static float getHealth(LivingEntity living){
+    public static float getHealth(LivingEntity living) {
         return living.getHealth();
     }
-    public static boolean isAlive(LivingEntity living){
+
+    public static boolean isAlive(LivingEntity living) {
         return living.isAlive();
     }
-    public static boolean isDeadOrDying(LivingEntity living){
+
+    public static boolean isDeadOrDying(LivingEntity living) {
         return living.isDeadOrDying();
     }
-    public static boolean isRemoved(LivingEntity living){
+
+    public static boolean isRemoved(LivingEntity living) {
         return living.isRemoved();
     }
 }

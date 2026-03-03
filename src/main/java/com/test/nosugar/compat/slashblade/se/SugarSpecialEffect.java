@@ -19,11 +19,6 @@ public class SugarSpecialEffect extends SpecialEffect {
 
     }
 
-    @Override
-    public Component getDescription() {
-        return ColorUtils.makeWaveLine("Sugar");
-    }
-
     @SubscribeEvent
     public static void onHit(SlashBladeEvent.HitEvent event) {
         LivingEntity attacker = event.getUser();
@@ -33,5 +28,10 @@ public class SugarSpecialEffect extends SpecialEffect {
             Eraser_Utils.killIfParentFound(target,attacker,16);
         }*/
 
+    }
+
+    @Override
+    public Component getDescription() {
+        return ColorUtils.makeWaveLine("Sugar");
     }
 }

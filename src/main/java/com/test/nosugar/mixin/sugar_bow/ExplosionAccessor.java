@@ -29,6 +29,8 @@ public interface ExplosionAccessor {
     @Accessor("source")
     Entity getSource();
 
-    @Final @Accessor(value = "position", remap = false)//:(
+    @Final
+    @Accessor(value = "position", remap = false)
+//:(
     Vec3 getPosition();
 }

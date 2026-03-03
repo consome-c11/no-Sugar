@@ -1,8 +1,6 @@
 package com.test.nosugar.entity;
 
-import com.mojang.authlib.GameProfile;
 import com.test.nosugar.NoSugar;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;

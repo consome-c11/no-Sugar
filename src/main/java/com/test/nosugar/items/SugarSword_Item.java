@@ -2,14 +2,11 @@ package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
 import com.test.nosugar.client.renderer.SugarSwordItemRenderProperties;
-import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.utils.render.ColorUtils;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -118,7 +115,7 @@ public class SugarSword_Item extends SwordItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         killIfParentFound(target, attacker, 32);
-        return false;
+        return true;
     }
 
     /*@Override

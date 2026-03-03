@@ -26,6 +26,7 @@ public class Deets {
     public static final String SLASHBLADE = "slashblade";
     public static final String IRONS_SPELLBOOKS = "irons_spellbooks";
     public static final String ERASER = "eraser";
+
     private Deets() {
     }
 

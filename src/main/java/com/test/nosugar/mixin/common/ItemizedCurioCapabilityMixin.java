@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,29 +25,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Pseudo
 @Mixin(ItemizedCurioCapability.class)
 public abstract class ItemizedCurioCapabilityMixin {
-    @Inject(method = "getAttributeModifiers", at = @At("RETURN"), remap = false, cancellable = true)
-    private void mergeSugarEffect(SlotContext slotContext, UUID uuid, CallbackInfoReturnable<Multimap<Attribute, AttributeModifier>> cir) {
-        ItemStack stack = ((ItemizedCurioCapability) (Object) this).getStack();
-        if (!stack.hasTag() || !stack.getTag().contains("SugarEffect", Tag.TAG_LIST)) {
-            return;
-        }
-        ListTag sugarEffects = stack.getTag().getList("SugarEffect", Tag.TAG_COMPOUND);
-
-        Multimap<Attribute, AttributeModifier> original = cir.getReturnValue();
-        if (original == null) {
-            return;
-        }
-
-        HashMultimap<Attribute, AttributeModifier> result = HashMultimap.create();
-        result.putAll(original);
-
-        mergeEffect(sugarEffects, result);
-
-        cir.setReturnValue(result);
-    }
-
     @Unique
     private static void mergeEffect(ListTag sugarEffects, Multimap<Attribute, AttributeModifier> result) {
         for (int i = 0; i < sugarEffects.size(); i++) {
@@ -97,5 +78,26 @@ public abstract class ItemizedCurioCapabilityMixin {
                 result.put(attribute, modifier);
             }
         }
+    }
+
+    @Inject(method = "getAttributeModifiers", at = @At("RETURN"), remap = false, cancellable = true)
+    private void mergeSugarEffect(SlotContext slotContext, UUID uuid, CallbackInfoReturnable<Multimap<Attribute, AttributeModifier>> cir) {
+        ItemStack stack = ((ItemizedCurioCapability) (Object) this).getStack();
+        if (!stack.hasTag() || !stack.getTag().contains("SugarEffect", Tag.TAG_LIST)) {
+            return;
+        }
+        ListTag sugarEffects = stack.getTag().getList("SugarEffect", Tag.TAG_COMPOUND);
+
+        Multimap<Attribute, AttributeModifier> original = cir.getReturnValue();
+        if (original == null) {
+            return;
+        }
+
+        HashMultimap<Attribute, AttributeModifier> result = HashMultimap.create();
+        result.putAll(original);
+
+        mergeEffect(sugarEffects, result);
+
+        cir.setReturnValue(result);
     }
 }

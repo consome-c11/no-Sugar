@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LevelRenderer.class)
 @OnlyIn(Dist.CLIENT)
-public class LevelRendererMixin{
+public class LevelRendererMixin {
 
     @WrapOperation(
             method = "renderLevel",

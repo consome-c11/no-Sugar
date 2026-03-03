@@ -48,9 +48,9 @@ public class ColorUtils {
     }
 
     public static float[] getGlintColor(ItemStack stack) {
-       // String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        // String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         //if (itemId.contains(NoSugar.MODID)) {
-            return new float[]{1.0F, 1.0F, 1.0F};
+        return new float[]{1.0F, 1.0F, 1.0F};
         //}
         //return null;
     }

@@ -1,13 +1,8 @@
 package com.test.nosugar.entity;
 
 import com.mojang.authlib.GameProfile;
-import com.test.nosugar.client.renderer.ClientEntityCache;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
 
@@ -18,19 +13,29 @@ public class PreviewEntity extends AbstractClientPlayer {
     }
 
     @Override
-    public boolean isSpectator() { return false; }
+    public boolean isSpectator() {
+        return false;
+    }
 
     @Override
-    public boolean isCreative() { return false; }
+    public boolean isCreative() {
+        return false;
+    }
 
     @Override
-    public boolean isLocalPlayer() { return false; }
+    public boolean isLocalPlayer() {
+        return false;
+    }
 
     @Override
-    public boolean isPushable() { return false; }
+    public boolean isPushable() {
+        return false;
+    }
 
     @Override
-    public boolean isAffectedByPotions() { return false; }
+    public boolean isAffectedByPotions() {
+        return false;
+    }
 
     @Override
     protected void defineSynchedData() {

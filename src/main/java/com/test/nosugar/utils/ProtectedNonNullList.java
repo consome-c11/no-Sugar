@@ -1,25 +1,21 @@
 package com.test.nosugar.utils;
 
 import com.test.nosugar.additional.SnackArmor;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.NonNullList;
 
 import java.util.Collection;
 import java.util.List;
 
 public class ProtectedNonNullList extends NonNullList<ItemStack> {
-    private boolean editingAllowed = false;
     private final Player player;
+    private boolean editingAllowed = false;
     private boolean isLoadContext = false;
 
     public ProtectedNonNullList(Collection<ItemStack> delegate, ItemStack defaultElement, Player player) {
-        super((List<ItemStack>)delegate, defaultElement);
+        super((List<ItemStack>) delegate, defaultElement);
         this.player = player;
-    }
-
-    public void setEditingAllowed(boolean allowed) {
-        this.editingAllowed = allowed;
     }
 
     public void setIsLoadContext(boolean loadContext) {
@@ -28,6 +24,10 @@ public class ProtectedNonNullList extends NonNullList<ItemStack> {
 
     public boolean isEditingAllowed() {
         return this.editingAllowed;
+    }
+
+    public void setEditingAllowed(boolean allowed) {
+        this.editingAllowed = allowed;
     }
 
     public boolean isProtectionActive() {

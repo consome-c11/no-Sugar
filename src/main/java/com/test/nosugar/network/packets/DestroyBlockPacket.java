@@ -1,8 +1,8 @@
 package com.test.nosugar.network.packets;
 
 import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.DestroyMode;
+import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.item.WorldDestroyerUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,7 +37,8 @@ public class DestroyBlockPacket {
             if (player == null) return;
 
             ItemStack held = player.getMainHandItem();
-            if(held.getItem() != ModItems.WORLD_DESTROYER.get() && !BlessingUtils.hasBlessedItem(player,BlessingUtils.ItemType.TOOL)) return;
+            if (held.getItem() != ModItems.WORLD_DESTROYER.get() && !BlessingUtils.hasBlessedItem(player, BlessingUtils.ItemType.TOOL))
+                return;
             WorldDestroyerUtils.destroyblock(held, player);
         });
         ctx.get().setPacketHandled(true);

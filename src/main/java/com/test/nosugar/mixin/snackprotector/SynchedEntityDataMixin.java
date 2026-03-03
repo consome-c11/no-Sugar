@@ -21,9 +21,10 @@ import java.util.List;
 
 @Mixin(SynchedEntityData.class)
 public abstract class SynchedEntityDataMixin {
-    @Shadow private Entity entity;
-
-    @Unique private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
+    @Unique
+    private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
+    @Shadow
+    private Entity entity;
 
     @Inject(
             method = "set",

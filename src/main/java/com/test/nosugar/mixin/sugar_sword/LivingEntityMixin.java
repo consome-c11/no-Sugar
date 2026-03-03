@@ -11,7 +11,6 @@ import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ChunkMap;
@@ -25,14 +24,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.*;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -122,8 +116,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
-        if(attacker instanceof Player player)((LivingEntityAccessor) self).setLastHurtByPlayer(player);
-        if(attacker != null)((LivingEntityAccessor) self).setLastHurtByMob(attacker);
+        if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
+        if (attacker != null) ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
         self.getCombatTracker().recordDamage(src, 0);
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
@@ -144,6 +138,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             //self.hurt(src, Float.MAX_VALUE);
             SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
+            ServerBossEvent event = getBossBar((ServerLevel) self.level());
+            if (event != null) event.setProgress(0.f);
             markErased(self.getUUID());
             for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
@@ -158,10 +154,11 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Unique
-    void unMarkErased(){
+    void unMarkErased() {
         LivingEntity self = (LivingEntity) (Object) this;
         this.unmarkErased(self.getUUID());
     }
+
     @Unique
     private void forcedie(DamageSource source) {
         LivingEntity self = (LivingEntity) (Object) this;
@@ -175,9 +172,9 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             if (self instanceof ServerPlayer sp) {
                 Component deathMsg = sp.getCombatTracker().getDeathMessage();
                 //チェック無いと夢幻終焉とかでMixinが上書きされてる時に酷い事になる :(
-                if(self.isDeadOrDying() && !self.isAlive() && self.getHealth() <= 0.f) {
+                if (self.isDeadOrDying() && !self.isAlive() && self.getHealth() <= 0.f) {
                     sp.connection.send(new ClientboundPlayerCombatKillPacket(sp.getId(), deathMsg));
-                     //sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
+                    //sp.server.getPlayerList().broadcastSystemMessage(deathMsg, false);
                 }
                 //((LivingEntityAccessor) self).callDie(source);
                 sp.die(source);
@@ -197,7 +194,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     @Override
     public void instantKill() {
         LivingEntity self = (LivingEntity) (Object) this;
-        instantKill(null, false, ModDamageSources.erase(self,null));
+        instantKill(null, false, ModDamageSources.erase(self, null));
     }
 
     @Override
@@ -207,9 +204,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Unique
-    void removeBossBar(ServerLevel serverLevel) {
+    ServerBossEvent getBossBar(ServerLevel serverLevel) {
         LivingEntity self = (LivingEntity) (Object) this;
-        //markErased(self.getUUID());
         Class<?> clazz = self.getClass();
         for (int depth = 0; depth < 3 && clazz != null; depth++) {
             for (Field f : clazz.getDeclaredFields()) {
@@ -218,23 +214,17 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     try {
                         ServerBossEvent event = (ServerBossEvent) f.get(self);
                         if (event == null) continue;
-
-                        ClientboundBossEventPacket bossRemovePkt =
-                                ClientboundBossEventPacket.createRemovePacket(event.getId());
-
-                        for (ServerPlayer sp : serverLevel.players()) {
-                            sp.connection.send(bossRemovePkt);
-                        }
-                        event.removeAllPlayers();
+                        return event;
 
                     } catch (ReflectiveOperationException | ClassCastException ex) {
-                        LOGGER.error("Failed to remove boss bar from {} (id={}, uuid={})",
+                        LOGGER.error("Failed to get boss bar from {} (id={}, uuid={})",
                                 self.getName().getString(), self.getId(), self.getUUID(), ex);
                     }
                 }
             }
             clazz = clazz.getSuperclass();
         }
+        return null;
     }
 
     @Override
@@ -246,7 +236,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
         if (self.level() instanceof ServerLevel serverLevel) {
-            removeBossBar(serverLevel);
+            ServerBossEvent event = getBossBar(serverLevel);
+            if (event != null) event.removeAllPlayers();
             boolean debug = true;
             self.stopRiding();
             self.invalidateCaps();
@@ -259,7 +250,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             removefromSectionManager(serverLevel);
 
             ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
-            ((ChunkMapAccessor)chunkMap).removeEntity(self);
+            ((ChunkMapAccessor) chunkMap).removeEntity(self);
             Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
             entityMap.remove(self.getId());
             if (self instanceof TrackedEntityAccessor accessor) {
@@ -271,7 +262,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Unique
-    public void removefromSectionManager(ServerLevel serverLevel){
+    public void removefromSectionManager(ServerLevel serverLevel) {
         LivingEntity self = (LivingEntity) (Object) this;
         PersistentEntitySectionManager<Entity> manager =
                 ((ServerLevelAccessor) serverLevel).getEntityManager();
@@ -291,7 +282,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             ClassInstanceMultiMap<Entity> multiMap =
                     ((EntitySectionAccessor<Entity>) section2).getStorage();
             Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-            if(byClass != null)hardRemove(self, byClass);
+            if (byClass != null) hardRemove(self, byClass);
         }
 
         acc.getKnownUuids().remove(self.getUUID());
@@ -302,18 +293,18 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             //((EntitySectionAccessor) section).getStorage().remove(self);
             ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section).getStorage();
             Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-            if(byClass != null)hardRemove(self, byClass);
+            if (byClass != null) hardRemove(self, byClass);
         }
         EntitySection<Entity> section3 =
-                ((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSection();
+                ((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSection();
         if (section3 != null) {
             //((EntitySectionAccessor) section3).getStorage().remove(self);
             ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section3).getStorage();
             Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-            if(byClass != null)hardRemove(self, byClass);
+            if (byClass != null) hardRemove(self, byClass);
             //これは泣いた
-            if(((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSection().isEmpty())
-                ((PersistentEntitySectionManagerAccessor<?>) manager).getSectionStorage().remove(((PersistentEntitySectionManagerCallbackAccessor)((EntityAccessor) self).getLevelCallBack()).getCurrentSectionKey());
+            if (((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSection().isEmpty())
+                ((PersistentEntitySectionManagerAccessor<?>) manager).getSectionStorage().remove(((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSectionKey());
         }
 
         acc.getCallbacks().onTrackingEnd(self);

@@ -15,9 +15,9 @@ import slimeknights.tconstruct.library.modifiers.hook.ranged.ProjectileHitModifi
 import slimeknights.tconstruct.library.modifiers.impl.NoLevelsModifier;
 import slimeknights.tconstruct.library.module.ModuleHookMap;
 import slimeknights.tconstruct.library.tools.context.ToolAttackContext;
+import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 
 public class Tail_of_NineMod extends NoLevelsModifier implements MeleeHitModifierHook, ProjectileHitModifierHook {
     private static final String NBT_KEY_COUNT = "nosugar:tail_of_nine_count";

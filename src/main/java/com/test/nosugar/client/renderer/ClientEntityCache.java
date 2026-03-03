@@ -4,13 +4,10 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,10 +84,25 @@ public class ClientEntityCache {
             this.noPhysics = true;
         }
 
-        @Override public boolean isSpectator() { return false; }
-        @Override public boolean isCreative() { return false; }
-        @Override public boolean isLocalPlayer() { return false; }
-        @Override public boolean isPushable() { return false; }
+        @Override
+        public boolean isSpectator() {
+            return false;
+        }
+
+        @Override
+        public boolean isCreative() {
+            return false;
+        }
+
+        @Override
+        public boolean isLocalPlayer() {
+            return false;
+        }
+
+        @Override
+        public boolean isPushable() {
+            return false;
+        }
 
         @Override
         protected void defineSynchedData() {

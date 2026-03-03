@@ -34,6 +34,8 @@ public interface ILivingEntity {
     int getDeathCount();
 
     void setDeathCount(int count);
+
     long getLastDeathTime();
+
     void setLastDeathTime(long time);
 }

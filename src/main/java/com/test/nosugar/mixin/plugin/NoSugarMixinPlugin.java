@@ -19,7 +19,8 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
     private static boolean registered = false;
 
     @Override
-    public void onLoad(String mixinPackage) {}
+    public void onLoad(String mixinPackage) {
+    }
 
     @Override
     public String getRefMapperConfig() {

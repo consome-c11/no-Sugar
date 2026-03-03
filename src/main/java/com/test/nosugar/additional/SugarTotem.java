@@ -9,18 +9,16 @@ public class SugarTotem {
 
     public static boolean hasTotem(Player player) {
         Level level = player.level();
-        if(level == null) return false;
-        if(player.getMainHandItem().getItem() == ModItems.SUGAR_TOTEM.get() || player.getOffhandItem().getItem() == ModItems.SUGAR_TOTEM.get()) {
-            return true;
-        }
-        return false;
+        if (level == null) return false;
+        return player.getMainHandItem().getItem() == ModItems.SUGAR_TOTEM.get() || player.getOffhandItem().getItem() == ModItems.SUGAR_TOTEM.get();
     }
 
     public static void onDead(Player player) {
         Level level = player.level();
-        if(level == null) return;
-        consumeItemFromPlayerInventory(player,new ItemStack(Items.COOKIE),1);
+        if (level == null) return;
+        consumeItemFromPlayerInventory(player, new ItemStack(Items.COOKIE), 1);
     }
+
     public static boolean consumeItemFromPlayerInventory(Player player, ItemStack targetItem, int count) {
         int slot = player.getInventory().findSlotMatchingItem(targetItem);
         if (slot != -1) {

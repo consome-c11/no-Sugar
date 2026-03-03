@@ -1,11 +1,9 @@
 package com.test.nosugar.network;
 
-import com.test.nosugar.NoSugar;
-import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.utils.TaskScheduler;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,14 +28,14 @@ public class ClientPacketHandler {
                 return;
             }
 
-            if (((LivingEntity)e) instanceof ILivingEntity erased) {
+            if (((LivingEntity) e) instanceof ILivingEntity erased) {
                 //LOGGER.info("[NoSugar] Received EraseEntityPacket for: " + e.getName().getString());
                 erased.setErased(true);
-                if(!(e instanceof Player player)) {
+                if (!(e instanceof Player player)) {
                     erased.markErased(e.getUUID());
                 }
 
-                if(msg.skipAnimation()) erased.eraseClientEntity();
+                if (msg.skipAnimation()) erased.eraseClientEntity();
                 else TaskScheduler.schedule(erased::eraseClientEntity, 22);
             }
         }

@@ -1,7 +1,6 @@
 package com.test.nosugar.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -49,7 +48,7 @@ public class PlayerModelDrawer {
             }
 
             playerRenderer.render(
-                    (AbstractClientPlayer)entity,
+                    (AbstractClientPlayer) entity,
                     0.0f,
                     partialTick,
                     poseStack,

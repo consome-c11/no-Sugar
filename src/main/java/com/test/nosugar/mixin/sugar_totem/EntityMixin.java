@@ -16,8 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = LivingEntity.class, priority = 0)
 public abstract class EntityMixin implements ILivingEntity {
 
-    @Unique private static long LastDeathTime = 0L;
-    @Unique private static int DeathCount = 0;
+    @Unique
+    private static long LastDeathTime = 0L;
+    @Unique
+    private static int DeathCount = 0;
 
     @Override
     public int getDeathCount() {
@@ -26,7 +28,7 @@ public abstract class EntityMixin implements ILivingEntity {
 
     @Override
     public void setDeathCount(int count) {
-        this.DeathCount = count;
+        DeathCount = count;
     }
 
     @Override
@@ -36,7 +38,7 @@ public abstract class EntityMixin implements ILivingEntity {
 
     @Override
     public void setLastDeathTime(long time) {
-        this.LastDeathTime = time;
+        LastDeathTime = time;
     }
 
     @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true, index = 2)
@@ -78,7 +80,7 @@ public abstract class EntityMixin implements ILivingEntity {
     }
 
     @Inject(method = "getHealth", at = @At("RETURN"), cancellable = true)
-    private void sugartotem$getHealth(CallbackInfoReturnable<Float>  cir) {
+    private void sugartotem$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof Player player && SugarTotem.hasTotem(player) && cir.getReturnValue() < 1) {
             //SugarTotem.recordDeath(player);

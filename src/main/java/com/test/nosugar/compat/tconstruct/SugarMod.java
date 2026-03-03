@@ -1,8 +1,8 @@
 package com.test.nosugar.compat.tconstruct;
 
-import com.test.nosugar.utils.render.ColorUtils;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import com.test.nosugar.utils.item.WorldDestroyerUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +47,7 @@ public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, 
         if (!context.getLevel().isClientSide() && context.getAttacker() instanceof Player player && tool.hasTag(TinkerTags.Items.MELEE_PRIMARY)) {
             LivingEntity target = context.getLivingTarget();
             if (target != null) {
-                Eraser_Utils.killIfParentFound(target,player,16);
+                Eraser_Utils.killIfParentFound(target, player, 16);
             }
 
         }
@@ -58,7 +58,7 @@ public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, 
     public boolean onProjectileHitEntity(@NotNull ModifierNBT modifiers, @NotNull ModDataNBT persistentData, @NotNull ModifierEntry modifier, @NotNull Projectile projectile, @NotNull EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
         if (!attacker.level().isClientSide()) {
             if (hit.getEntity() instanceof LivingEntity entity && attacker instanceof Player player) {
-                Eraser_Utils.killIfParentFound(target,player,16);
+                Eraser_Utils.killIfParentFound(target, player, 16);
             }
         }
         return ProjectileHitModifierHook.super.onProjectileHitEntity(modifiers, persistentData, modifier, projectile, hit, attacker, target);
@@ -71,7 +71,7 @@ public class SugarMod extends NoLevelsModifier implements MeleeHitModifierHook, 
 
     @Override
     public void startHarvest(IToolStackView tool, ModifierEntry modifier, ToolHarvestContext context) {
-        if(context.getPlayer() != null && !context.getPlayer().level().isClientSide()) {
+        if (context.getPlayer() != null && !context.getPlayer().level().isClientSide()) {
             WorldDestroyerUtils.destroyblock(new ItemStack(tool.getItem()), context.getPlayer());
         }
     }

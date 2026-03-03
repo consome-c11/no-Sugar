@@ -1,10 +1,10 @@
 package com.test.nosugar.mixin.client;
 
 import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.item.BlessingUtils;
-import com.test.nosugar.utils.render.ColorUtils;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.ShootMode;
+import com.test.nosugar.utils.item.BlessingUtils;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -70,7 +70,7 @@ public abstract class ItemStackDisplayMixin {
         boolean isEraserOrWorld = stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
         boolean isSnackProtector = stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
         if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessed(stack)/*うわ忘れてた*/) {
-            if(BlessingUtils.isBlessed(stack)) {
+            if (BlessingUtils.isBlessed(stack)) {
                 tooltip.add(makeWaveLine("Sugar Blessing", true));
             }
             String attackKeyStr = Component.translatable("attribute.name.generic.attack_damage").getString();
@@ -83,7 +83,8 @@ public abstract class ItemStackDisplayMixin {
 
                 if (lineStr.contains(attackKeyStr)) {
                     Component attrComp = Component.translatable("attribute.name.generic.attack_damage");
-                    if(!BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.TOOL))tooltip.set(i, buildInfinityLine(attrComp));
+                    if (!BlessingUtils.isBlessedAndMatchesType(stack, BlessingUtils.ItemType.TOOL))
+                        tooltip.set(i, buildInfinityLine(attrComp));
                 } else if (lineStr.contains(armorKeyStr)) {
                     Component attrComp = Component.translatable("attribute.name.generic.armor");
                     tooltip.set(i, buildInfinityLine(attrComp));
@@ -124,7 +125,7 @@ public abstract class ItemStackDisplayMixin {
     }
 
     private boolean applycolorname(ItemStack stack) {//hate my brain
-        return stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get()  || stack.getItem() == ModItems.SUGAR_BOW.get();
+        return stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get() || stack.getItem() == ModItems.SUGAR_BOW.get();
     }
 
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
@@ -142,8 +143,7 @@ public abstract class ItemStackDisplayMixin {
                 if (DestroyMode.isSilkTouchEnabled(stack)) {
                     text += " [SilkTouch Enabled]";
                 }
-            }
-            else if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
+            } else if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
                 text += " Mode:[";
                 text += ShootMode.getMode(stack).getDisplayName();
                 text += "]";

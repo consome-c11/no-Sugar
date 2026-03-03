@@ -68,8 +68,7 @@ public class SugarExplosion extends Explosion {
 
                                 if (normalizedDistance > 0.9) {
                                     shouldRemove = noiseValue > NOISE_THRESHOLD;
-                                }
-                                else {
+                                } else {
                                     shouldRemove = noiseValue > NOISE_THRESHOLD * 1.5;
                                 }
                             }
@@ -79,7 +78,7 @@ public class SugarExplosion extends Explosion {
                                     BlockState state = level.getBlockState(pos);
                                     ItemStack usedTool = new ItemStack(ModItems.WORLD_DESTROYER.get());
 
-                                    LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
+                                    LootParams.Builder builder = new LootParams.Builder(serverLevel)
                                             .withParameter(LootContextParams.TOOL, usedTool)
                                             .withParameter(LootContextParams.ORIGIN, pos.getCenter())
                                             .withParameter(LootContextParams.BLOCK_STATE, state)

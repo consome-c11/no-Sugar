@@ -5,7 +5,6 @@ import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 public class CommonEvents {
     @SubscribeEvent
     public static void onLivingMethod(LivingEntityMethodEvent event) {
-        if(!(event.getEntity() instanceof LivingEntity self) || !(self instanceof ILivingEntity iliving)) return;
+        if (!(event.getEntity() instanceof LivingEntity self) || !(self instanceof ILivingEntity iliving)) return;
         if (event.getMethodType() == LivingEntityMethodEvent.MethodType.GET_HEALTH) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
                 event.setReturnValue(0.f);

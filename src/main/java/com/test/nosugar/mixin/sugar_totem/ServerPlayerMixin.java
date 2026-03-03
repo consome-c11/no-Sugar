@@ -17,7 +17,7 @@ public class ServerPlayerMixin {
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof Player player && SugarTotem.hasTotem(player)) {
-            ((LivingEntityAccessor)self).setDeadFlag(false);
+            ((LivingEntityAccessor) self).setDeadFlag(false);
             SugarTotem.onDead(player);
             ci.cancel();
         }

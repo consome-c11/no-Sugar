@@ -1,7 +1,6 @@
 package com.test.nosugar.utils;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import net.minecraft.world.entity.LivingEntity;
 

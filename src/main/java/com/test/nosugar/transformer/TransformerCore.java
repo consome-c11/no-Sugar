@@ -3,24 +3,18 @@ package com.test.nosugar.transformer;
 import com.test.nosugar.transformer.transformers.LivingEntityTransformer;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TransformerCore {
 
     private static final List<ITransformerModule> MODULES = new ArrayList<>();
-    private static boolean initialized = false;
-
     private static final Map<String, ClassNode> classNodeCache = new ConcurrentHashMap<>();
-
-    public enum Phase {
-        BEFORE,
-        AFTER,
-        CLASS_LOADING
-    }
+    private static final boolean initialized = false;
 
     static {
         registerModule(new LivingEntityTransformer());
@@ -60,5 +54,11 @@ public class TransformerCore {
             classNodeCache.remove(classNode.name);
         }
         return modified;
+    }
+
+    public enum Phase {
+        BEFORE,
+        AFTER,
+        CLASS_LOADING
     }
 }

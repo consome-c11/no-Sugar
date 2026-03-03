@@ -2,8 +2,6 @@ package com.test.nosugar.additional;
 
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
@@ -113,8 +111,9 @@ public class SnackArmor {
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-            if(real) return  isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
-            else return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
+            if (real) return isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+            else
+                return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
         }
 
         public static boolean isFullSet(Player player) {
@@ -145,7 +144,7 @@ public class SnackArmor {
         @SubscribeEvent
         public static void onEquipmentChange(LivingEquipmentChangeEvent event) {
             if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) return;
-            if(player instanceof ILivingEntity Iliving) {
+            if (player instanceof ILivingEntity Iliving) {
                 if (Iliving.wasFullset() && !isFullSet(player, true)) {
                     player.getServer().getPlayerList().getPlayers().forEach(otherPlayer -> {
                         if (otherPlayer != player) {
@@ -153,8 +152,8 @@ public class SnackArmor {
                         }
                     });
                     resetAbilities(player);
-                } else if(!Iliving.wasFullset() && isFullSet(player, true)) {
-                    sendRemove((ServerPlayer)player);
+                } else if (!Iliving.wasFullset() && isFullSet(player, true)) {
+                    sendRemove((ServerPlayer) player);
                 }
             }
         }
@@ -182,7 +181,7 @@ public class SnackArmor {
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
             Player player = event.getEntity();
             if (!player.level().isClientSide && isFullSet(player, true)) {
-                sendRemove((ServerPlayer)player);
+                sendRemove((ServerPlayer) player);
             }
         }
 
@@ -190,7 +189,7 @@ public class SnackArmor {
         public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
             Player player = event.getEntity();
             if (!player.level().isClientSide && isFullSet(player, true)) {
-                sendRemove((ServerPlayer)player);
+                sendRemove((ServerPlayer) player);
             }
         }
 
@@ -198,7 +197,7 @@ public class SnackArmor {
         public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
             Player player = event.getEntity();
             if (!player.level().isClientSide && isFullSet(player, true)) {
-                sendRemove((ServerPlayer)player);
+                sendRemove((ServerPlayer) player);
             }
         }
 

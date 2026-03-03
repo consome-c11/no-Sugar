@@ -19,12 +19,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SynchedEntityData.DataItem.class)
 public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDataItem {
-    @Shadow public abstract EntityDataAccessor<T> getAccessor();
-    @Shadow private T value;
+    @Unique
+    private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
+    @Unique
+    private static java.lang.reflect.Field this$0;
+    @Shadow
+    private T value;
+    @Unique
+    private T oldValue;
 
-    @Unique private T oldValue;
-    @Unique private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
-    @Unique private static java.lang.reflect.Field this$0;
+    @Shadow
+    public abstract EntityDataAccessor<T> getAccessor();
 
     @Unique
     private SynchedEntityData getOuterSynchedData() {
@@ -41,7 +46,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
 
     @Inject(method = "setValue", at = @At("HEAD"), cancellable = true)
     private void nosugar$setValue(T newValue, CallbackInfo ci) {
-        if(oldValue == null) oldValue = newValue;
+        if (oldValue == null) oldValue = newValue;
         if (getAccessor() == HEALTH_ID) {
 
             SynchedEntityData synchedData = getOuterSynchedData();
@@ -66,8 +71,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
                 if (newHealth <= oldHealth) {
                     ci.cancel();
                     this.value = oldValue;
-                }
-                else this.oldValue = this.value;
+                } else this.oldValue = this.value;
             }
         }
     }
@@ -100,8 +104,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
             if (newHealth <= oldHealth) {
                 this.value = oldValue;
                 ci.cancel();
-            }
-            else this.oldValue = this.value;
+            } else this.oldValue = this.value;
         }
     }
 
@@ -163,8 +166,7 @@ public abstract class SynchedEntityDataItemMixin<T> implements ISynchedEntityDat
             //System.out.println("Old Health: " + oldHealth + " New Health: " + newHealth);//あぁ～コンソールスパムの音ぉ～
             if (newHealth <= oldHealth) {
                 this.value = oldValue;
-            }
-            else this.oldValue = this.value;
+            } else this.oldValue = this.value;
         }
     }
 

@@ -1,11 +1,11 @@
 package com.test.nosugar.transformer.transformers;
 
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.transformer.ITransformerModule;
 import com.test.nosugar.transformer.MethodMatcher;
+import com.test.nosugar.transformer.TransformerCore.Phase;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import com.test.nosugar.transformer.ITransformerModule;
-import com.test.nosugar.transformer.TransformerCore.Phase;
 
 public class LivingEntityTransformer implements ITransformerModule {
 
@@ -36,12 +36,11 @@ public class LivingEntityTransformer implements ITransformerModule {
     @Override
     public boolean matchesMethod(String className, MethodNode method) {
         //if ("net/minecraft/world/entity/LivingEntity".equals(className)) {
-            if (GET_HEALTH.matches(method, className)||
-                    IS_DEAD_OR_DYING.matches(method, className) ||
-                    IS_ALIVE.matches(method, className)) return true;
-            //return false;
+        return GET_HEALTH.matches(method, className) ||
+                IS_DEAD_OR_DYING.matches(method, className) ||
+                IS_ALIVE.matches(method, className);
+        //return false;
         //}
-        return false;
     }
 
     @Override

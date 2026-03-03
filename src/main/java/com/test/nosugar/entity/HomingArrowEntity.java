@@ -26,16 +26,19 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
     private static final double SEARCH_RADIUS = 32.0;
     private static final double MAX_ANGLE_DEGREES = 25.0; //Homing Fov
     private static final double MAX_ANGLE_COS = Math.cos(Math.toRadians(MAX_ANGLE_DEGREES));
-    private LivingEntity homingTarget;
     private static final EntityDataAccessor<Integer> CHARGE_LEVEL = SynchedEntityData.defineId(HomingArrowEntity.class, EntityDataSerializers.INT);
+    private LivingEntity homingTarget;
     private boolean explosive;
+
     public HomingArrowEntity(EntityType<? extends HomingArrowEntity> type, Level level) {
         super(type, level);
     }
+
     public HomingArrowEntity(EntityType<? extends HomingArrowEntity> type, Level level, boolean explosives) {
         super(type, level);
         explosive = explosives;
     }
+
     public HomingArrowEntity(Level level, LivingEntity shooter, boolean explosives) {
         super(ModEntities.HOMING_ARROW.get(), shooter, level);
         explosive = explosives;
@@ -194,7 +197,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
         }
 
         if (hit instanceof LivingEntity living && this.getOwner() instanceof Player owner)
-            Eraser_Utils.killIfParentFound(living,owner,16);
+            Eraser_Utils.killIfParentFound(living, owner, 16);
 
         //this.remove(RemovalReason.DISCARDED);//removeしないと消えるまで永遠にホーミングする
         super.onHitEntity(result);
@@ -202,7 +205,7 @@ public class HomingArrowEntity extends AbstractArrow {//90% ChatGPT Lawl   if(!m
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if(explosive) {
+        if (explosive) {
             SugarExplosion explosion = new SugarExplosion(this.level(), getOwner(), this.getX(), this.getY(), this.getZ(), 60);
             //どっかーん☆
             explosion.explode();

@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class Sugar_Totem_Item extends Item{
+public class Sugar_Totem_Item extends Item {
     public Sugar_Totem_Item() {
         super(new Item.Properties().stacksTo(1));
     }

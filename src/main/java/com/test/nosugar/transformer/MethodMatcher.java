@@ -2,13 +2,10 @@ package com.test.nosugar.transformer;
 
 import com.test.nosugar.NoSugar;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.InputStream;
-import java.util.Objects;
 
 public class MethodMatcher {
 
@@ -24,18 +21,6 @@ public class MethodMatcher {
         this.mappedName = mappedName;
         this.desc = desc;
         this.isInterface = isInterface;
-    }
-
-    public boolean matches(MethodInsnNode insn) {
-        if (!desc.equals(insn.desc)) return false;
-        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
-        return owner.equals(insn.owner);
-    }
-
-    public boolean matches(MethodNode method, String classname) {
-        if (!desc.equals(method.desc) ||
-                !obfName.equals(method.name) && !mappedName.equals(method.name)) return false;
-        return isSubclass(classname, owner)/* || isOverride(method, classname)*/;
     }
 
     //粉みかんさん感謝
@@ -54,7 +39,7 @@ public class MethodMatcher {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         while (!currentName.equals("java/lang/Object")) {
             try (InputStream is = classloader.getResourceAsStream(currentName + ".class")) {
-                if(is == null) continue;
+                if (is == null) continue;
                 ClassReader classreader = new ClassReader(is);
                 currentName = classreader.getSuperName();
                 if (currentName.equals(superClass)) {
@@ -69,9 +54,19 @@ public class MethodMatcher {
         return false;
     }
 
-
-
     public static MethodMatcher of(String owner, String obfName, String mappedName, String desc, boolean isInterface) {
         return new MethodMatcher(owner, obfName, mappedName, desc, isInterface);
+    }
+
+    public boolean matches(MethodInsnNode insn) {
+        if (!desc.equals(insn.desc)) return false;
+        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
+        return owner.equals(insn.owner);
+    }
+
+    public boolean matches(MethodNode method, String classname) {
+        if (!desc.equals(method.desc) ||
+                !obfName.equals(method.name) && !mappedName.equals(method.name)) return false;
+        return isSubclass(classname, owner)/* || isOverride(method, classname)*/;
     }
 }

@@ -1,10 +1,10 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.entity.HomingArrowEntity;
-import com.test.nosugar.utils.render.ColorUtils;
+import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.utils.ShootMode;
+import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,11 +27,15 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class Sugar_Bow_Item extends BowItem {
+    private static final Predicate<ItemStack> SUGAR_ARROW_ONLY = (p_40683_) -> {
+        return p_40683_.is(ModItems.SUGAR_ARROW.get());
+    };
+    public static ItemStack THIS;
+
     public Sugar_Bow_Item(Properties prop) {
         super(prop);
     }
 
-    public static ItemStack THIS;
     @Override
     public AbstractArrow customArrow(AbstractArrow arrow) {
         Level level = arrow.level();
@@ -40,7 +44,7 @@ public class Sugar_Bow_Item extends BowItem {
 
         homingArrow.copyPosition(arrow);
         homingArrow.setDeltaMovement(arrow.getDeltaMovement());
-        homingArrow.setPierceLevel((byte)127);
+        homingArrow.setPierceLevel((byte) 127);
         homingArrow.setCritArrow(arrow.isCritArrow());
         homingArrow.setBaseDamage(arrow.getBaseDamage());
         homingArrow.setKnockback(arrow.getKnockback());
@@ -77,10 +81,6 @@ public class Sugar_Bow_Item extends BowItem {
         tooltip.add(1, result);
     }
 
-    private static final Predicate<ItemStack> SUGAR_ARROW_ONLY = (p_40683_) -> {
-        return p_40683_.is(ModItems.SUGAR_ARROW.get());
-    };
-
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
         if (entity instanceof Player player) {
@@ -95,7 +95,7 @@ public class Sugar_Bow_Item extends BowItem {
                     THIS = stack;
                     AbstractArrow customArrow = this.customArrow(vanillaArrow);
 
-                    customArrow.shootFromRotation(player, player.getXRot(),player.getYRot(), 0.0F, 3,1.0F);
+                    customArrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 3, 1.0F);
 
                     level.addFreshEntity(customArrow);
                 }
@@ -107,6 +107,7 @@ public class Sugar_Bow_Item extends BowItem {
             }
         }
     }
+
     @Override
     public @NotNull Predicate<ItemStack> getAllSupportedProjectiles() {
         return SUGAR_ARROW_ONLY;

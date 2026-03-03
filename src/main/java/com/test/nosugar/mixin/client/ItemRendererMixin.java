@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.test.nosugar.compat.tconstruct.Mods;
 import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.utils.item.TicUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -23,8 +23,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import slimeknights.tconstruct.library.tools.item.IModifiable;
-import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,15 +39,15 @@ public abstract class ItemRendererMixin {
     );
 
     @Unique
-    private static List<String> AFFECTED_ITEM_IDS = List.of(
+    private static final List<String> AFFECTED_ITEM_IDS = List.of(
             "eraser:sugar_eraser"
     );
     @Unique
-    private static DynamicTexture dynTex = null;
+    private static final DynamicTexture dynTex = null;
     @Unique
-    private static ResourceLocation dynLoc = null;
+    private static final ResourceLocation dynLoc = null;
     @Unique
-    private static NativeImage img = null;
+    private static final NativeImage img = null;
 
     @Unique
     private static List<Item> getAffectedItems() {
@@ -66,15 +64,12 @@ public abstract class ItemRendererMixin {
                         ctx == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ||
                         ctx == ItemDisplayContext.THIRD_PERSON_LEFT_HAND ||
                         ctx == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
-        boolean issugar = false;
-        if (stack.getItem() instanceof IModifiable) {
-            ToolStack tool = ToolStack.from(stack);
-            issugar =  !tool.isBroken() && (tool.getModifierLevel(Mods.SUGAR.getId()) > 0 || tool.getModifierLevel(Mods.TAIL_OF_NINE.getId()) > 0);
-        }
+        boolean issugar = TicUtils.hasSugarMod(stack);
+
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         List<Item> currentAffectedItems = getAffectedItems();
-        issugar = issugar || ModItems.getAllItems().stream().anyMatch(stack::is) ||
-                currentAffectedItems.stream().anyMatch(stack::is) || AFFECTED_ITEM_IDS.contains(itemId);
+        issugar = (issugar || ModItems.getAllItems().stream().anyMatch(stack::is) ||
+                currentAffectedItems.stream().anyMatch(stack::is) || AFFECTED_ITEM_IDS.contains(itemId));
         boolean inGui = ctx == ItemDisplayContext.GUI;
 
         return (inHand || inGui) && issugar;
@@ -116,15 +111,15 @@ public abstract class ItemRendererMixin {
                                                  int packedOverlay, BakedModel model, CallbackInfo ci) {
         if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
                 && stack.getItem() == ModItems.SUGAR_SWORD.get()) {
-            Minecraft mc =  Minecraft.getInstance();
-            if(mc == null) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc == null) return;
             Player player = Minecraft.getInstance().player;
             if (player != null && player.isUsingItem() && player.getUseItem() == stack) {
                 poseStack.pushPose();
                 //なんでポーズ変えても三人称視点だと適用されるのに一人称視点だと適用されないんやこれ　あー意味分からん
                 poseStack.translate(0.0, 0.0, -0.02);
 
-                poseStack.mulPose(Axis.YP.rotationDegrees(55.0F));//うあああああめんどくさい
+                poseStack.mulPose(Axis.YP.rotationDegrees(60.0F));//うあああああめんどくさい
                 poseStack.mulPose(Axis.XP.rotationDegrees(-75.0F));
                 poseStack.mulPose(Axis.ZP.rotationDegrees(25.0F));
             }
@@ -145,6 +140,7 @@ public abstract class ItemRendererMixin {
             }
         }
     }
+
     @Unique
     public List<String> getAffectedItemIds() {
         return AFFECTED_ITEM_IDS;
@@ -183,7 +179,7 @@ public abstract class ItemRendererMixin {
         net.minecraft.util.RandomSource randomsource = net.minecraft.util.RandomSource.create();
         long i = 42L;
 
-        for(net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
+        for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
             randomsource.setSeed(42L);
             renderQuadList(poseStack, vertexConsumer, model.getQuads(null, direction, randomsource), stack, packedLight, packedOverlay);
         }
@@ -197,15 +193,15 @@ public abstract class ItemRendererMixin {
         boolean flag = !stack.isEmpty();
         com.mojang.blaze3d.vertex.PoseStack.Pose posestack$pose = poseStack.last();
 
-        for(net.minecraft.client.renderer.block.model.BakedQuad bakedquad : quads) {
+        for (net.minecraft.client.renderer.block.model.BakedQuad bakedquad : quads) {
             int i = -1;
             if (flag && bakedquad.isTinted()) {
                 i = net.minecraft.client.Minecraft.getInstance().getItemColors().getColor(stack, bakedquad.getTintIndex());
             }
 
-            float f = (float)(i >> 16 & 255) / 255.0F;
-            float f1 = (float)(i >> 8 & 255) / 255.0F;
-            float f2 = (float)(i & 255) / 255.0F;
+            float f = (float) (i >> 16 & 255) / 255.0F;
+            float f1 = (float) (i >> 8 & 255) / 255.0F;
+            float f2 = (float) (i & 255) / 255.0F;
             vertexConsumer.putBulkData(posestack$pose, bakedquad, f, f1, f2, 1.0F, packedLight, packedOverlay, true);
         }
     }

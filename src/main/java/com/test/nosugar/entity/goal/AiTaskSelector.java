@@ -9,14 +9,13 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class AiTaskSelector {
+    private static final int TARGET_SEARCH_INTERVAL = 40; //2sec
     private final Sand_Bag_v2 owner;
     private final List<AiTask> tasks = Lists.newArrayList();
+    int targetSearchCooldown = 0;
     private AiTask currentTask = null;
-
     private Player targetPlayer = null;
     private Vec3 lastKnownPosition = null;
-    int targetSearchCooldown = 0;
-    private static final int TARGET_SEARCH_INTERVAL = 40; //2sec
 
     public AiTaskSelector(Sand_Bag_v2 owner) {
         this.owner = owner;

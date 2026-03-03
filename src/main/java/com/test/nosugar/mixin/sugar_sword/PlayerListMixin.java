@@ -1,6 +1,5 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -18,7 +17,6 @@ public class PlayerListMixin {
             iliving.unmarkErased(player.getUUID());
             iliving.setErased(false);
         }
-        return;
     }
 
     @Inject(method = "respawn", at = @At("RETURN"), cancellable = true)
@@ -27,7 +25,6 @@ public class PlayerListMixin {
             iliving.unmarkErased(player.getUUID());
             iliving.setErased(false);
         }
-        return;
     }
 }
 

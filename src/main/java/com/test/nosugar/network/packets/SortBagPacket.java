@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 public class SortBagPacket {
     private final UUID bagId;
     private final SortType sortType;
+
     public SortBagPacket(UUID bagId, SortType sortType) {
         this.bagId = bagId;
         this.sortType = sortType;

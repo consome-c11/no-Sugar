@@ -16,10 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(value = Inventory.class ,priority = 0)
+@Mixin(value = Inventory.class, priority = 0)
 public class InventoryMixin {
 
     private static Player player_;
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstruct(Player player, CallbackInfo ci) {
         NonNullList<ItemStack> originalItems = ((InventoryAccessor) this).getItems();
@@ -45,7 +46,7 @@ public class InventoryMixin {
 
     @Inject(method = "dropAll", at = @At("HEAD"), cancellable = true)
     private void ondropAll(CallbackInfo ci) {
-        if (player_ != null && SnackArmor.SnackProtector.isFullSet(player_)) {
+        if (SnackArmor.SnackProtector.isFullSet(player_)) {
             ci.cancel();
         }
     }
@@ -168,9 +169,9 @@ public class InventoryMixin {
 
     @Inject(method = "setItem(ILnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
     private void onSetItemStart(int slot, ItemStack stack, CallbackInfo ci) {
-        ProtectedNonNullList itemsList = (ProtectedNonNullList) ((InventoryAccessor) (Object) this).getItems();
-        ProtectedNonNullList armorList = (ProtectedNonNullList) ((InventoryAccessor) (Object) this).getArmor();
-        ProtectedNonNullList offhandList = (ProtectedNonNullList) ((InventoryAccessor) (Object) this).getOffhand();
+        ProtectedNonNullList itemsList = (ProtectedNonNullList) ((InventoryAccessor) this).getItems();
+        ProtectedNonNullList armorList = (ProtectedNonNullList) ((InventoryAccessor) this).getArmor();
+        ProtectedNonNullList offhandList = (ProtectedNonNullList) ((InventoryAccessor) this).getOffhand();
         ProtectedNonNullList targetList = null;
 
         if (slot >= 0 && slot < itemsList.size()) {

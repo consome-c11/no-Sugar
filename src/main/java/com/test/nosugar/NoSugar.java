@@ -1,13 +1,13 @@
 package com.test.nosugar;
 
 import com.mojang.logging.LogUtils;
+import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.client.ModCreativeTabs;
 import com.test.nosugar.compat.slashblade.SERegister;
 import com.test.nosugar.compat.spells.ModSpells;
 import com.test.nosugar.compat.tconstruct.TConstruct;
-import com.test.nosugar.client.ModCreativeTabs;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.gui.ModMenus;
-import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.network.ModPackets;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
@@ -52,10 +52,10 @@ public class NoSugar {
             ModSpells.register(modEventBus);
         });
         require(SLASHBLADE).run(() -> {
-           ModItems.SLASH_BLADE_ITEMS.register(modEventBus);
+            ModItems.SLASH_BLADE_ITEMS.register(modEventBus);
             SERegister.register(modEventBus);
         });
-        new TConstruct(modEventBus,FMLJavaModLoadingContext.get());
+        new TConstruct(modEventBus, FMLJavaModLoadingContext.get());
         NoSugar.LOGGER.debug("[NoSugar] loaded");
     }
 

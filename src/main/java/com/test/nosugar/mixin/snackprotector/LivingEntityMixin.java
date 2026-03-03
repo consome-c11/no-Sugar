@@ -70,9 +70,9 @@ public abstract class LivingEntityMixin {
     @Inject(method = "die", at = @At("HEAD"), cancellable = true)
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
+        if (self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
-            ((LivingEntityAccessor)self).setDeadFlag(false);
+            ((LivingEntityAccessor) self).setDeadFlag(false);
             ci.cancel();
             //self.setHealth(self.getMaxHealth());
         }
@@ -102,7 +102,7 @@ public abstract class LivingEntityMixin {
             argsOnly = true
     )
     private MobEffectInstance snackProtector$modifyEffectInstance(MobEffectInstance original) {
-        if((Object)this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
+        if ((Object) this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
             return new MobEffectInstance(
                     original.getEffect(),
                     (original.getDuration() * 7),//効果7倍! アンパソマソ!
@@ -118,7 +118,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "baseTick", at = @At("HEAD"), cancellable = true)
     private void snackProtector$onbaseTick(CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             player.setAirSupply(player.getMaxAirSupply());
             player.hurtTime = 0;
             player.hurtMarked = false;
@@ -129,7 +129,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "animateHurt", at = @At("HEAD"), cancellable = true)
     private void snackProtector$onAnimateHurt(float flt, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if(self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             player.hurtTime = 0;
             player.hurtMarked = false;
             ci.cancel();

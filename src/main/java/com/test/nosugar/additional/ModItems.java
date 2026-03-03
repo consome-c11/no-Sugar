@@ -23,7 +23,7 @@ public class ModItems {
             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
     public static final DeferredRegister<Item> SLASH_BLADE_ITEMS =
-             DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
+            DeferredRegister.create(ForgeRegistries.ITEMS, NoSugar.MODID);
 
     public static final RegistryObject<Item> SUGAR_SWORD =
             ITEMS.register("sugar_sword", () -> new SugarSword_Item(new Item.Properties().stacksTo(1)));

@@ -1,14 +1,11 @@
 package com.test.nosugar.mixin.client;
 
-import com.test.nosugar.events.ClientEvents;
-import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.mixin.sugar_sword.EntityAccessor;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.HandleErasePacket;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -24,7 +21,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     public void eraseClientEntity() {
         LivingEntity self = (LivingEntity) (Object) this;
         Minecraft mc = Minecraft.getInstance();
-        if(self == mc.player) return;
+        if (self == mc.player) return;
         if (self instanceof Player) {
             PacketHandler.CHANNEL.sendToServer(new HandleErasePacket());
             ((ILivingEntity) self).setErased(false);

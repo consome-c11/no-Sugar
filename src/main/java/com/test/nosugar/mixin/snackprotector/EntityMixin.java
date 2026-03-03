@@ -3,7 +3,6 @@ package com.test.nosugar.mixin.snackprotector;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +15,7 @@ public class EntityMixin {
 
     @Inject(method = "markHurt", at = @At("HEAD"), cancellable = true)
     private void snackProtector$onMarkHurt(CallbackInfo ci) {
-        Entity self = (Entity)(Object) this;
+        Entity self = (Entity) (Object) this;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             ci.cancel();
             //self.setHealth(self.getMaxHealth());
@@ -26,8 +25,8 @@ public class EntityMixin {
     @Inject(method = "isRemoved", at = @At("HEAD"), cancellable = true)
     private void snackProtector$isRemoved(CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
-        if(self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())
-        || self.getRemovalReason() == Entity.RemovalReason.CHANGED_DIMENSION ||
+        if (self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())
+                || self.getRemovalReason() == Entity.RemovalReason.CHANGED_DIMENSION ||
                 self.getRemovalReason() == Entity.RemovalReason.DISCARDED/*痛い目見た*/) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             cir.setReturnValue(false);
