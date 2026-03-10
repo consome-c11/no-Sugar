@@ -4,6 +4,7 @@ import com.test.nosugar.Config;
 import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
+import com.test.nosugar.utils.LivingEntityUtils;
 import com.test.nosugar.utils.SynchedEntityDataUtil;
 import com.test.nosugar.utils.TaskScheduler;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
@@ -165,7 +166,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //if(!(self instanceof ServerPlayer)) { self.die(source);}
         ((LivingEntityAccessor) self).setDeadFlag(true);
         self.deathTime = 1;
-        ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
         if (!self.level().isClientSide) {
 
@@ -185,7 +185,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     player.awardStat(Stats.ENTITY_KILLED_BY.get(killer.getType()));
                 killer.awardKillScore(self, 0, source);
             }
-            ((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
+            ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);//0以上かで判断してるし1でもええやろ(フラグ)
+            if(!LivingEntityUtils.isAlive(self) && LivingEntityUtils.isDeadOrDying(self))((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
             //((LivingEntityAccessor)self).invokedropFromLootTable(source,false);
             //((LivingEntityAccessor)self).invokedropExperience();
         }
@@ -232,7 +233,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         LivingEntity self = (LivingEntity) (Object) this;
         self.level().broadcastEntityEvent(self, (byte) 60);
 
-        //LevelCallBack.onRemoveとかは呼ばれない
+        //フィールド書き換えてるだけ
         ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
         if (self.level() instanceof ServerLevel serverLevel) {
