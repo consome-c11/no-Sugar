@@ -1,5 +1,6 @@
 package com.test.nosugar.mixin.client;
 
+import com.test.nosugar.Config;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.ShootMode;
@@ -7,20 +8,26 @@ import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackDisplayMixin {
@@ -79,7 +86,19 @@ public abstract class ItemStackDisplayMixin {
                 String lineStr = line.getString();
 
                 if (lineStr.contains(mainhandKeyStr)) {
-                    tooltip.add(i + 1, makeWaveLine(" " + Component.translatable("item.nosugar.ignore.invtime").getString(), true));
+                    if (Screen.hasShiftDown()) {
+                        addActiveBypassTooltips(tooltip, i + 1);
+                        if(stack.getItem() == ModItems.TAIL_OF_NINE.get())
+                            tooltip.add(i + 1, ColorUtils.makeWaveLine(" " + Component.translatable("item.nosugar.tail.of.nine.desc").getString(), 0xFF0000, 0xFFFFFFD));
+                        if(stack.getItem() == ModItems.SUGAR_SWORD.get())
+                            tooltip.add(i + 1, ColorUtils.makeWaveLine(" " + Component.translatable("item.nosugar.sugar.sword.desc").getString()));
+
+                    } else {
+                        tooltip.add(i + 1, makeWaveLine(" " + Component.translatable("item.nosugar.show_advanced").getString(), true));
+                        if(stack.getItem() == ModItems.TAIL_OF_NINE.get()) tooltip.add(i + 1, ColorUtils.makeWaveLine(" " + "Tail of Nine", 0xFF0000, 0xFFFFFFD));
+                        if(stack.getItem() == ModItems.SUGAR_SWORD.get()) tooltip.add(i + 1, ColorUtils.makeWaveLine(" " + "Sugar"));
+                    }
+
                     break;
                 }
             }
@@ -144,6 +163,28 @@ public abstract class ItemStackDisplayMixin {
         }
     }
 
+    @Unique
+    private void addActiveBypassTooltips(List<Component> tooltip, int insertIndex) {
+        Map<TagKey<DamageType>, String> tagToKeyMap = Map.ofEntries(
+                Map.entry(DamageTypeTags.BYPASSES_INVULNERABILITY, "item.nosugar.ignore.invulnerability"),
+                Map.entry(DamageTypeTags.BYPASSES_ARMOR, "item.nosugar.ignore.armor"),
+                Map.entry(DamageTypeTags.BYPASSES_SHIELD, "item.nosugar.ignore.shield"),
+                Map.entry(DamageTypeTags.BYPASSES_ENCHANTMENTS, "item.nosugar.ignore.enchantments"),
+                Map.entry(DamageTypeTags.BYPASSES_EFFECTS, "item.nosugar.ignore.effects"),
+                Map.entry(DamageTypeTags.BYPASSES_COOLDOWN, "item.nosugar.ignore.cooldown")
+        );
+
+        int offset = 0;
+        for (Map.Entry<TagKey<DamageType>, String> entry : tagToKeyMap.entrySet()) {
+            if (Config.shouldBypassTag(entry.getKey())) {
+                String text = " " + Component.translatable(entry.getValue()).getString();
+                tooltip.add(insertIndex + offset, makeWaveLine(text, true));
+                offset++;
+            }
+        }
+    }
+
+    @Unique
     private boolean applycolorname(ItemStack stack) {//hate my brain
         return stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get() || stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get() || stack.getItem() == ModItems.SUGAR_BOW.get();
     }

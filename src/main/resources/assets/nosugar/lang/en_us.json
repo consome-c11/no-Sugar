@@ -30,5 +30,14 @@
   "item.nosuger.null_ingot.desc": "Sugar that has absorbed moisture and turned rock-hard!",
   "item.nosugar.ignore.invtime": "Ignores invincibility, shields, armor, enchantments, effects, and totems",
   "item.nosuger.block_suger.name": "Block Sugar",
-  "item.nosuger.block_suger.desc": "SWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET"
+  "item.nosuger.block_suger.desc": "SWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET",
+  "item.nosugar.ignore.invulnerability": "Ignores invincibility",
+  "item.nosugar.ignore.armor": "Ignores armor",
+  "item.nosugar.ignore.shield": "Ignores shields",
+  "item.nosugar.ignore.enchantments": "Ignores enchantments",
+  "item.nosugar.ignore.effects": "Ignores effects",
+  "item.nosugar.ignore.cooldown": "Ignores damage cooldown",
+  "item.nosugar.show_advanced": "[Hold Shift for details]",
+  "item.nosugar.sugar.sword.desc": "Force the target entity to die",
+  "item.nosugar.tail.of.nine.desc": "If you hit the same entity 9 times, it will be forced to die"
 }

@@ -1,6 +1,5 @@
 package com.test.nosugar.entity;
 
-import com.test.nosugar.entity.goal.RandomFlyGoal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -66,7 +65,6 @@ public class Sand_Bag extends FlyingMob implements RangedAttackMob {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new RangedAttackGoal(this, 1.0D, 10, 32.0F));
         this.goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 16.0F));
-        this.goalSelector.addGoal(2, new RandomFlyGoal(this));
     }
 
     @Override

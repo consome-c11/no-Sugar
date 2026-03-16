@@ -1,6 +1,10 @@
 package com.test.nosugar;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -37,9 +41,27 @@ public class Config {
             .comment("If true to skip the death animation of entities killed by the NoSugar")
             .define("skipAnimation", false);
 
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BYPASS_TAGS =
+            BUILDER.comment("Damage type Tags to add")
+                    .defineListAllowEmpty(
+                            "DamageTags",
+                            List.of(
+                                    "minecraft:bypasses_armor",
+                                    "minecraft:bypasses_invulnerability",
+                                    "minecraft:bypasses_magic",
+                                    "minecraft:bypasses_shield",
+                                    "minecraft:bypasses_enchantments",
+                                    "minecraft:bypasses_effects",
+                                    "minecraft:bypasses_cooldown"
+                            ),
+                            obj -> obj instanceof String s && ResourceLocation.tryParse(s) != null
+                    );
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private static Set<ResourceLocation> normalDieEntities = Set.of();
+
+    private static Set<TagKey<DamageType>> resolvedBypassTags = Set.of();
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -52,9 +74,22 @@ public class Config {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
         }
+        var tagStrings = BYPASS_TAGS.get();
+        if (tagStrings != null) {
+            resolvedBypassTags = tagStrings.stream()
+                    .map(ResourceLocation::tryParse)
+                    .filter(Objects::nonNull)
+                    .map(loc -> TagKey.create(Registries.DAMAGE_TYPE, loc))
+                    .collect(Collectors.toSet());
+        }
     }
 
     public static boolean isNormalDieEntity(Entity entity) {
         return normalDieEntities.contains(EntityType.getKey(entity.getType()));
+    }
+
+    public static boolean shouldBypassTag(TagKey<DamageType> tag) {
+        NoSugar.LOGGER.info(resolvedBypassTags.toString() + "ret: " + resolvedBypassTags.contains(tag));
+        return resolvedBypassTags.contains(tag);
     }
 }
