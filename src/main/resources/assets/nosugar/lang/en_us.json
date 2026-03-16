@@ -1,11 +1,11 @@
 {
-  "death.attack.erase": "%1$has turned into sugar",
-  "death.attack.erase.player": "%1$was turned into sugar by %2$s",
-  "death.attack.explosive": "%1$has turned to ashes",
-  "death.attack.explosive.player": "%1$was reduced to ashes by %2$s",
+  "death.attack.erase": "%1$s has turned into sugar",
+  "death.attack.erase.player": "%1$s was turned into sugar by %2$s",
+  "death.attack.explosive": "%1$s has turned to ashes",
+  "death.attack.explosive.player": "%1$s was reduced to ashes by %2$s",
   "item.nosugar.null_ingot": "? Ingot",
   "item.nosugar.null_ingot.desc": "yeeeeeeeeeeeeeeeeeeeeeeeeee",
-  "item.nosugar.sugar_sword.desc": "Here, take a lethal dose of sugar :) ",
+  "item.nosuger.sugar_sword.desc": "Here, take a lethal dose of sugar :) ",
   "item.nosugar.world_destroyer": "Snack Destroyer",
   "item.nosugar.world_destroyer.desc": "Grandpa, didn't you already have your snack?",
   "key.categories.world_destroyer": "World Destroyer",
@@ -24,10 +24,11 @@
   "key.categories.nosugar": "NoSugar",
   "key.sugarbow.toggle_mode": "Toggle Shoot Mode",
   "item.nosuger.world_destroyer": "Snack Destryer",
-  "item.nosuger.sugar_sword.desc": "Force sugar:fire:",
-  "item.nosuger.sugar_totem.desc": "Yeah. Work in progress \\n soon™",
+  "item.nosuger.sugar_totem.desc": "Yeah. Work in progress \n soon™",
   "item.nosugar.sugar_bow.desc": "Mach 3 sugar!",
   "item.nosugar.sugar_arrow.desc": "Mach 3 sugar! Agein! LAWL!",
   "item.nosuger.null_ingot.desc": "Sugar that has absorbed moisture and turned rock-hard!",
-  "item.nosugar.ignore.invtime": "Ignore Invincibility Time"
+  "item.nosugar.ignore.invtime": "Ignores invincibility, shields, armor, enchantments, effects, and totems",
+  "item.nosuger.block_suger.name": "Block Sugar",
+  "item.nosuger.block_suger.desc": "SWEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET"
 }

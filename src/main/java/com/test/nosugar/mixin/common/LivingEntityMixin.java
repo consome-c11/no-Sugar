@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -27,20 +28,76 @@ public class LivingEntityMixin {
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
     )
-    private boolean BypassCooldown(
+    private boolean hurt_CheckTag(
             DamageSource source, TagKey<DamageType> tag, Operation<Boolean> original
     ) {
+        if(getret(source, tag)) return true;
+        return original.call(source, tag);
+    }
+
+    @WrapOperation(
+            method = "getDamageAfterArmorAbsorb",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
+    )
+    private boolean on_getDamageAfterArmorAbsorb_CheckTag(
+            DamageSource source, TagKey<DamageType> tag, Operation<Boolean> original
+    ) {
+        if(getret(source, tag)) return true;
+        return original.call(source, tag);
+    }
+
+    @WrapOperation(
+            method = "getDamageAfterMagicAbsorb",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
+    )
+    private boolean on_getDamageAfterMagicAbsorb_CheckTag(
+            DamageSource source, TagKey<DamageType> tag, Operation<Boolean> original
+    ) {
+        if(getret(source, tag)) return true;
+        return original.call(source, tag);
+    }
+    @WrapOperation(
+            method = "isDamageSourceBlocked",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
+    )
+    private boolean on_isDamageSourceBlocked_CheckTag(
+            DamageSource source, TagKey<DamageType> tag, Operation<Boolean> original
+    ) {
+        if(getret(source, tag)) return true;
+        return original.call(source, tag);
+    }
+    @WrapOperation(
+            method = "checkTotemDeathProtection",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
+    )
+    private boolean on_checkTotemDeathProtection_CheckTag(
+            DamageSource source, TagKey<DamageType> tag, Operation<Boolean> original
+    ) {
+        if(getret(source, tag)) return true;
+        return original.call(source, tag);
+    }
+
+    @Unique
+    private boolean getret(DamageSource source, TagKey<DamageType> tag){
         if(source.getEntity() != null)NoSugar.LOGGER.info("Source Entity: " + source.getEntity().getName());
-        if (tag == DamageTypeTags.BYPASSES_COOLDOWN
+        if ((tag == DamageTypeTags.BYPASSES_COOLDOWN
+                || tag == DamageTypeTags.BYPASSES_ARMOR
+                || tag == DamageTypeTags.BYPASSES_EFFECTS
+                || tag == DamageTypeTags.BYPASSES_ENCHANTMENTS
+                || tag == DamageTypeTags.BYPASSES_INVULNERABILITY
+                || tag == DamageTypeTags.BYPASSES_SHIELD)
                 && source.getEntity() instanceof LivingEntity living
                 && (living.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
-                   || living.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
-                   || living.getMainHandItem().getItem() == ModItems.TAIL_OF_NINE.get()
-                   || TicUtils.hasSugarMod(living.getMainHandItem()))
+                || living.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
+                || living.getMainHandItem().getItem() == ModItems.TAIL_OF_NINE.get()
+                || TicUtils.hasSugarMod(living.getMainHandItem()))
         ) {
             return true;
         }
-
-        return original.call(source, tag);
+        return false;
     }
 }
