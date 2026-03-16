@@ -22,7 +22,7 @@ import static com.test.nosugar.utils.entity.EntityUtils.getretInvulnerable;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
 
-    @WrapOperation(
+    /*@WrapOperation(
             method = "hurt",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
@@ -104,6 +104,6 @@ public class LivingEntityMixin {
     ) {
         if(enable_tag(source, tag)) return true;
         return original.call(source, tag);
-    }
+    }*/
 
 }

@@ -14,7 +14,7 @@ import static com.test.nosugar.utils.entity.EntityUtils.enable_tag;
 
 @Mixin(Entity.class)
 public class EntityMixin {
-    @WrapOperation(
+    /*@WrapOperation(
             method = "isInvulnerableTo",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/damagesource/DamageSource;is(Lnet/minecraft/tags/TagKey;)Z")
@@ -24,5 +24,5 @@ public class EntityMixin {
     ) {
         if(enable_tag(source, tag)) return true;
         return original.call(source, tag);
-    }
+    }*/
 }

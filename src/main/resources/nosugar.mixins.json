@@ -26,6 +26,7 @@
     "snackprotector.GameRendererMixin"
   ],
   "mixins": [
+    "common.DamageSourceMixin",
     "common.EntityMixin",
     "common.InventoryMixin",
     "common.ItemizedCurioCapabilityMixin",

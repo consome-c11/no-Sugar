@@ -147,17 +147,17 @@ public class SugarSword_Item extends SwordItem {
         return false;
     }*/
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    /*public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         player.startUsingItem(hand);
 
         return InteractionResultHolder.consume(stack);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public int getUseDuration(ItemStack stack) {
         return 72000;
-    }
+    }*/
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
