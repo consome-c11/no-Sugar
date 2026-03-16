@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.Config;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
@@ -10,6 +11,8 @@ import com.test.nosugar.utils.TaskScheduler;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
@@ -18,17 +21,29 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.*;
+import net.minecraftforge.client.event.sound.SoundEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.EventBus;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +57,9 @@ import static com.mojang.text2speech.Narrator.LOGGER;
 public abstract class LivingEntityMixin implements ILivingEntity {
 
 
+    @Shadow
+    @Nullable
+    private DamageSource lastDamageSource;
     private static final Set<UUID> erasedUuids = ConcurrentHashMap.newKeySet();
     @Unique
     private boolean erased = false;
@@ -119,7 +137,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
         if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
         if (attacker != null) ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
-        self.getCombatTracker().recordDamage(src, 0);
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
@@ -136,8 +153,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
             //((LivingEntityAccessor) self).callDie(eraseSrc);
         } else if (Config.FORCE_DIE.get()) {
-
-            //self.hurt(src, Float.MAX_VALUE);
             SynchedEntityDataUtil.forceSet(self.getEntityData(), healthId, 0.f);
             ServerBossEvent event = getBossBar((ServerLevel) self.level());
             if (event != null) event.setProgress(0.f);
@@ -145,8 +160,13 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
             }
+            if(self instanceof TamableAnimal animal && animal.isTame()) self.die(src);
             this.setErased(true);
             forcedie(src);
+            //MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(self, src, Float.POSITIVE_INFINITY));
+            MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(self, src));
+            self.playSound(((LivingEntityAccessor)self).invokegetDeathSound());
+            self.playSound(SoundEvents.PLAYER_ATTACK_STRONG, ((LivingEntityAccessor)self).invokegetSoundVolume(), self.getVoicePitch());
             if (!SkipAnimation && !Config.SKIP_DEATH_ANIMATION.get()) {
                 TaskScheduler.schedule(this::forceErase, 21);
             } else forceErase();

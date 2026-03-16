@@ -11,7 +11,9 @@ import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.network.ModPackets;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -31,12 +33,12 @@ import static com.test.nosugar.utils.Deets.*;
 public class NoSugar {
     public static final String MODID = "nosugar";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static IEventBus modEventBus;
 
     public NoSugar() {
-
+        modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         MinecraftForge.EVENT_BUS.register(this);
 
-        var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 

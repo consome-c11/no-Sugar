@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -54,4 +55,9 @@ public interface LivingEntityAccessor {
     @Invoker("die")
     void callDie(DamageSource source);
 
+    @Invoker("getDeathSound")
+    SoundEvent invokegetDeathSound();
+
+    @Invoker("getSoundVolume")
+    float invokegetSoundVolume();
 }

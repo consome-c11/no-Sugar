@@ -39,7 +39,7 @@ public class WorldDestroyerChangeModePacket {
 
                 DestroyMode.setMode(held, msg.mode);
                 DestroyMode.setSilkTouch(held, msg.silkEnabled);
-
+                player.inventoryMenu.broadcastChanges();
                 if (Config.CHENGEMODE_MESSAGE.get())
                     player.displayClientMessage(
                             Component.literal(

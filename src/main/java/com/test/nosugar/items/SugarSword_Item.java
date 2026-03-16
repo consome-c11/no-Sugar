@@ -27,10 +27,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
 public class SugarSword_Item extends SwordItem {
     public SugarSword_Item(Properties props) {
-        super(ModTiers.ERASER_TIER, 10, 3.F, props.stacksTo(1).fireResistant());
+        super(ModTiers.ERASER_TIER, 10, 7.F, props.stacksTo(1).fireResistant());
     }
 
     public static BlockHitResult getPlayerLookingAt(Player player, int reach) {
@@ -57,6 +58,11 @@ public class SugarSword_Item extends SwordItem {
         if (!(target instanceof LivingEntity)) target.kill();
         return true;
     }
+
+    /*@Override
+    public java.util.Optional<net.minecraft.world.inventory.tooltip.TooltipComponent> getTooltipImage(ItemStack stack) {
+        return java.util.Optional.of(new SugarToolTipData("omg worked!"));
+    }*/
 
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
@@ -164,7 +170,7 @@ public class SugarSword_Item extends SwordItem {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(text.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }
@@ -195,7 +201,9 @@ public class SugarSword_Item extends SwordItem {
                             .withStyle(s -> s.withColor(color))
             );
         }
+
         tooltip.add(1, waveLine);
         tooltip.add(2, waveLine2);
+
     }
 }

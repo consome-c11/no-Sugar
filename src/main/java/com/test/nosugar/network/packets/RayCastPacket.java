@@ -30,7 +30,7 @@ public class RayCastPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer sender = ctx.get().getSender();
             Item held = sender.getMainHandItem().getItem();
-            if (held != ModItems.SUGAR_SWORD.get() && held != ModItems.WORLD_DESTROYER.get() &&
+            if (held != ModItems.SUGAR_SWORD.get() &&
                     !BlessingUtils.hasBlessedItem(sender, BlessingUtils.ItemType.SWORD)) return;
             if (sender != null) {
                 Entity target = sender.level().getEntity(msg.entityId);

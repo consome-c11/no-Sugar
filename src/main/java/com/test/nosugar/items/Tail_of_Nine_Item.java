@@ -8,6 +8,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
 public class Tail_of_Nine_Item extends SwordItem {
 
@@ -18,6 +25,12 @@ public class Tail_of_Nine_Item extends SwordItem {
     @Override
     public Component getName(ItemStack stack) {
         return ColorUtils.makeWaveLine("Tail of Nine", 0xFF0000, 0xFFFFFF);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        long gameTime = (level != null) ? level.getGameTime() : 0;
+
     }
 
     @Override

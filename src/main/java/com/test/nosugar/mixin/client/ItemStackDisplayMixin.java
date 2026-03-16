@@ -6,9 +6,12 @@ import com.test.nosugar.utils.ShootMode;
 import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,7 +72,19 @@ public abstract class ItemStackDisplayMixin {
 
         boolean isEraserOrWorld = stack.getItem() == ModItems.SUGAR_SWORD.get() || stack.getItem() == ModItems.WORLD_DESTROYER.get();
         boolean isSnackProtector = stack.getItem() == ModItems.SNACK_BOOTS.get() || stack.getItem() == ModItems.SNACK_LEGGINGS.get() || stack.getItem() == ModItems.SNACK_CHESTPLATE.get() || stack.getItem() == ModItems.SNACK_HELMET.get();
-        if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessed(stack)/*うわ忘れてた*/) {
+        if(isEraserOrWorld || stack.getItem() == ModItems.TAIL_OF_NINE.get()) {
+            String mainhandKeyStr = Component.translatable("item.modifiers.mainhand").getString();
+            for (int i = 0; i < tooltip.size(); i++) {
+                Component line = tooltip.get(i);
+                String lineStr = line.getString();
+
+                if (lineStr.contains(mainhandKeyStr)) {
+                    tooltip.add(i + 1, makeWaveLine(" " + Component.translatable("item.nosugar.ignore.invtime").getString(), true));
+                    break;
+                }
+            }
+        }
+        if (isEraserOrWorld || isSnackProtector || BlessingUtils.isBlessed(stack)) {
             if (BlessingUtils.isBlessed(stack)) {
                 tooltip.add(makeWaveLine("Sugar Blessing", true));
             }
@@ -94,6 +109,7 @@ public abstract class ItemStackDisplayMixin {
                 }
             }
             if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
+
                 tooltip.add(Component.translatable("item.erasers.use")
                         .withStyle(ChatFormatting.GRAY));
 
@@ -119,7 +135,11 @@ public abstract class ItemStackDisplayMixin {
 
                 String sneakText = " Get Cookie x64";
                 tooltip.add(makeWaveLine(sneakText, false));
+                //なんか表示されんかったんやﾕﾙｼﾃ:sob:
+                String sneakText2 = "";
+                tooltip.add(makeWaveLine(sneakText, false));
             }
+
             cir.setReturnValue(tooltip);
         }
     }

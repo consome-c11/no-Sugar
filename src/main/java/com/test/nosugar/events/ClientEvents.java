@@ -106,7 +106,6 @@ public class ClientEvents {
             RenderQueue.clear();
         } else
             QueueRenderBreakBlock(mc.level, mc.player, pos, DestroyMode.getMode(mc.player.getMainHandItem()), same_id, 32, accept);
-        erase();
         ItemStack stack = mc.player.getMainHandItem();
         if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
             if (mc.options.keyShift.isDown()) {
@@ -131,10 +130,6 @@ public class ClientEvents {
 
                 DestroyMode next = DestroyMode.values()[(current.ordinal() + 1) % DestroyMode.values().length];
                 ItemStack held = mc.player.getMainHandItem();
-                    /*mc.player.displayClientMessage(
-                            net.minecraft.network.chat.Component.literal("Mode: " + next.name()),
-                            true
-                    );*/
 
                 if (mc.player.isShiftKeyDown()) {
                     boolean nextSilk = !DestroyMode.isSilkTouchEnabled(held);
@@ -200,7 +195,12 @@ public class ClientEvents {
         if (player instanceof ServerPlayer serverPlayer) {
             if (player == null) return;
             ItemStack stack = serverPlayer.getMainHandItem();
-            if (isInGameWorld() && (stack.getItem() == ModItems.WORLD_DESTROYER.get()) || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
+            if(stack.getItem() == ModItems.UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.get()) {
+                PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(event.getPos(), DestroyMode.NORMAL));
+                return;
+            }
+            if (isInGameWorld() && (stack.getItem() == ModItems.WORLD_DESTROYER.get())
+                    || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL)) {
                 if (!player.isShiftKeyDown()) {
                     PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(event.getPos(), DestroyMode.NORMAL));
                 } else {
@@ -221,7 +221,7 @@ public class ClientEvents {
         }
         if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
 
-            HitResult hit = mc.hitResult;
+            /*HitResult hit = mc.hitResult;
             if (hit != null && hit.getType() == HitResult.Type.ENTITY && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
                 EntityHitResult entityHit = (EntityHitResult) hit;
                 int id = entityHit.getEntity().getId();
@@ -234,7 +234,7 @@ public class ClientEvents {
                 DestroyMode mode = DestroyMode.getMode(player.getMainHandItem());
 
                 PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
-            }
+            }*/
         }
         if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.SWORD)) {
             HitResult hit = mc.hitResult;

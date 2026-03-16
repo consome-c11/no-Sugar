@@ -11,6 +11,7 @@
     "client.ClientLevelAccessor",
     "client.ClientLevelMixin",
     "client.ClientPacketListenerMixin",
+    "client.ClientTextTooltipAccessor",
     "client.CreativeModeInventoryScreenAccess",
     "client.CreativeModeInventoryScreenMixin",
     "client.EntityMixin",
@@ -27,6 +28,7 @@
   "mixins": [
     "common.InventoryMixin",
     "common.ItemizedCurioCapabilityMixin",
+    "common.LivingEntityMixin",
     "common.ServerPlayerMixin",
     "snackprotector.EntityMixin",
     "snackprotector.InventoryAccessor",

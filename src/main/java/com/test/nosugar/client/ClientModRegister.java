@@ -44,6 +44,7 @@ public class ClientModRegister {
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         ModKeyBindings.init();
         event.register(ModKeyBindings.TOGGLE_RANGE);
+        event.register(ModKeyBindings.TOGGLE_SHOOT_MODE);
     }
 
     @SubscribeEvent

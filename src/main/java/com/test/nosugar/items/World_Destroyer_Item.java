@@ -1,5 +1,8 @@
 package com.test.nosugar.items;
 
+import com.test.nosugar.NoSugar;
+import com.test.nosugar.additional.ModDamageSources;
+import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModTiers;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
@@ -13,15 +16,22 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
+@Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class World_Destroyer_Item extends PickaxeItem {
     public World_Destroyer_Item(Properties props) {
-        super(ModTiers.WORLD_DESTROYER_TIER, 1, 3.F, props.stacksTo(1).fireResistant());
+        super(ModTiers.WORLD_DESTROYER_TIER, 1, 21.F, props.stacksTo(1).fireResistant());
     }
 
     @Override
@@ -31,7 +41,7 @@ public class World_Destroyer_Item extends PickaxeItem {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(text.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }
@@ -92,6 +102,7 @@ public class World_Destroyer_Item extends PickaxeItem {
         tooltip.add(1, waveLineNormal);
         tooltip.add(2, waveLineSpecial);
         tooltip.add(3, waveLine2);
+
     }
 
     /*public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
@@ -139,11 +150,19 @@ public class World_Destroyer_Item extends PickaxeItem {
         return true;
     }*/
 
-    @Override
+    /*@Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity target) {
         killIfParentFound(target, player, 32);
         if (!(target instanceof LivingEntity)) target.kill();
         return false;
+    }*/
+
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event){
+        if(event.getSource().getEntity() instanceof LivingEntity attacker &&
+                attacker.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()){
+            event.setAmount(Float.POSITIVE_INFINITY);
+        }
     }
 
     @Override

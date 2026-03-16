@@ -37,7 +37,9 @@ public class DestroyBlockPacket {
             if (player == null) return;
 
             ItemStack held = player.getMainHandItem();
-            if (held.getItem() != ModItems.WORLD_DESTROYER.get() && !BlessingUtils.hasBlessedItem(player, BlessingUtils.ItemType.TOOL))
+            if (held.getItem() != ModItems.WORLD_DESTROYER.get()
+                    && !BlessingUtils.hasBlessedItem(player, BlessingUtils.ItemType.TOOL)
+                    && held.getItem() != ModItems.UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.get())
                 return;
             WorldDestroyerUtils.destroyblock(held, player);
         });

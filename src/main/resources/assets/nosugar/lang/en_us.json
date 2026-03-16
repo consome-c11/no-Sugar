@@ -22,5 +22,12 @@
   "item.nosugar.block_sugar.desc": "Cube!",
   "item.nosugar.sugar_sword.name": "Sugar Sword",
   "key.categories.nosugar": "NoSugar",
-  "key.sugarbow.toggle_mode": "Toggle Shoot Mode"
+  "key.sugarbow.toggle_mode": "Toggle Shoot Mode",
+  "item.nosuger.world_destroyer": "Snack Destryer",
+  "item.nosuger.sugar_sword.desc": "Force sugar:fire:",
+  "item.nosuger.sugar_totem.desc": "Yeah. Work in progress \\n soon™",
+  "item.nosugar.sugar_bow.desc": "Mach 3 sugar!",
+  "item.nosugar.sugar_arrow.desc": "Mach 3 sugar! Agein! LAWL!",
+  "item.nosuger.null_ingot.desc": "Sugar that has absorbed moisture and turned rock-hard!",
+  "item.nosugar.ignore.invtime": "Ignore Invincibility Time"
 }

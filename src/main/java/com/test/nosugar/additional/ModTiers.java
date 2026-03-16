@@ -9,8 +9,8 @@ public class ModTiers {
     public static final Tier WORLD_DESTROYER_TIER = new ForgeTier(
             1919, // harvestLevel
             0, // durability
-            5000000000000.0F, // miningSpeed
-            Integer.MAX_VALUE, // attackDamageBonus
+            Float.POSITIVE_INFINITY, // miningSpeed
+            Float.POSITIVE_INFINITY, // attackDamageBonus
             30, // enchantmentValue
             BlockTags.NEEDS_DIAMOND_TOOL,
             () -> Ingredient.EMPTY
@@ -18,8 +18,8 @@ public class ModTiers {
     public static final Tier ERASER_TIER = new ForgeTier(
             1919,
             0,
-            35.0F,
-            Integer.MAX_VALUE,
+            Float.POSITIVE_INFINITY,
+            Float.POSITIVE_INFINITY,
             30,
             BlockTags.NEEDS_DIAMOND_TOOL,
             () -> Ingredient.EMPTY

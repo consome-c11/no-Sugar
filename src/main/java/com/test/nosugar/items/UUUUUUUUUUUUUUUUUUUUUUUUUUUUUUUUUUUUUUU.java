@@ -1,9 +1,12 @@
 package com.test.nosugar.items;
 
+import com.test.nosugar.entity.HomingArrowEntity;
+import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.mixin.sugar_sword.EntityLookupAccessor;
 import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;
 import com.test.nosugar.mixin.sugar_sword.ServerLevelAccessor;
+import com.test.nosugar.utils.ShootMode;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
@@ -34,11 +37,17 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(text.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }
         return result;
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity target) {
+        if (target instanceof LivingEntity living) Eraser_Utils.killIfParentFound(living, player, true);
+        return false;
     }
 
     @Override

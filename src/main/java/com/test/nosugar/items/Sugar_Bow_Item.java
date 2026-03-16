@@ -59,7 +59,7 @@ public class Sugar_Bow_Item extends BowItem {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(text.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }
@@ -74,7 +74,7 @@ public class Sugar_Bow_Item extends BowItem {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < desc.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(desc.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }

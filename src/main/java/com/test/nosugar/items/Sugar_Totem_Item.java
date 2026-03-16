@@ -22,7 +22,7 @@ public class Sugar_Totem_Item extends Item {
         long time = System.currentTimeMillis() / 50;
 
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 5.0);
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             result = result.append(Component.literal(String.valueOf(text.charAt(i)))
                     .withStyle(style -> style.withColor(color)));
         }
@@ -37,7 +37,7 @@ public class Sugar_Totem_Item extends Item {
         String[] parts = desc.split(" ");
         var waveLine = Component.empty();
         for (int i = 0; i < parts.length; i++) {
-            int color = ColorUtils.waveGrayWhiteColor(gameTime, i, 6.5);
+            int color = ColorUtils.waveGrayWhiteColor(gameTime, i, 6.0);
             waveLine = waveLine.append(
                     Component.literal(parts[i])
                             .withStyle(s -> s.withColor(color))

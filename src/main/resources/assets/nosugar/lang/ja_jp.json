@@ -20,5 +20,6 @@
   "item.nosuger.block_suger.desc": "かじりつきたい ",
   "item.nosugar.sugar_sword.name": "砂糖の剣",
   "item.nosugar.sugar_arrow.desc": "角砂糖をグサッ! 相手は死ぬ!",
-  "item.nosugar.sugar_bow.desc": "角砂糖をシュー!!\n超☆エキサイティン!"
+  "item.nosugar.sugar_bow.desc": "角砂糖をシュー!!\n超☆エキサイティン!",
+  "item.nosugar.ignore.invtime": "無敵時間を無視する"
 }
