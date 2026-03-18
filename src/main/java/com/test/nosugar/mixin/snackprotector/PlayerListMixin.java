@@ -1,7 +1,7 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
-import com.test.nosugar.utils.LivingEntityUtils;
+import com.test.nosugar.utils.entity.LivingEntityUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;

@@ -2,7 +2,6 @@ package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
 import com.test.nosugar.utils.Tail_of_Nine_Handler;
-import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -19,18 +18,16 @@ import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 public class Tail_of_Nine_Item extends SwordItem {
 
     public Tail_of_Nine_Item(Properties props) {
-        super(ModTiers.TAIL_OF_NINE_TIER, 10, 3.F, props.stacksTo(1).fireResistant());
+        super(ModTiers.TAIL_OF_NINE_TIER, 10, 3.0F, props.stacksTo(1).fireResistant());
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        return ColorUtils.makeWaveLine("Tail of Nine", 0xFF0000, 0xFFFFFF);
+        return makeWaveLine("Tail of Nine", 0xFF0000, 0xFFFFFF);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        long gameTime = (level != null) ? level.getGameTime() : 0;
-
     }
 
     @Override

@@ -48,15 +48,47 @@ public class ColorUtils {
         return waveLine;
     }
 
-    public static MutableComponent makeWaveLine(String text, int startColor, int endColor) {
+    public static MutableComponent makeWaveLine(String text, boolean wave) {
         long time = System.currentTimeMillis() / 50;
         MutableComponent waveLine = Component.empty();
         for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveColor(time, i, 6.0, startColor, endColor); // Wave speed
+            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
             waveLine = waveLine.append(
                     Component.literal(String.valueOf(text.charAt(i)))
                             .withStyle(s -> s.withColor(color))
             );
+        }
+        if (wave) {
+            return Component.literal(":_S").append(waveLine);
+        }
+        return waveLine;
+    }
+
+    public static MutableComponent makeWaveLine(String text, int startColor, int endColor) {
+        long time = System.currentTimeMillis() / 50;
+        MutableComponent waveLine = Component.empty();
+        for (int i = 0; i < text.length(); i++) {
+            int color = ColorUtils.waveColor(time, i, 6.0, startColor, endColor);
+            waveLine = waveLine.append(
+                    Component.literal(String.valueOf(text.charAt(i)))
+                            .withStyle(s -> s.withColor(color))
+            );
+        }
+        return waveLine;
+    }
+
+    public static MutableComponent makeWaveLine(String text, int startColor, int endColor, boolean wave) {
+        long time = System.currentTimeMillis() / 50;
+        MutableComponent waveLine = Component.empty();
+        for (int i = 0; i < text.length(); i++) {
+            int color = ColorUtils.waveColor(time, i, 6.0, startColor, endColor);
+            waveLine = waveLine.append(
+                    Component.literal(String.valueOf(text.charAt(i)))
+                            .withStyle(s -> s.withColor(color))
+            );
+        }
+        if (wave) {
+            return Component.literal(":_S").append(waveLine);
         }
         return waveLine;
     }

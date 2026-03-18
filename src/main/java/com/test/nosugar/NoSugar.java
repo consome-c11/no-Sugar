@@ -1,5 +1,6 @@
 package com.test.nosugar;
 
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import com.mojang.logging.LogUtils;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.client.ModCreativeTabs;
@@ -66,6 +67,7 @@ public class NoSugar {
         Set<Item> itemSet = new HashSet<>(modItems);
         InventorySpecialItemsHolder.setSpecialItems(itemSet);
         ModPackets.register();
+        MixinExtrasBootstrap.init();
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

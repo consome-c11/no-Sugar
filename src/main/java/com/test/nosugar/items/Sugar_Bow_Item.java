@@ -26,6 +26,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
+
 public class Sugar_Bow_Item extends BowItem {
     private static final Predicate<ItemStack> SUGAR_ARROW_ONLY = (p_40683_) -> {
         return p_40683_.is(ModItems.SUGAR_ARROW.get());
@@ -54,31 +56,12 @@ public class Sugar_Bow_Item extends BowItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = "Sugar Bow";
-        var result = Component.empty();
-        long time = System.currentTimeMillis() / 50;
-
-        for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
-            result = result.append(Component.literal(String.valueOf(text.charAt(i)))
-                    .withStyle(style -> style.withColor(color)));
-        }
-        return result;
+        return makeWaveLine("Sugar Bow", true);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        long gameTime = (level != null) ? level.getGameTime() : 0;
-        String desc = Component.translatable("item.nosugar.sugar_bow.desc").getString();
-        var result = Component.empty();
-        long time = System.currentTimeMillis() / 50;
-
-        for (int i = 0; i < desc.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
-            result = result.append(Component.literal(String.valueOf(desc.charAt(i)))
-                    .withStyle(style -> style.withColor(color)));
-        }
-        tooltip.add(1, result);
+        tooltip.add(1, makeWaveLine(Component.translatable("item.nosugar.sugar_bow.desc").getString()));
     }
 
     @Override

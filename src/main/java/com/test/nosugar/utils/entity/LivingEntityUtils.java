@@ -1,4 +1,4 @@
-package com.test.nosugar.utils;
+package com.test.nosugar.utils.entity;
 
 import net.minecraft.world.entity.LivingEntity;
 

@@ -4,7 +4,6 @@ import com.test.nosugar.gui.BagMenu;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.SyncBagPagesPacket;
 import com.test.nosugar.utils.BagSavedData;
-import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -27,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
+
 public class UltimaCanteen extends Item {
     private static final float SATURATION_TARGET = 7.0f;
     private static final int FOOD_LEVEL_TARGET = 20;
@@ -37,16 +38,7 @@ public class UltimaCanteen extends Item {
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = Component.literal("Canteen").getString();
-        var result = Component.empty();
-        long time = System.currentTimeMillis() / 50;
-
-        for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
-            result = result.append(Component.literal(String.valueOf(text.charAt(i)))
-                    .withStyle(style -> style.withColor(color)));
-        }
-        return result;
+        return makeWaveLine("Canteen", true);
     }
 
     @Override
@@ -122,31 +114,7 @@ public class UltimaCanteen extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        long gameTime = (level != null) ? level.getGameTime() : 0;
-
-        String special = "Solve food problem!";
-        String[] partsSpecial = special.split(" ");
-        var waveLineSpecial = Component.empty();
-
-        int gold = 0xFFD700;
-        int Gold2 = 0xD4AF37;
-
-        for (int i = 0; i < partsSpecial.length; i++) {
-            double wave = 0.5 + 0.5 * Math.sin((gameTime / 6.5) + i);
-            int r = (int) (((gold >> 16) & 0xFF) * wave + ((Gold2 >> 16) & 0xFF) * (1 - wave));
-            int g = (int) (((gold >> 8) & 0xFF) * wave + ((Gold2 >> 8) & 0xFF) * (1 - wave));
-            int b = (int) ((gold & 0xFF) * wave + (Gold2 & 0xFF) * (1 - wave));
-            int blended = (r << 16) | (g << 8) | b;
-
-            waveLineSpecial = waveLineSpecial.append(
-                    Component.literal(partsSpecial[i])
-                            .withStyle(s -> s.withColor(blended))
-            );
-            if (i < partsSpecial.length - 1) {
-                waveLineSpecial = waveLineSpecial.append(Component.literal(" "));
-            }
-        }
-        tooltip.add(1, waveLineSpecial);
+        tooltip.add(1, makeWaveLine("Solve food problem!", 0xFFD700, 0xD4AF37));
     }
 
     public static class BagMenuProvider implements MenuProvider {
@@ -162,7 +130,7 @@ public class UltimaCanteen extends Item {
 
         @Override
         public Component getDisplayName() {
-            return Component.literal("Canteen");
+            return makeWaveLine("Canteen", false);
         }
 
         @Override

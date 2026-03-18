@@ -15,6 +15,8 @@
     "client.CreativeModeInventoryScreenAccess",
     "client.CreativeModeInventoryScreenMixin",
     "client.EntityMixin",
+    "client.FontAccessor",
+    "client.FontMixin",
     "client.ItemRendererAccessor",
     "client.ItemRendererMixin",
     "client.ItemStackDisplayMixin",
@@ -23,7 +25,8 @@
     "client.RenderStateShardAccessor",
     "client.SetScreenMixin",
     "client.TransientEntitySectionManagerAccessor",
-    "snackprotector.GameRendererMixin"
+    "snackprotector.GameRendererMixin",
+    "stop_watch.ClientLevelMixin"
   ],
   "mixins": [
     "common.DamageSourceMixin",
@@ -41,6 +44,10 @@
     "snackprotector.ServerPlayerMixin",
     "snackprotector.SynchedEntityDataItemMixin",
     "snackprotector.SynchedEntityDataMixin",
+    "stop_watch.EntityAccessor",
+    "stop_watch.EntityMixin",
+    "stop_watch.LevelMixin",
+    "stop_watch.ServerLevelMixin",
     "sugar_bow.ExplosionAccessor",
     "sugar_sword.ChunkMapAccessor",
     "sugar_sword.ChunkSerializerMixin",

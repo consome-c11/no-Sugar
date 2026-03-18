@@ -1,28 +1,53 @@
 package com.test.nosugar.utils.render;
 
+import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.test.nosugar.NoSugar;
+import com.test.nosugar.mixin.client.ClientTextTooltipAccessor;
+import com.test.nosugar.mixin.client.FontAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.FontSet;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+import net.minecraft.client.gui.font.glyphs.EmptyGlyph;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.test.nosugar.utils.render.ColorUtils.waveGrayWhiteColor;
 
 public class RenderUtils {
 
     private RenderUtils() {
     }
+
+    private static final double WAVE_AMPLITUDE = 1.f;
+    private static final double WAVE_SPEED = 3.f;
+    private static final double WAVE_CHAR_SPACING = .3f;
+    private static final float SHADOW_OFFSET = 1.f;
+    private static final float SHADOW_DIM = 0.1f;
+    private static final float SHADOW_Z_OFFSET = 0.001f;
+    private static final int MAX_LIGHT = 15728880; //0xF000F0
 
     public static VertexConsumer getBuffer(RenderType type) {
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -48,10 +73,10 @@ public class RenderUtils {
                 poseStack,
                 getBuffer(RenderType.lines()),
                 identity,
-                (float) (color >> 16 & 255) / 255.0F, // R
-                (float) (color >> 8 & 255) / 255.0F,  // G
-                (float) (color & 255) / 255.0F,       // B
-                (float) (color >> 24 & 255) / 255.0F  // A
+                (float) (color >> 16 & 255) / 255.0F,
+                (float) (color >> 8 & 255) / 255.0F,
+                (float) (color & 255) / 255.0F,
+                (float) (color >> 24 & 255) / 255.0F
         );
 
         endBatch(RenderType.lines());
@@ -70,39 +95,33 @@ public class RenderUtils {
         VertexConsumer builder = getBuffer(RenderType.lines());
 
         final float[][] EDGES = new float[][]{
-                {0, 0, 0, 1, 0, 0, 0, -1, 0}, // edge 0: (0,0,0)-(1,0,0)
-                {1, 0, 0, 1, 0, 1, 0, -1, 0}, // edge 1: (1,0,0)-(1,0,1)
-                {0, 0, 1, 1, 0, 1, 0, -1, 0}, // edge 2: (0,0,1)-(1,0,1)
-                {0, 0, 0, 0, 0, 1, 0, -1, 0}, // edge 3: (0,0,0)-(0,0,1)
-
-                {0, 1, 0, 1, 1, 0, 0, 1, 0},  // edge 4: (0,1,0)-(1,1,0)
-                {1, 1, 0, 1, 1, 1, 0, 1, 0},  // edge 5: (1,1,0)-(1,1,1)
-                {0, 1, 1, 1, 1, 1, 0, 1, 0},  // edge 6: (0,1,1)-(1,1,1)
-                {0, 1, 0, 0, 1, 1, 0, 1, 0},  // edge 7: (0,1,0)-(0,1,1)
-
-                {0, 0, 0, 0, 1, 0, -1, 0, 0}, // edge 8:  (0,0,0)-(0,1,0)
-                {0, 0, 1, 0, 1, 1, -1, 0, 0}, // edge 9:  (0,0,1)-(0,1,1)
-
-                {1, 0, 0, 1, 1, 0, 1, 0, 0},  // edge10:  (1,0,0)-(1,1,0)
-                {1, 0, 1, 1, 1, 1, 1, 0, 0},  // edge11:  (1,0,1)-(1,1,1)
+                {0, 0, 0, 1, 0, 0, 0, -1, 0},
+                {1, 0, 0, 1, 0, 1, 0, -1, 0},
+                {0, 0, 1, 1, 0, 1, 0, -1, 0},
+                {0, 0, 0, 0, 0, 1, 0, -1, 0},
+                {0, 1, 0, 1, 1, 0, 0, 1, 0},
+                {1, 1, 0, 1, 1, 1, 0, 1, 0},
+                {0, 1, 1, 1, 1, 1, 0, 1, 0},
+                {0, 1, 0, 0, 1, 1, 0, 1, 0},
+                {0, 0, 0, 0, 1, 0, -1, 0, 0},
+                {0, 0, 1, 0, 1, 1, -1, 0, 0},
+                {1, 0, 0, 1, 1, 0, 1, 0, 0},
+                {1, 0, 1, 1, 1, 1, 1, 0, 0},
         };
 
         final int[][][] NEIGHBORS = new int[][][]{
-                {{0, -1, 0}, {0, 0, -1}}, // edge0: (0,0,0)-(1,0,0)  下 / 北
-                {{0, -1, 0}, {1, 0, 0}},  // edge1: (1,0,0)-(1,0,1)  下 / 東
-                {{0, -1, 0}, {0, 0, 1}},  // edge2: (0,0,1)-(1,0,1)  下 / 南
-                {{0, -1, 0}, {-1, 0, 0}}, // edge3: (0,0,0)-(0,0,1)  下 / 西
-
-                {{0, 1, 0}, {0, 0, -1}}, // edge4: (0,1,0)-(1,1,0)  上 / 北
-                {{0, 1, 0}, {1, 0, 0}},  // edge5: (1,1,0)-(1,1,1)  上 / 東
-                {{0, 1, 0}, {0, 0, 1}},  // edge6: (0,1,1)-(1,1,1)  上 / 南
-                {{0, 1, 0}, {-1, 0, 0}}, // edge7: (0,1,0)-(0,1,1)  上 / 西
-
-                {{-1, 0, 0}, {0, 0, -1}}, // edge8: (0,0,0)-(0,1,0)  西 / 北
-                {{-1, 0, 0}, {0, 0, 1}},  // edge9: (0,0,1)-(0,1,1)  西 / 南
-
-                {{1, 0, 0}, {0, 0, -1}}, // edge10: (1,0,0)-(1,1,0) 東 / 北
-                {{1, 0, 0}, {0, 0, 1}},  // edge11: (1,0,1)-(1,1,1) 東 / 南
+                {{0, -1, 0}, {0, 0, -1}},
+                {{0, -1, 0}, {1, 0, 0}},
+                {{0, -1, 0}, {0, 0, 1}},
+                {{0, -1, 0}, {-1, 0, 0}},
+                {{0, 1, 0}, {0, 0, -1}},
+                {{0, 1, 0}, {1, 0, 0}},
+                {{0, 1, 0}, {0, 0, 1}},
+                {{0, 1, 0}, {-1, 0, 0}},
+                {{-1, 0, 0}, {0, 0, -1}},
+                {{-1, 0, 0}, {0, 0, 1}},
+                {{1, 0, 0}, {0, 0, -1}},
+                {{1, 0, 0}, {0, 0, 1}},
         };
 
         for (BlockPos pos : positions) {
@@ -122,11 +141,6 @@ public class RenderUtils {
                 BlockPos n2 = pos.offset(ns[1][0], ns[1][1], ns[1][2]);
 
                 if (planned.contains(n1) || planned.contains(n2)) continue;
-                boolean n1p = planned.contains(n1);
-                boolean n2p = planned.contains(n2);
-
-                System.out.printf("DRAW edge %d at %s; n1=%s (%b), n2=%s (%b)%n",
-                        i, pos, n1, n1p, n2, n2p);
 
                 drawLine(builder, matrix, normalMatrix,
                         e[0], e[1], e[2],
@@ -139,7 +153,6 @@ public class RenderUtils {
         }
 
         endBatch(RenderType.lines());
-
     }
 
     private static void drawLine(VertexConsumer builder, Matrix4f matrix, Matrix3f normalMatrix,
@@ -169,4 +182,331 @@ public class RenderUtils {
         consumer.vertex(matrix, 0.5f, 0.5f, 0).color(r, g, b, a).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 0, -1).endVertex();
         consumer.vertex(matrix, 0.5f, -0.5f, 0).color(r, g, b, a).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normal, 0, 0, -1).endVertex();
     }
+
+    public static void renderWavingText(
+            Font font,
+            ClientTextTooltip tooltip,
+            float x,
+            float y,
+            double timeSec,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource buffer
+    ) {
+        FormattedCharSequence text = ((ClientTextTooltipAccessor) tooltip).getText();
+        if (text == null) return;
+
+        FontAccessor fontAccessor = (FontAccessor) font;
+        boolean filterFishy = fontAccessor.nosugar$getFilterFishyGlyphs();
+
+        List<CharData> chars = new ArrayList<>();
+        text.accept((idx, style, code) -> {
+            chars.add(new CharData(code, style));
+            return true;
+        });
+
+        float currentX = x;
+        float baseY = y;
+
+        for (int i = 0; i < chars.size(); i++) {
+            CharData data = chars.get(i);
+            Style style = data.style;
+
+            FontSet fontSet = fontAccessor.invokeGetFontSet(style.getFont());
+            GlyphInfo glyphInfo = fontSet.getGlyphInfo(data.code, filterFishy);
+            BakedGlyph bakedGlyph = style.isObfuscated() && data.code != 32
+                    ? fontSet.getRandomGlyph(glyphInfo)
+                    : fontSet.getGlyph(data.code);
+
+            boolean bold = style.isBold();
+            boolean italic = style.isItalic();
+            float boldOffset = bold ? glyphInfo.getBoldOffset() : 0.0f;
+            float shadowOff = glyphInfo.getShadowOffset();
+
+            float r, g, b;
+            TextColor textColor = style.getColor();
+            if (textColor != null) {
+                int color = textColor.getValue();
+                r = (float) (color >> 16 & 255) / 255.0f;
+                g = (float) (color >> 8 & 255) / 255.0f;
+                b = (float) (color & 255) / 255.0f;
+            } else {
+                r = 1.0f;
+                g = 1.0f;
+                b = 1.0f;
+            }
+            float a = 1.0f;
+
+            float waveOffset = (float) (Math.sin(timeSec * WAVE_SPEED + i * WAVE_CHAR_SPACING) * WAVE_AMPLITUDE);
+
+            if (!(bakedGlyph instanceof EmptyGlyph)) {
+                Matrix4f shadowMatrix = new Matrix4f(poseStack.last().pose());
+                shadowMatrix.translate(0, waveOffset, 0);
+
+                VertexConsumer shadowConsumer = buffer.getBuffer(bakedGlyph.renderType(Font.DisplayMode.NORMAL));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX + shadowOff, baseY + waveOffset + shadowOff,
+                        shadowMatrix, shadowConsumer,
+                        r * SHADOW_DIM, g * SHADOW_DIM, b * SHADOW_DIM, a,
+                        15728880
+                );
+            }
+
+            if (!(bakedGlyph instanceof EmptyGlyph)) {
+                Matrix4f charMatrix = new Matrix4f(poseStack.last().pose());
+                charMatrix.translate(0, waveOffset, SHADOW_Z_OFFSET);
+
+                VertexConsumer charConsumer = buffer.getBuffer(bakedGlyph.renderType(Font.DisplayMode.NORMAL));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX, baseY + waveOffset,
+                        charMatrix, charConsumer,
+                        r, g, b, a,
+                        15728880
+                );
+            }
+
+            currentX += glyphInfo.getAdvance(bold);
+        }
+    }
+
+    public static float renderWavingTextRaw(
+            Font font,
+            String text,
+            float x,
+            float y,
+            double timeSec,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource buffer,
+            int color,
+            boolean dropShadow,
+            Font.DisplayMode displayMode,
+            int packedLight
+    ) {
+        FontAccessor fontAccessor = (FontAccessor) font;
+        boolean filterFishy = fontAccessor.nosugar$getFilterFishyGlyphs();
+
+        float currentX = x;
+        float baseY = y;
+
+        float baseR = (float) (color >> 16 & 255) / 255.0f;
+        float baseG = (float) (color >> 8 & 255) / 255.0f;
+        float baseB = (float) (color & 255) / 255.0f;
+        float baseA = (float) (color >> 24 & 255) / 255.0f;
+
+        float dimFactor = dropShadow ? 0.25f : 1.0f;
+        float shadowOff = dropShadow ? 1.0f : 0.0f;
+
+        int charIndex = 0;
+        for (int i = 0; i < text.length(); ) {
+            int codePoint = text.codePointAt(i);
+            Style style = Style.EMPTY.withColor(color & 0x00FFFFFF);
+
+            FontSet fontSet = fontAccessor.invokeGetFontSet(style.getFont());
+            GlyphInfo glyphInfo = fontSet.getGlyphInfo(codePoint, filterFishy);
+            BakedGlyph bakedGlyph = fontSet.getGlyph(codePoint);
+
+            boolean bold = style.isBold();
+            boolean italic = style.isItalic();
+            float boldOffset = bold ? glyphInfo.getBoldOffset() : 0.0f;
+
+            float r = baseR * dimFactor;
+            float g = baseG * dimFactor;
+            float b = baseB * dimFactor;
+            float a = baseA;
+
+            float waveOffset = (float) (Math.sin(timeSec * WAVE_SPEED + charIndex * WAVE_CHAR_SPACING) * WAVE_AMPLITUDE);
+
+            if (!(bakedGlyph instanceof EmptyGlyph)) {
+                Matrix4f shadowMatrix = new Matrix4f(poseStack.last().pose());
+                shadowMatrix.translate(0, waveOffset, 0);
+
+                VertexConsumer shadowConsumer = buffer.getBuffer(bakedGlyph.renderType(displayMode));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX + shadowOff, baseY + waveOffset + shadowOff,
+                        shadowMatrix, shadowConsumer,
+                        r * SHADOW_DIM, g * SHADOW_DIM, b * SHADOW_DIM, a,
+                        packedLight
+                );
+
+                Matrix4f charMatrix = new Matrix4f(poseStack.last().pose());
+                charMatrix.translate(0, waveOffset, SHADOW_Z_OFFSET);
+
+                VertexConsumer charConsumer = buffer.getBuffer(bakedGlyph.renderType(displayMode));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX, baseY + waveOffset,
+                        charMatrix, charConsumer,
+                        r, g, b, a,
+                        packedLight
+                );
+            }
+
+            currentX += glyphInfo.getAdvance(bold);
+            charIndex++;
+            i += Character.charCount(codePoint);
+        }
+
+        return currentX;
+    }
+
+    public static float renderWavingTextRaw(
+            Font font,
+            String text,
+            float x,
+            float y,
+            double timeSec,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource buffer,
+            int color,
+            boolean dropShadow,
+            Font.DisplayMode displayMode,
+            int packedLight,
+            int backgroundColor,
+            boolean forceShadow
+    ) {
+        FontAccessor fontAccessor = (FontAccessor) font;
+        boolean filterFishy = fontAccessor.nosugar$getFilterFishyGlyphs();
+
+        float currentX = x;
+        float baseY = y;
+
+        float baseR = (float) (color >> 16 & 255) / 255.0f;
+        float baseG = (float) (color >> 8 & 255) / 255.0f;
+        float baseB = (float) (color & 255) / 255.0f;
+        float baseA = (float) (color >> 24 & 255) / 255.0f;
+
+        float dimFactor = dropShadow ? 0.25f : 1.0f; // shadow dim factor
+        float shadowOff = dropShadow ? 1.0f : 0.0f; // shadow offset
+
+        int charIndex = 0;
+        for (int i = 0; i < text.length(); ) {
+            int codePoint = text.codePointAt(i);
+            Style style = Style.EMPTY.withColor(color & 0x00FFFFFF);
+
+            FontSet fontSet = fontAccessor.invokeGetFontSet(style.getFont());
+            GlyphInfo glyphInfo = fontSet.getGlyphInfo(codePoint, filterFishy);
+            BakedGlyph bakedGlyph = fontSet.getGlyph(codePoint);
+
+            boolean bold = style.isBold();
+            boolean italic = style.isItalic();
+            float boldOffset = bold ? glyphInfo.getBoldOffset() : 0.0f;
+
+            float r = baseR * dimFactor;
+            float g = baseG * dimFactor;
+            float b = baseB * dimFactor;
+            float a = baseA;
+
+            float waveOffset = (float) (Math.sin(timeSec * WAVE_SPEED + charIndex * WAVE_CHAR_SPACING) * WAVE_AMPLITUDE);
+
+            if (!(bakedGlyph instanceof EmptyGlyph)) {
+                Matrix4f shadowMatrix = new Matrix4f(poseStack.last().pose());
+                shadowMatrix.translate(0, waveOffset, 0);
+
+                VertexConsumer shadowConsumer = buffer.getBuffer(bakedGlyph.renderType(displayMode));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX + shadowOff, baseY + waveOffset + shadowOff,
+                        shadowMatrix, shadowConsumer,
+                        r * SHADOW_DIM, g * SHADOW_DIM, b * SHADOW_DIM, a,
+                        packedLight
+                );
+
+                Matrix4f charMatrix = new Matrix4f(poseStack.last().pose());
+                charMatrix.translate(0, waveOffset, SHADOW_Z_OFFSET);
+
+                VertexConsumer charConsumer = buffer.getBuffer(bakedGlyph.renderType(displayMode));
+                fontAccessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX, baseY + waveOffset,
+                        charMatrix, charConsumer,
+                        baseR, baseG, baseB, baseA,
+                        255
+                );
+            }
+
+            currentX += glyphInfo.getAdvance(bold);
+            charIndex++;
+            i += Character.charCount(codePoint);
+        }
+
+        return currentX;
+    }
+
+    public static float renderWavingTextDirect(
+            Font font,
+            String text,
+            float x,
+            float y,
+            double timeSec,
+            double waveSpeed,
+            double waveAmplitude,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource buffer,
+            boolean dropShadow
+    ) {
+        FontAccessor accessor = (FontAccessor) font;
+        FontSet fontSet = accessor.invokeGetFontSet(Style.DEFAULT_FONT);
+        boolean filterFishy = accessor.nosugar$getFilterFishyGlyphs();
+        Matrix4f baseMatrix = poseStack.last().pose();
+
+        float currentX = x;
+        int charIndex = 0; // 表示文字数カウンター（サロゲートペア対応）
+
+        // ✅ codePoint 単位で処理
+        for (int i = 0; i < text.length(); ) {
+            int codePoint = text.codePointAt(i);
+            char c = (char) codePoint; // BMP 内と仮定、必要ならグリフ取得部分を調整
+
+            int waveColorInt = waveGrayWhiteColor((long) (timeSec * 1000), charIndex, (int) (waveSpeed * 1000));
+            float r = (float) ((waveColorInt >> 16) & 0xFF) / 255.0F;
+            float g = (float) ((waveColorInt >> 8) & 0xFF) / 255.0F;
+            float b = (float) (waveColorInt & 0xFF) / 255.0F;
+            float a = 1.0F;
+
+            // ✅ 位相差を小さく滑らかに (0.15〜0.25 を推奨)
+            float phaseOffset = charIndex * 0.2f;
+            float waveOffset = (float) (Math.sin(timeSec * waveSpeed + phaseOffset) * waveAmplitude);
+
+            GlyphInfo glyphInfo = fontSet.getGlyphInfo(c, filterFishy);
+            BakedGlyph bakedGlyph = fontSet.getGlyph(c);
+            boolean bold = false;
+            boolean italic = false;
+            float boldOffset = bold ? glyphInfo.getBoldOffset() : 0.0F;
+            float shadowOff = glyphInfo.getShadowOffset();
+
+            if (!(bakedGlyph instanceof EmptyGlyph)) {
+                if (dropShadow) {
+                    Matrix4f shadowMatrix = new Matrix4f(baseMatrix).translate(0, waveOffset, 0);
+                    VertexConsumer shadowVC = buffer.getBuffer(bakedGlyph.renderType(Font.DisplayMode.NORMAL));
+                    accessor.invokeRenderChar(
+                            bakedGlyph, bold, italic, boldOffset,
+                            currentX + shadowOff, y + waveOffset + shadowOff,
+                            shadowMatrix, shadowVC,
+                            r * SHADOW_DIM, g * SHADOW_DIM, b * SHADOW_DIM, a,
+                            MAX_LIGHT
+                    );
+                }
+
+                Matrix4f charMatrix = new Matrix4f(baseMatrix).translate(0, waveOffset, SHADOW_Z_OFFSET);
+                VertexConsumer charVC = buffer.getBuffer(bakedGlyph.renderType(Font.DisplayMode.NORMAL));
+                accessor.invokeRenderChar(
+                        bakedGlyph, bold, italic, boldOffset,
+                        currentX, y + waveOffset,
+                        charMatrix, charVC,
+                        r, g, b, a,
+                        MAX_LIGHT
+                );
+            }
+
+            currentX += glyphInfo.getAdvance(bold);
+            charIndex++;
+            i += Character.charCount(codePoint);
+        }
+
+        return currentX;
+    }
+
+    private record CharData(int code, Style style) {}
 }

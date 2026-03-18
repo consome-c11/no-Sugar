@@ -7,6 +7,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,6 +70,9 @@ public class ModItems {
     /*public static final RegistryObject<Item> SUGAR_BLADE =
             SLASH_BLADE_ITEMS.register("sugar_blade", () -> new SugarBladeItem());*/
 
+    public static final RegistryObject<Item> STOP_WATCH =
+            ITEMS.register("stop_watch", () -> new StopWatch(new Item.Properties().stacksTo(1)));
+
     public static final RegistryObject<Item> UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU =
             ITEMS.register("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", () -> new UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(new Item.Properties().stacksTo(1)));
 
@@ -80,12 +85,18 @@ public class ModItems {
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY3 =
             DUMMY_ITEMS.register("sugar_bow_pulling_2", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
 
-    public static List<Item> getAllItems() {//サンキューチャッピー
-        return Stream.of(
-                        ITEMS.getEntries().stream()
-                )
-                .flatMap(Function.identity())
-                .map(RegistryObject::get)
-                .collect(Collectors.toList());
+    //サンキューチャッピー again
+    private static List<Item> cachedAllItems = null;
+
+    public static List<Item> getAllItems() {
+        if (cachedAllItems == null) {
+            List<Item> list = new ArrayList<>();
+            ITEMS.getEntries().stream()
+                    .filter(RegistryObject::isPresent)
+                    .map(RegistryObject::get)
+                    .forEach(list::add);
+            cachedAllItems = Collections.unmodifiableList(list);
+        }
+        return cachedAllItems;
     }
 }

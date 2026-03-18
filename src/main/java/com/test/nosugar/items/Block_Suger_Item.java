@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
+
 public class Block_Suger_Item extends Item {
     public Block_Suger_Item(Properties props) {
         super(props);
@@ -36,30 +38,11 @@ public class Block_Suger_Item extends Item {
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = Component.translatable("item.nosuger.block_suger.name").getString();
-        var result = Component.empty();
-        long time = System.currentTimeMillis() / 50;
-
-        for (int i = 0; i < text.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
-            result = result.append(Component.literal(String.valueOf(text.charAt(i)))
-                    .withStyle(style -> style.withColor(color)));
-        }
-        return result;
+        return makeWaveLine(Component.translatable("item.nosuger.block_suger.name").getString(), true);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        long gameTime = (level != null) ? level.getGameTime() : 0;
-        String desc = Component.translatable("item.nosuger.block_suger.desc").getString();
-        var result = Component.empty();
-        long time = System.currentTimeMillis() / 50;
-
-        for (int i = 0; i < desc.length(); i++) {
-            int color = ColorUtils.waveGrayWhiteColor(time, i, 6.0);
-            result = result.append(Component.literal(String.valueOf(desc.charAt(i)))
-                    .withStyle(style -> style.withColor(color)));
-        }
-        tooltip.add(1, result);
+        tooltip.add(1, makeWaveLine(Component.translatable("item.nosuger.block_suger.desc").getString()));
     }
 }
