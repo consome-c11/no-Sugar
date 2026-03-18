@@ -3,6 +3,7 @@ package com.test.nosugar.utils.entity;
 import com.test.nosugar.Config;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.item.TicUtils;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
@@ -20,7 +21,8 @@ public class EntityUtils {
                 && (living.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
                 || living.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
                 || living.getMainHandItem().getItem() == ModItems.TAIL_OF_NINE.get()
-                || TicUtils.hasSugarMod(living.getMainHandItem()));
+                || TicUtils.hasSugarMod(living.getMainHandItem())
+                || BlessingUtils.isBlessed(living.getMainHandItem()));
         //NoSugar.LOGGER.info(tag.toString());
         if (isNoSugarItem && Config.shouldBypassTag(tag)) {
             return true;
@@ -33,7 +35,8 @@ public class EntityUtils {
             boolean isNoSugarItem = (attacker.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
                     || attacker.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
                     || attacker.getMainHandItem().getItem() == ModItems.TAIL_OF_NINE.get()
-                    || TicUtils.hasSugarMod(attacker.getMainHandItem()));
+                    || TicUtils.hasSugarMod(attacker.getMainHandItem())
+                    || BlessingUtils.isBlessed(attacker.getMainHandItem()));
             NoSugar.LOGGER.info(attacker.getMainHandItem().getDisplayName().getString());
             if (isNoSugarItem && Config.shouldBypassTag(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 return false;
