@@ -29,7 +29,7 @@ public class EntityMixin {
         }
     }
 
-    @Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
     private void nosugar$onlerpMotion(double p_20306_, double p_20307_, double p_20308_, CallbackInfo ci){
         Entity self = (Entity) (Object) this;
         EntityAccessor iself = (EntityAccessor) self;
@@ -38,7 +38,7 @@ public class EntityMixin {
         }
     }
 
-    /*@Inject(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"), cancellable = true)
     private void nosugar$onsetDeltaMovement(Vec3 p_20257_, CallbackInfo ci){
         Entity self = (Entity) (Object) this;
         EntityAccessor iself = (EntityAccessor) self;
@@ -54,7 +54,7 @@ public class EntityMixin {
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
             ci.cancel();
         }
-    }*/
+    }
 
     @Inject(method = "getPosition", at = @At("RETURN"), cancellable = true)
     private void nosugar$ongetPosition(float p_20319_, CallbackInfoReturnable<Vec3> cir) {
@@ -92,5 +92,5 @@ public class EntityMixin {
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
             ci.cancel();
         }
-    }
+    }*/
 }

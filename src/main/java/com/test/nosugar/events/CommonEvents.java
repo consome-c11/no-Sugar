@@ -38,5 +38,6 @@ public class CommonEvents {
                 event.setReturnValue(false);
             }
         }
+        event.setModified(true);
     }
 }

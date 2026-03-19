@@ -18,6 +18,12 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
 
     private static boolean registered = false;
 
+    static{
+        if (!registered) {
+            registerTransformer();
+            registered = true;
+        }
+    }
     @Override
     public void onLoad(String mixinPackage) {
     }
@@ -47,15 +53,9 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-        if (registered) {
-            return;
-        }
-        registerTransformer();
-        registered = true;
-    }
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
-    private void registerTransformer() {
+    private static void registerTransformer() {
         try {
             NoSugarLaunchPlugin plugin = new NoSugarLaunchPlugin();
 
