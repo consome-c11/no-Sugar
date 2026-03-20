@@ -9,7 +9,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class LivingEntityTransformer implements ITransformerModule {
-
     private static final MethodMatcher GET_HEALTH = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
             "m_21223_", "getHealth", "()F", false
@@ -43,6 +42,7 @@ public class LivingEntityTransformer implements ITransformerModule {
                 IS_ALIVE.matches(method, className)) {
             return true;
         }
+
         for (AbstractInsnNode insn : method.instructions.toArray()) {
             if (insn instanceof MethodInsnNode minsn && isInvocation(minsn.getOpcode())) {
                 if (GET_HEALTH.matches(minsn) ||
@@ -52,33 +52,36 @@ public class LivingEntityTransformer implements ITransformerModule {
                 }
             }
         }
+
         return false;
     }
 
     @Override
     public boolean transform(Phase phase, ClassNode classNode, MethodNode method) {
         boolean modified = false;
-        for (AbstractInsnNode insn : method.instructions) {
+        if(phase == Phase.AFTER) return false;
+        AbstractInsnNode[] insns = method.instructions.toArray();
+        AbstractInsnNode[] callInsns = method.instructions.toArray();
+        for (AbstractInsnNode insn : insns) {
             if (GET_HEALTH.matches(method, classNode.name) && insn.getOpcode() == Opcodes.FRETURN) {
                 injectInterfaceHook(method, insn, "getHealth",
                         "(FLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")F");
                 modified = true;
-                NoSugar.LOGGER.debug("[NoSugar] transforming getHealth... \n Class: " + classNode.name);
+                NoSugar.LOGGER.info("[NoSugar] transforming getHealth... \n Class: " + classNode.name);
             } else if (insn.getOpcode() == Opcodes.IRETURN) {
                 if (IS_DEAD_OR_DYING.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isDeadOrDying",
                             "(ZLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")Z");
                     modified = true;
-                    NoSugar.LOGGER.debug("[NoSugar] transforming isDeadOrDying...\n Class: " + classNode.name);
+                    NoSugar.LOGGER.info("[NoSugar] transforming isDeadOrDying...\n Class: " + classNode.name);
                 } else if (IS_ALIVE.matches(method, classNode.name)) {
                     injectInterfaceHook(method, insn, "isAlive",
                             "(ZLnet/minecraft/world/entity/Entity;" + PHASE_DESC + ")Z");
                     modified = true;
-                    NoSugar.LOGGER.debug("[NoSugar] transforming isAlive...\n Class: " + classNode.name);
+                    NoSugar.LOGGER.info("[NoSugar] transforming isAlive...\n Class: " + classNode.name);
                 }
             }
         }
-        AbstractInsnNode[] callInsns = method.instructions.toArray();
         for (AbstractInsnNode insn : callInsns) {
             if (!(insn instanceof MethodInsnNode methodInsn)) continue;
             if (!isInvocation(methodInsn.getOpcode())) continue;
@@ -87,19 +90,19 @@ public class LivingEntityTransformer implements ITransformerModule {
                 injectPostCallHook(method, methodInsn, "getHealth",
                         "(FLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")F",
                         Opcodes.FSTORE, Opcodes.FLOAD);
-                NoSugar.LOGGER.debug("[NoSugar] wapping getHealth...\n Class: " + classNode.name);
+                NoSugar.LOGGER.info("[NoSugar] wrapping getHealth...\n Class: " + classNode.name);
                 modified = true;
             } else if (IS_DEAD_OR_DYING.matches(methodInsn)) {
                 injectPostCallHook(method, methodInsn, "isDeadOrDying",
                         "(ZLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")Z",
                         Opcodes.ISTORE, Opcodes.ILOAD);
-                NoSugar.LOGGER.debug("[NoSugar] wapping isDeadOrDying...\n Class: " + classNode.name);
+                NoSugar.LOGGER.info("[NoSugar] wrapping isDeadOrDying...\n Class: " + classNode.name);
                 modified = true;
             } else if (IS_ALIVE.matches(methodInsn)) {
                 injectPostCallHook(method, methodInsn, "isAlive",
                         "(ZLnet/minecraft/world/entity/Entity;" + PHASE_DESC + ")Z",
                         Opcodes.ISTORE, Opcodes.ILOAD);
-                NoSugar.LOGGER.debug("[NoSugar] wapping isAlive...\n Class: " + classNode.name);
+                NoSugar.LOGGER.info("[NoSugar] wrapping isAlive...\n Class: " + classNode.name);
                 modified = true;
             }
         }
@@ -115,12 +118,11 @@ public class LivingEntityTransformer implements ITransformerModule {
                                      String hookMethod, String hookDesc,
                                      LivingEntityMethodEvent.MethodPhase phase) {
         InsnList injection = new InsnList();
-
         injection.add(new FieldInsnNode(Opcodes.GETSTATIC, HOOK_CLASS, HOOK_FIELD, HOOK_DESC));
         injection.add(new InsnNode(Opcodes.SWAP));
-        injection.add(new VarInsnNode(Opcodes.ALOAD, 0));//this
-        pushEnumConstant(injection, phase);//enum
+        injection.add(new VarInsnNode(Opcodes.ALOAD, 0));
 
+        pushEnumConstant(injection, phase);
         injection.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                 "com/test/nosugar/transformer/hook/livingentity/ILivingEntityHook",
                 hookMethod,
@@ -128,7 +130,7 @@ public class LivingEntityTransformer implements ITransformerModule {
                 true));
 
         method.instructions.insertBefore(returnInsn, injection);
-        method.maxStack = Math.max(method.maxStack, 4);
+        method.maxStack = Math.max(method.maxStack, 6);
     }
 
     private void injectInterfaceHook(MethodNode method, AbstractInsnNode returnInsn,
@@ -142,32 +144,31 @@ public class LivingEntityTransformer implements ITransformerModule {
     }
 
     private void injectPostCallHook(MethodNode method, MethodInsnNode originalCall, String hookMethod, String hookDesc, int storeOpcode, int loadOpcode) {
+        int receiverSlot = method.maxLocals++;
 
-        int entitySlot = method.maxLocals++;
-        int resultSlot = method.maxLocals++;
+        InsnList before = new InsnList();
+        before.add(new InsnNode(Opcodes.DUP));
+        before.add(new VarInsnNode(Opcodes.ASTORE, receiverSlot));
 
-        InsnList preInjection = new InsnList();
-        preInjection.add(new InsnNode(Opcodes.DUP));
-        preInjection.add(new VarInsnNode(Opcodes.ASTORE, entitySlot));
-        method.instructions.insertBefore(originalCall, preInjection);
+        InsnList after = new InsnList();
 
-        InsnList postInjection = new InsnList();
-
-        postInjection.add(new VarInsnNode(storeOpcode, resultSlot));
-
-        postInjection.add(new FieldInsnNode(Opcodes.GETSTATIC, HOOK_CLASS, HOOK_FIELD, HOOK_DESC));
-        postInjection.add(new VarInsnNode(loadOpcode, resultSlot));
-        postInjection.add(new VarInsnNode(Opcodes.ALOAD, entitySlot));
-        pushEnumConstant(postInjection, LivingEntityMethodEvent.MethodPhase.AFTER);
-
-        postInjection.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+        after.add(new InsnNode(Opcodes.DUP));
+        after.add(new FieldInsnNode(Opcodes.GETSTATIC, HOOK_CLASS, HOOK_FIELD, HOOK_DESC));
+        after.add(new InsnNode(Opcodes.SWAP));
+        after.add(new VarInsnNode(Opcodes.ALOAD, receiverSlot));
+        pushEnumConstant(after, LivingEntityMethodEvent.MethodPhase.AFTER);
+        after.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
                 "com/test/nosugar/transformer/hook/livingentity/ILivingEntityHook",
-                hookMethod, hookDesc, true));
+                hookMethod,
+                hookDesc,
+                true));
+        after.add(new InsnNode(Opcodes.SWAP));
+        after.add(new InsnNode(Opcodes.POP));
 
-        method.instructions.insert(originalCall, postInjection);
+        method.instructions.insertBefore(originalCall, before);
+        method.instructions.insert(originalCall, after);
 
-        // Update stack/locals limits
-        method.maxStack = Math.max(method.maxStack, 6);
+        method.maxStack = Math.max(method.maxStack, method.maxStack + 5);
     }
 
     @Override

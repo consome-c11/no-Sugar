@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
+import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,6 +20,7 @@ public class ServerPlayerMixin {
         if (self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             ci.cancel();
+            System.out.println("isAlive: " + LivingEntityUtils.isAlive(self) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(self) + " Health: " + LivingEntityUtils.getHealth(self));
         }
     }
 

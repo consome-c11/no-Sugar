@@ -11,7 +11,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public String name() {
-        return "nosugar_transformer";
+        return "nosugar";
     }
 
     @Override
@@ -19,7 +19,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
         if (type.getClassName().startsWith("com/test/nosugar/transformer")) {
             return EnumSet.noneOf(Phase.class);
         }
-        return EnumSet.of(Phase.BEFORE, Phase.AFTER);
+        return EnumSet.of(Phase.BEFORE);
     }
 
     @Override

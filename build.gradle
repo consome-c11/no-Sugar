@@ -3,8 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-	id 'org.spongepowered.mixin' version '0.7.+'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -25,7 +24,6 @@ minecraft {
             workingDirectory project.file('run')
 
             property 'forge.logging.markers', 'REGISTRIES'
-
             property 'forge.logging.console.level', 'debug'
 
             mods {
@@ -49,56 +47,42 @@ minecraft {
         }
 
         data {
-
             workingDirectory project.file('run-data')
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
             property 'mixin.config.disable', 'true'
-
         }
     }
 }
-
-configurations.create('sugarlibShadow')
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenCentral()
-	maven { url "https://maven.kosmx.dev/" }
-	maven { url "https://maven.theillusivec4.top/" } // Caelus, Curios
-    maven { url "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" } // GeckoLib
+    maven { url "https://maven.kosmx.dev/" }
+    maven { url "https://maven.theillusivec4.top/" }
+    maven { url "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
     maven { url 'https://jitpack.io' }
+    maven { url "https://www.cursemaven.com" }
     flatDir {
         dirs 'libs'
     }
 }
 
 dependencies {
-
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
-    compileOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
-    runtimeOnly fg.deobf(files("libs/irons_spellbooks-1.20.1-3.4.0.11.jar"))
-    compileOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
-    runtimeOnly fg.deobf(files("libs/eraser-1.10.3.jar"))
-    compileOnly fg.deobf(files("libs/TConstruct.jar"))
-    runtimeOnly fg.deobf(files("libs/TConstruct.jar"))
-    compileOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
-    runtimeOnly fg.deobf(files("libs/Mantle-1.20.1-1.11.79.jar"))
-    compileOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
-    runtimeOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
-    compileOnly fg.deobf(files("libs/SlashBladeResharped-1.20.1-1.8.61.jar"))
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
-    runtimeOnly fg.deobf(files("libs/sugarlib.jar"))
-    compileOnly fg.deobf(files("libs/sugarlib.jar"))
-    runtimeOnly fg.deobf(files("libs/curios-forge-5.14.1+1.20.1.jar"))
-    compileOnly fg.deobf(files("libs/curios-forge-5.14.1+1.20.1.jar"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")) {
-        jarJar.ranged(it, "[0.5.0,)")
+    implementation jarJar("io.github.llamalad7:mixinextras-forge:0.5.3") {
+        jarJar.ranged(it, "[0.5.3,)")
     }
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
+    annotationProcessor "io.github.llamalad7:mixinextras-common:0.5.3"
+
+    implementation fg.deobf("curse.maven:curios-309927:6418456")
+    implementation fg.deobf("curse.maven:slashblade-resharped-1022428:7363505")
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:7691158")
+    implementation fg.deobf("curse.maven:tinkers-construct-74072:7449219")
+    implementation fg.deobf("curse.maven:mantle-74924:7563777")
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -128,7 +112,6 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
         ])
     }
-
     finalizedBy 'reobfJar'
 }
 
@@ -153,34 +136,3 @@ mixin {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-
-shadowJar {
-    archiveClassifier.set('')
-
-    configurations = [project.configurations.sugarlibShadow]
-
-    relocate 'com.test.sugarlib', 'shaded.com.test.sugarlib'
-    mergeServiceFiles()
-    zip64 true
-
-    doFirst {
-        println "Shadowing configurations: ${configurations.join(", ")}"
-        configurations.forEach { config ->
-            println "Files in $config:"
-            config.files.each { file ->
-                println "  - $file"
-            }
-        }
-    }
-}
-
-jar {
-    enabled = true
-    archiveClassifier.set('slim')
-}
-
-tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar).configure {
-    finalizedBy 'reobfJar'
-}
-
-build.dependsOn shadowJar

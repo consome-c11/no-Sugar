@@ -46,9 +46,6 @@ public abstract class ItemRendererMixin {
     private static final long TRANSITION_DURATION_NS = 500_000_000L;
 
     @Unique
-    private static Item SUGAR_SWORD_ITEM = null;
-
-    @Unique
     private static void initCache() {
         if (cacheInitialized) return;
 
@@ -57,7 +54,7 @@ public abstract class ItemRendererMixin {
         if (ModItems.SNACK_LEGGINGS.isPresent()) CACHED_AFFECTED_ITEMS.add(ModItems.SNACK_LEGGINGS.get());
         if (ModItems.SNACK_BOOTS.isPresent()) CACHED_AFFECTED_ITEMS.add(ModItems.SNACK_BOOTS.get());
         if (ModItems.NULL_INGOT.isPresent()) CACHED_AFFECTED_ITEMS.add(ModItems.NULL_INGOT.get());
-        if (ModItems.SUGAR_SWORD.isPresent()) SUGAR_SWORD_ITEM = ModItems.SUGAR_SWORD.get();
+        if (ModItems.SUGAR_SWORD.isPresent()) CACHED_AFFECTED_ITEMS.add(ModItems.SUGAR_SWORD.get());
 
         cacheInitialized = true;
     }
@@ -124,8 +121,7 @@ public abstract class ItemRendererMixin {
         Player player = (mc != null) ? mc.player : null;
 
         // Sugar Sword Specific Logic
-        if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-                && stack.getItem() == SUGAR_SWORD_ITEM) {
+        if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)) {
             if (player != null && player.isUsingItem() && player.getUseItem() == stack) {
                 poseStack.pushPose();
                 poseStack.translate(0.0, 0.0, -0.02);
@@ -159,7 +155,7 @@ public abstract class ItemRendererMixin {
         }
 
         // Held Item Logic (Exclude Sugar Sword)
-        if (isHeldContext(context) && shouldAffect(stack, context) && stack.getItem() != SUGAR_SWORD_ITEM) {
+        if (isHeldContext(context) && shouldAffect(stack, context)) {
             long time = System.currentTimeMillis();
             float angle = (float) (Math.sin(time / 500.0) * 10.0);
             poseStack.pushPose();
@@ -175,8 +171,7 @@ public abstract class ItemRendererMixin {
         Minecraft mc = Minecraft.getInstance();
         Player player = (mc != null) ? mc.player : null;
 
-        if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
-                && stack.getItem() == SUGAR_SWORD_ITEM) {
+        if ((context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)) {
             if (player != null && player.isUsingItem() && player.getUseItem() == stack) {
                 poseStack.popPose();
                 return;
@@ -188,7 +183,7 @@ public abstract class ItemRendererMixin {
             return;
         }
 
-        if (isHeldContext(context) && shouldAffect(stack, context) && stack.getItem() != SUGAR_SWORD_ITEM) {
+        if (isHeldContext(context) && shouldAffect(stack, context)) {
             poseStack.popPose();
         }
     }

@@ -19,7 +19,7 @@ public abstract class ServerLevelMixin{
         TimeStopManager.clearLevel();
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void nosugar$onTick(BooleanSupplier p_8794_, CallbackInfo ci) {
         Level level = (Level) (Object) this;
         if (!TimeStopManager.isStopped(level)) {
@@ -27,6 +27,6 @@ public abstract class ServerLevelMixin{
         }
 
         ci.cancel();
-    }
+    }*/
 
 }

@@ -2,6 +2,7 @@ package com.test.nosugar.mixin.client;
 
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.additional.SugarTotem;
+import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
@@ -18,8 +19,11 @@ public class SetScreenMixin {//for witherzilla
     private void onSetScreen(Screen screen, CallbackInfo ci) {
         if (Minecraft.getInstance() == null) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null || !mc.player.isAlive() || mc.player.isDeadOrDying() ||
-                mc.player.getHealth() <= 0.f || ((ILivingEntity) mc.player).isErased()) return;
+        if (mc.player == null || mc.level == null || !LivingEntityUtils.isAlive(mc.player) || LivingEntityUtils.isDeadOrDying(mc.player) ||
+                LivingEntityUtils.getHealth(mc.player) <= 0.f || ((ILivingEntity) mc.player).isErased()) {
+            if(mc.player != null)System.out.println("isAlive: " + LivingEntityUtils.isAlive(mc.player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(mc.player) + " Health: " + LivingEntityUtils.getHealth(mc.player));
+            return;
+        }
         if ((SnackArmor.SnackProtector.isFullSet(mc.player) || SugarTotem.hasTotem(mc.player)))
             if (screen instanceof DeathScreen) {
                 ci.cancel();

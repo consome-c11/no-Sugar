@@ -2,6 +2,7 @@ package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,7 @@ public abstract class PersistentEntitySectionManagerCallbackMixin {
 
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true, remap = true)
     private void nosugar$onMoveGuard(CallbackInfo ci) {
-        if (realEntity instanceof ILivingEntity erased && erased.isErased()) {
+        if (realEntity instanceof ILivingEntity erased && erased.isErased() && !(realEntity instanceof Player)) {
             ci.cancel();
         }
     }

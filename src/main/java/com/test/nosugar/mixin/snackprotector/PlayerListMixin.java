@@ -15,9 +15,9 @@ public class PlayerListMixin {
     //互換性の都合上で一度ヘルパー関数挟んでる
     @Inject(method = "respawn", at = @At("HEAD"), cancellable = true)
     private void nosugar$onrespawn(ServerPlayer player, boolean keepinventory, CallbackInfoReturnable<ServerPlayer> cir) {
+        System.out.println("isAlive: " + LivingEntityUtils.isAlive(player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(player) + " Health: " + LivingEntityUtils.getHealth(player));
         if (SnackArmor.SnackProtector.isFullSet(player) && player.isAlive() && !player.isDeadOrDying()
                 && player.getHealth() > 0.f && !player.isRemoved() && !player.isRespawnForced()) {
-            System.out.println("isAlive: " + LivingEntityUtils.isAlive(player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(player) + " Health: " + LivingEntityUtils.getHealth(player));
             //cir.cancel();
             //cir.setReturnValue(player);
             //@test ちゃんとMixinするときは元関数読めよ!

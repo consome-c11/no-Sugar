@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
+import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -29,6 +30,7 @@ public class EntityMixin {
                 || self.getRemovalReason() == Entity.RemovalReason.CHANGED_DIMENSION ||
                 self.getRemovalReason() == Entity.RemovalReason.DISCARDED/*痛い目見た*/) return;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            //System.out.println("isAlive: " + LivingEntityUtils.isAlive(player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(player) + " Health: " + LivingEntityUtils.getHealth(player));
             cir.setReturnValue(false);
             cir.cancel();
         }

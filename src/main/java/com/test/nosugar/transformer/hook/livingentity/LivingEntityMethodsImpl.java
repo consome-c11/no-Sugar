@@ -1,5 +1,6 @@
 package com.test.nosugar.transformer.hook.livingentity;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +21,12 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
                 original
         );
         MinecraftForge.EVENT_BUS.post(event);
-        return (Float) event.getReturnValue();
+        Object returnValue = event.getReturnValue();
+        if (returnValue instanceof Float ret) {
+            return ret;
+        }
+        else NoSugar.LOGGER.info("aaaaaaaaaaaHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGshitiiiiiiiiiiiiiiiiiiiiiiit");
+        return original;
     }
 
     @Override
@@ -32,7 +38,11 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
                 original
         );
         MinecraftForge.EVENT_BUS.post(event);
-        return (Boolean) event.getReturnValue();
+        Object returnValue = event.getReturnValue();
+        if (returnValue instanceof Boolean) {
+            return (Boolean) returnValue;
+        }
+        return original;
     }
 
     @Override
@@ -44,6 +54,10 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
                 original
         );
         MinecraftForge.EVENT_BUS.post(event);
-        return (Boolean) event.getReturnValue();
+        Object returnValue = event.getReturnValue();
+        if (returnValue instanceof Boolean) {
+            return (Boolean) returnValue;
+        }
+        return original;
     }
 }

@@ -19,12 +19,6 @@ public class EntityMixin {
         Entity self = (Entity) (Object) this;
         EntityAccessor iself = (EntityAccessor) self;
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
-            /*iself.setXo(self.getX());
-            iself.setYo(self.getY());
-            iself.setZo(self.getZ());
-            iself.setXRotO(self.getXRot());
-            iself.setYRotO(self.getYRot());
-            self.setDeltaMovement(Vec3.ZERO);*/
             ci.cancel();
         }
     }
@@ -54,9 +48,9 @@ public class EntityMixin {
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
             ci.cancel();
         }
-    }
+    }*/
 
-    @Inject(method = "getPosition", at = @At("RETURN"), cancellable = true)
+    /*@Inject(method = "getPosition", at = @At("RETURN"), cancellable = true)
     private void nosugar$ongetPosition(float p_20319_, CallbackInfoReturnable<Vec3> cir) {
         Entity self = (Entity) (Object) this;
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
