@@ -48,6 +48,7 @@
     "stop_watch.EntityMixin",
     "stop_watch.EntityTickListMixin",
     "stop_watch.LevelMixin",
+    "stop_watch.MobMixin",
     "stop_watch.ServerLevelMixin",
     "sugar_bow.ExplosionAccessor",
     "sugar_sword.ChunkEntitiesAccessor",
