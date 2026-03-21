@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 public class CommonEvents {
     @SubscribeEvent
     public static void onLivingMethod(LivingEntityMethodEvent event) {
+        if(event.getMethodPhase() == LivingEntityMethodEvent.MethodPhase.RETURN) return;
         if (!(event.getEntity() instanceof LivingEntity self) || !(self instanceof ILivingEntity iliving)) return;
         if (event.getMethodType() == LivingEntityMethodEvent.MethodType.GET_HEALTH) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
@@ -20,8 +21,7 @@ public class CommonEvents {
                 return;
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
-                event.setReturnValue(player.getMaxHealth());
-                return;
+                event.setReturnValue(1.f);
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
@@ -30,7 +30,6 @@ public class CommonEvents {
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(true);
-                return;
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_DEAD_OR_DYING) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
@@ -39,7 +38,6 @@ public class CommonEvents {
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(false);
-                return;
             }
         }
     }

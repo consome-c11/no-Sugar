@@ -22,10 +22,23 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
         );
         MinecraftForge.EVENT_BUS.post(event);
         Object returnValue = event.getReturnValue();
-        if (returnValue instanceof Float ret) {
-            return ret;
+
+        if (returnValue instanceof Number num) {
+            return num.floatValue();
         }
-        else NoSugar.LOGGER.info("aaaaaaaaaaaHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGshitiiiiiiiiiiiiiiiiiiiiiiit");
+
+        if (returnValue != null) {
+            NoSugar.LOGGER.warn("Invalid return type from event: expected Number, got {}", returnValue.getClass());
+        } else {
+            StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+            for (StackTraceElement element : stack) {
+                String className = element.getClassName();
+                NoSugar.LOGGER.info("getHealth NOT updated called from: {}.{}({}:{})",
+                        className, element.getMethodName(), element.getFileName(), element.getLineNumber());
+                break;
+
+            }
+        }
         return original;
     }
 
@@ -42,6 +55,9 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
         if (returnValue instanceof Boolean) {
             return (Boolean) returnValue;
         }
+        if (returnValue != null) {
+            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
+        }
         return original;
     }
 
@@ -57,6 +73,9 @@ public class LivingEntityMethodsImpl implements ILivingEntityHook {
         Object returnValue = event.getReturnValue();
         if (returnValue instanceof Boolean) {
             return (Boolean) returnValue;
+        }
+        if (returnValue != null) {
+            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
         }
         return original;
     }

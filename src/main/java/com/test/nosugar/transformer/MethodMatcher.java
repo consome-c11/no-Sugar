@@ -1,6 +1,7 @@
 package com.test.nosugar.transformer;
 
 import com.test.nosugar.NoSugar;
+import net.minecraft.server.level.ServerPlayer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -33,7 +34,6 @@ public class MethodMatcher {
         if (className.equals("java/lang/Object")) {
             return false;
         }
-
         String currentName = className;
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
@@ -69,4 +69,17 @@ public class MethodMatcher {
                 !obfName.equals(method.name) && !mappedName.equals(method.name)) return false;
         return isSubclass(classname, owner)/* || isOverride(method, classname)*/;
     }
+
+    public boolean matchesCall(MethodInsnNode insn) {
+        if (!desc.equals(insn.desc)) return false;
+        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
+        return owner.equals(insn.owner) || isSubclass(insn.owner, owner);
+    }
+
+    public boolean matchesCall(MethodInsnNode insn, String classname) {
+        if (!desc.equals(insn.desc)) return false;
+        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
+        return owner.equals(insn.owner) || isSubclass(insn.owner, owner);
+    }
+
 }

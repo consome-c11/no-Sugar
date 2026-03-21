@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TransformerCore {
 
     private static final List<ITransformerModule> MODULES = new ArrayList<>();
     private static final Map<String, ClassNode> classNodeCache = new ConcurrentHashMap<>();
-    private static final boolean initialized = false;
+    private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
 
     static {
         registerModule(new LivingEntityTransformer());
@@ -30,8 +31,14 @@ public class TransformerCore {
     }
 
     public static boolean transform(Phase phase, ClassNode classNode) {
+
         if (classNode.name.startsWith("com/test/nosugar/transformer")) {
             return false;
+        }
+
+        String key = classNode.name + ":" + phase.name();
+        if (!transformedClasses.add(key)) {
+            //return false;
         }
 
         boolean modified = false;

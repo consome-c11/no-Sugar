@@ -24,6 +24,7 @@ public class SetScreenMixin {//for witherzilla
             if(mc.player != null)System.out.println("isAlive: " + LivingEntityUtils.isAlive(mc.player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(mc.player) + " Health: " + LivingEntityUtils.getHealth(mc.player));
             return;
         }
+        System.out.println("isAlive: " + LivingEntityUtils.isAlive(mc.player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(mc.player) + " Health: " + LivingEntityUtils.getHealth(mc.player));
         if ((SnackArmor.SnackProtector.isFullSet(mc.player) || SugarTotem.hasTotem(mc.player)))
             if (screen instanceof DeathScreen) {
                 ci.cancel();

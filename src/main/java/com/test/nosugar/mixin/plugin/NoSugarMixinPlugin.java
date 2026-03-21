@@ -70,7 +70,7 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
 
             if (!map.containsKey(plugin.name())) {
                 map.put(plugin.name(), plugin);
-                NoSugar.LOGGER.debug("[NoSugar] Transformer registered.");
+                NoSugar.LOGGER.info("[NoSugar] Transformer registered.");
             }
         } catch (Exception e) {
             NoSugar.LOGGER.debug("[NoSugar] Failed to register Transformer: " + e);

@@ -4,23 +4,204 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AsmUtil {
+    private static final Map<Integer, String> OPCODE_NAMES = new HashMap<>();
 
-    public static void recalculateMaxStack(MethodNode method) {
-        int maxStack = 0;
-        int currentStack = 0;
+    static {
+        // Constants
+        OPCODE_NAMES.put(Opcodes.NOP, "NOP");
+        OPCODE_NAMES.put(Opcodes.ACONST_NULL, "ACONST_NULL");
+        OPCODE_NAMES.put(Opcodes.ICONST_M1, "ICONST_M1");
+        OPCODE_NAMES.put(Opcodes.ICONST_0, "ICONST_0");
+        OPCODE_NAMES.put(Opcodes.ICONST_1, "ICONST_1");
+        OPCODE_NAMES.put(Opcodes.ICONST_2, "ICONST_2");
+        OPCODE_NAMES.put(Opcodes.ICONST_3, "ICONST_3");
+        OPCODE_NAMES.put(Opcodes.ICONST_4, "ICONST_4");
+        OPCODE_NAMES.put(Opcodes.ICONST_5, "ICONST_5");
+        OPCODE_NAMES.put(Opcodes.LCONST_0, "LCONST_0");
+        OPCODE_NAMES.put(Opcodes.LCONST_1, "LCONST_1");
+        OPCODE_NAMES.put(Opcodes.FCONST_0, "FCONST_0");
+        OPCODE_NAMES.put(Opcodes.FCONST_1, "FCONST_1");
+        OPCODE_NAMES.put(Opcodes.FCONST_2, "FCONST_2");
+        OPCODE_NAMES.put(Opcodes.DCONST_0, "DCONST_0");
+        OPCODE_NAMES.put(Opcodes.DCONST_1, "DCONST_1");
+        OPCODE_NAMES.put(Opcodes.BIPUSH, "BIPUSH");
+        OPCODE_NAMES.put(Opcodes.SIPUSH, "SIPUSH");
+        OPCODE_NAMES.put(Opcodes.LDC, "LDC");
 
-        for (AbstractInsnNode insn : method.instructions) {
-            int opcode = insn.getOpcode();
-            if (opcode == -1) continue;
+        // Loads
+        OPCODE_NAMES.put(Opcodes.ILOAD, "ILOAD");
+        OPCODE_NAMES.put(Opcodes.LLOAD, "LLOAD");
+        OPCODE_NAMES.put(Opcodes.FLOAD, "FLOAD");
+        OPCODE_NAMES.put(Opcodes.DLOAD, "DLOAD");
+        OPCODE_NAMES.put(Opcodes.ALOAD, "ALOAD");
+        OPCODE_NAMES.put(Opcodes.IALOAD, "IALOAD");
+        OPCODE_NAMES.put(Opcodes.LALOAD, "LALOAD");
+        OPCODE_NAMES.put(Opcodes.FALOAD, "FALOAD");
+        OPCODE_NAMES.put(Opcodes.DALOAD, "DALOAD");
+        OPCODE_NAMES.put(Opcodes.AALOAD, "AALOAD");
+        OPCODE_NAMES.put(Opcodes.BALOAD, "BALOAD");
+        OPCODE_NAMES.put(Opcodes.CALOAD, "CALOAD");
+        OPCODE_NAMES.put(Opcodes.SALOAD, "SALOAD");
 
-            currentStack += getStackChange(opcode, insn);
-            maxStack = Math.max(maxStack, currentStack);
-        }
+        // Stores
+        OPCODE_NAMES.put(Opcodes.ISTORE, "ISTORE");
+        OPCODE_NAMES.put(Opcodes.LSTORE, "LSTORE");
+        OPCODE_NAMES.put(Opcodes.FSTORE, "FSTORE");
+        OPCODE_NAMES.put(Opcodes.DSTORE, "DSTORE");
+        OPCODE_NAMES.put(Opcodes.ASTORE, "ASTORE");
+        OPCODE_NAMES.put(Opcodes.IASTORE, "IASTORE");
+        OPCODE_NAMES.put(Opcodes.LASTORE, "LASTORE");
+        OPCODE_NAMES.put(Opcodes.FASTORE, "FASTORE");
+        OPCODE_NAMES.put(Opcodes.DASTORE, "DASTORE");
+        OPCODE_NAMES.put(Opcodes.AASTORE, "AASTORE");
+        OPCODE_NAMES.put(Opcodes.BASTORE, "BASTORE");
+        OPCODE_NAMES.put(Opcodes.CASTORE, "CASTORE");
+        OPCODE_NAMES.put(Opcodes.SASTORE, "SASTORE");
 
-        method.maxStack = Math.max(method.maxStack, maxStack);
+        // Stack
+        OPCODE_NAMES.put(Opcodes.POP, "POP");
+        OPCODE_NAMES.put(Opcodes.POP2, "POP2");
+        OPCODE_NAMES.put(Opcodes.DUP, "DUP");
+        OPCODE_NAMES.put(Opcodes.DUP_X1, "DUP_X1");
+        OPCODE_NAMES.put(Opcodes.DUP_X2, "DUP_X2");
+        OPCODE_NAMES.put(Opcodes.DUP2, "DUP2");
+        OPCODE_NAMES.put(Opcodes.DUP2_X1, "DUP2_X1");
+        OPCODE_NAMES.put(Opcodes.DUP2_X2, "DUP2_X2");
+        OPCODE_NAMES.put(Opcodes.SWAP, "SWAP");
+
+        // Math
+        OPCODE_NAMES.put(Opcodes.IADD, "IADD");
+        OPCODE_NAMES.put(Opcodes.LADD, "LADD");
+        OPCODE_NAMES.put(Opcodes.FADD, "FADD");
+        OPCODE_NAMES.put(Opcodes.DADD, "DADD");
+        OPCODE_NAMES.put(Opcodes.ISUB, "ISUB");
+        OPCODE_NAMES.put(Opcodes.LSUB, "LSUB");
+        OPCODE_NAMES.put(Opcodes.FSUB, "FSUB");
+        OPCODE_NAMES.put(Opcodes.DSUB, "DSUB");
+        OPCODE_NAMES.put(Opcodes.IMUL, "IMUL");
+        OPCODE_NAMES.put(Opcodes.LMUL, "LMUL");
+        OPCODE_NAMES.put(Opcodes.FMUL, "FMUL");
+        OPCODE_NAMES.put(Opcodes.DMUL, "DMUL");
+        OPCODE_NAMES.put(Opcodes.IDIV, "IDIV");
+        OPCODE_NAMES.put(Opcodes.LDIV, "LDIV");
+        OPCODE_NAMES.put(Opcodes.FDIV, "FDIV");
+        OPCODE_NAMES.put(Opcodes.DDIV, "DDIV");
+        OPCODE_NAMES.put(Opcodes.IREM, "IREM");
+        OPCODE_NAMES.put(Opcodes.LREM, "LREM");
+        OPCODE_NAMES.put(Opcodes.FREM, "FREM");
+        OPCODE_NAMES.put(Opcodes.DREM, "DREM");
+        OPCODE_NAMES.put(Opcodes.INEG, "INEG");
+        OPCODE_NAMES.put(Opcodes.LNEG, "LNEG");
+        OPCODE_NAMES.put(Opcodes.FNEG, "FNEG");
+        OPCODE_NAMES.put(Opcodes.DNEG, "DNEG");
+
+        // Shifts
+        OPCODE_NAMES.put(Opcodes.ISHL, "ISHL");
+        OPCODE_NAMES.put(Opcodes.LSHL, "LSHL");
+        OPCODE_NAMES.put(Opcodes.ISHR, "ISHR");
+        OPCODE_NAMES.put(Opcodes.LSHR, "LSHR");
+        OPCODE_NAMES.put(Opcodes.IUSHR, "IUSHR");
+        OPCODE_NAMES.put(Opcodes.LUSHR, "LUSHR");
+
+        // Bit
+        OPCODE_NAMES.put(Opcodes.IAND, "IAND");
+        OPCODE_NAMES.put(Opcodes.LAND, "LAND");
+        OPCODE_NAMES.put(Opcodes.IOR, "IOR");
+        OPCODE_NAMES.put(Opcodes.LOR, "LOR");
+        OPCODE_NAMES.put(Opcodes.IXOR, "IXOR");
+        OPCODE_NAMES.put(Opcodes.LXOR, "LXOR");
+
+        // Conversions
+        OPCODE_NAMES.put(Opcodes.I2L, "I2L");
+        OPCODE_NAMES.put(Opcodes.I2F, "I2F");
+        OPCODE_NAMES.put(Opcodes.I2D, "I2D");
+        OPCODE_NAMES.put(Opcodes.L2I, "L2I");
+        OPCODE_NAMES.put(Opcodes.L2F, "L2F");
+        OPCODE_NAMES.put(Opcodes.L2D, "L2D");
+        OPCODE_NAMES.put(Opcodes.F2I, "F2I");
+        OPCODE_NAMES.put(Opcodes.F2L, "F2L");
+        OPCODE_NAMES.put(Opcodes.F2D, "F2D");
+        OPCODE_NAMES.put(Opcodes.D2I, "D2I");
+        OPCODE_NAMES.put(Opcodes.D2L, "D2L");
+        OPCODE_NAMES.put(Opcodes.D2F, "D2F");
+        OPCODE_NAMES.put(Opcodes.I2B, "I2B");
+        OPCODE_NAMES.put(Opcodes.I2C, "I2C");
+        OPCODE_NAMES.put(Opcodes.I2S, "I2S");
+
+        // Comparisons
+        OPCODE_NAMES.put(Opcodes.LCMP, "LCMP");
+        OPCODE_NAMES.put(Opcodes.FCMPL, "FCMPL");
+        OPCODE_NAMES.put(Opcodes.FCMPG, "FCMPG");
+        OPCODE_NAMES.put(Opcodes.DCMPL, "DCMPL");
+        OPCODE_NAMES.put(Opcodes.DCMPG, "DCMPG");
+
+        // Control
+        OPCODE_NAMES.put(Opcodes.IFEQ, "IFEQ");
+        OPCODE_NAMES.put(Opcodes.IFNE, "IFNE");
+        OPCODE_NAMES.put(Opcodes.IFLT, "IFLT");
+        OPCODE_NAMES.put(Opcodes.IFGE, "IFGE");
+        OPCODE_NAMES.put(Opcodes.IFGT, "IFGT");
+        OPCODE_NAMES.put(Opcodes.IFLE, "IFLE");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPEQ, "IF_ICMPEQ");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPNE, "IF_ICMPNE");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPLT, "IF_ICMPLT");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPGE, "IF_ICMPGE");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPGT, "IF_ICMPGT");
+        OPCODE_NAMES.put(Opcodes.IF_ICMPLE, "IF_ICMPLE");
+        OPCODE_NAMES.put(Opcodes.IF_ACMPEQ, "IF_ACMPEQ");
+        OPCODE_NAMES.put(Opcodes.IF_ACMPNE, "IF_ACMPNE");
+        OPCODE_NAMES.put(Opcodes.GOTO, "GOTO");
+        OPCODE_NAMES.put(Opcodes.JSR, "JSR");
+        OPCODE_NAMES.put(Opcodes.RET, "RET");
+        OPCODE_NAMES.put(Opcodes.TABLESWITCH, "TABLESWITCH");
+        OPCODE_NAMES.put(Opcodes.LOOKUPSWITCH, "LOOKUPSWITCH");
+        OPCODE_NAMES.put(Opcodes.IRETURN, "IRETURN");
+        OPCODE_NAMES.put(Opcodes.LRETURN, "LRETURN");
+        OPCODE_NAMES.put(Opcodes.FRETURN, "FRETURN");
+        OPCODE_NAMES.put(Opcodes.DRETURN, "DRETURN");
+        OPCODE_NAMES.put(Opcodes.ARETURN, "ARETURN");
+        OPCODE_NAMES.put(Opcodes.RETURN, "RETURN");
+
+        // Fields
+        OPCODE_NAMES.put(Opcodes.GETSTATIC, "GETSTATIC");
+        OPCODE_NAMES.put(Opcodes.PUTSTATIC, "PUTSTATIC");
+        OPCODE_NAMES.put(Opcodes.GETFIELD, "GETFIELD");
+        OPCODE_NAMES.put(Opcodes.PUTFIELD, "PUTFIELD");
+
+        // Methods
+        OPCODE_NAMES.put(Opcodes.INVOKEVIRTUAL, "INVOKEVIRTUAL");
+        OPCODE_NAMES.put(Opcodes.INVOKESPECIAL, "INVOKESPECIAL");
+        OPCODE_NAMES.put(Opcodes.INVOKESTATIC, "INVOKESTATIC");
+        OPCODE_NAMES.put(Opcodes.INVOKEINTERFACE, "INVOKEINTERFACE");
+        OPCODE_NAMES.put(Opcodes.INVOKEDYNAMIC, "INVOKEDYNAMIC");
+
+        // Objects
+        OPCODE_NAMES.put(Opcodes.NEW, "NEW");
+        OPCODE_NAMES.put(Opcodes.NEWARRAY, "NEWARRAY");
+        OPCODE_NAMES.put(Opcodes.ANEWARRAY, "ANEWARRAY");
+        OPCODE_NAMES.put(Opcodes.ARRAYLENGTH, "ARRAYLENGTH");
+        OPCODE_NAMES.put(Opcodes.ATHROW, "ATHROW");
+        OPCODE_NAMES.put(Opcodes.CHECKCAST, "CHECKCAST");
+        OPCODE_NAMES.put(Opcodes.INSTANCEOF, "INSTANCEOF");
+
+        // Monitor
+        OPCODE_NAMES.put(Opcodes.MONITORENTER, "MONITORENTER");
+        OPCODE_NAMES.put(Opcodes.MONITOREXIT, "MONITOREXIT");
+
+        // Others
+        OPCODE_NAMES.put(Opcodes.MULTIANEWARRAY, "MULTIANEWARRAY");
+        OPCODE_NAMES.put(Opcodes.IFNULL, "IFNULL");
+        OPCODE_NAMES.put(Opcodes.IFNONNULL, "IFNONNULL");
+    }
+
+    public static String getOpcodeName(int opcode) {
+        if (opcode < 0) return null;
+        return OPCODE_NAMES.getOrDefault(opcode, "OPCODE_" + opcode);
     }
 
     //スパゲッティすぎる
