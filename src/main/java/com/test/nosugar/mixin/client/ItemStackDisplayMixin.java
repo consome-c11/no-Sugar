@@ -154,9 +154,6 @@ public abstract class ItemStackDisplayMixin {
 
                 String sneakText = " Get Cookie x64";
                 tooltip.add(makeWaveLine(sneakText, false));
-                //なんか表示されんかったんやﾕﾙｼﾃ:sob:
-                String sneakText2 = "";
-                tooltip.add(makeWaveLine(sneakText, false));
             }
 
             cir.setReturnValue(tooltip);

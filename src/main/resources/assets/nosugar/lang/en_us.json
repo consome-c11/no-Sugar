@@ -41,5 +41,6 @@
   "item.nosugar.sugar.sword.desc": "Force the target entity to die",
   "item.nosugar.tail.of.nine.desc": "If you hit the same entity 9 times, it will be forced to die",
   "item.nosugar.stopwatch.stopped": "Stopped",
-  "item.nosugar.stopwatch.resumed": "Resumed"
+  "item.nosugar.stopwatch.resumed": "Resumed",
+  "key.sugar.sword.range.attack": "RangeAttack"
 }

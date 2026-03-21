@@ -126,14 +126,14 @@ public class SugarToolTipRenderer {
 
         int maxWidth = 0;
         int totalHeight = 0;
-        int renderLimit = Math.max(0, components.size() -1);
+        int renderLimit = Math.max(0, components.size());
 
         for (int i = 0; i < renderLimit; i++) {
             ClientTooltipComponent comp = components.get(i);
             int width = comp.getWidth(font);
             int height = comp.getHeight();
             if (width > maxWidth) maxWidth = width;
-            if(comp.getWidth(font) > font.width(" "))totalHeight += height;
+            if(comp.getWidth(font) > font.width(""))totalHeight += height;
         }
 
         int tooltipWidth = maxWidth + 8;

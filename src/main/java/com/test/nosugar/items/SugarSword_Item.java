@@ -2,12 +2,13 @@ package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
 import com.test.nosugar.client.renderer.SugarSwordItemRenderProperties;
+import com.test.nosugar.utils.render.ColorUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -29,11 +29,37 @@ import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
 import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
 public class SugarSword_Item extends SwordItem {
+    private static final String TAG_COOLDOWN = "RangeAttackCooldown";
+    private static final String TAG_COOLDOWN_MAX = "RangeAttackCooldownMax";
+
     public SugarSword_Item(Properties props) {
         super(ModTiers.ERASER_TIER, 10, 7.F, props.stacksTo(1).fireResistant());
     }
 
-    public static BlockHitResult getPlayerLookingAt(Player player, int reach) {
+    public static void startRangeAttackCooldown(ItemStack stack, int ticks) {
+        if (stack.isEmpty()) return;
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putInt(TAG_COOLDOWN, ticks);
+        tag.putInt(TAG_COOLDOWN_MAX, ticks);
+    }
+
+    public static boolean isOnCustomCooldown(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.contains(TAG_COOLDOWN) && tag.getInt(TAG_COOLDOWN) > 0;
+    }
+
+    public static float getCustomCooldownProgress(ItemStack stack) {
+        if (stack.isEmpty()) return 0.0F;
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(TAG_COOLDOWN) || !tag.contains(TAG_COOLDOWN_MAX)) return 0.0F;
+
+        int current = tag.getInt(TAG_COOLDOWN);
+        int max = tag.getInt(TAG_COOLDOWN_MAX);
+        return max > 0 ? 1.0F - (float)current / max : 1.0F;
+    }
+
+    public static HitResult getPlayerLookingAt(Player player, int reach) {
         Level level = player.level();
 
         Vec3 eyePosition = player.getEyePosition();
@@ -66,7 +92,7 @@ public class SugarSword_Item extends SwordItem {
             }
             HitResult hitResult = player.pick(5, 1.0f, true);
 
-            if (!player.level().getBlockState(getPlayerLookingAt(player, 7).getBlockPos()).isAir() || hitResult.getType() == HitResult.Type.ENTITY)
+            if (!player.level().getBlockState(BlockPos.containing(getPlayerLookingAt(player, 7).getLocation())).isAir() || hitResult.getType() == HitResult.Type.ENTITY)
                 return false;
             List<Entity> entities = findEntitiesInCone(player, 3.5, 45.0);
 
@@ -130,5 +156,47 @@ public class SugarSword_Item extends SwordItem {
 
         tooltip.add(1, makeWaveLine(desc, 0xFFAAAAAA, 0xFFFFFFFF));
         tooltip.add(2, makeWaveLine(desc2, 0xFFAAAAAA, 0xFFFFFFFF));
+    }
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return isOnCustomCooldown(stack);
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.contains("RangeAttackCooldown") && tag.contains("RangeAttackCooldownMax")) {
+            int current = tag.getInt("RangeAttackCooldown");
+            int max = tag.getInt("RangeAttackCooldownMax");
+            return Math.round(13.0F * (1.0F - (float)current / max));
+        }
+        return 13;
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        long time = System.currentTimeMillis() / 50;
+        return ColorUtils.waveGrayWhiteColor(time, 1, 6.0);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        if (!level.isClientSide && entity instanceof Player player) {
+            CompoundTag tag = stack.getTag();
+            if (tag != null && tag.contains(TAG_COOLDOWN)) {
+                int cooldown = tag.getInt(TAG_COOLDOWN);
+                if (cooldown > 0) {
+                    tag.putInt(TAG_COOLDOWN, cooldown - 1);
+                    if (cooldown <= 1) {
+                        tag.remove(TAG_COOLDOWN);
+                        tag.remove(TAG_COOLDOWN_MAX);
+                    }
+                    if (player instanceof ServerPlayer) {
+                        player.containerMenu.broadcastChanges();
+                    }
+                }
+            }
+        }
     }
 }

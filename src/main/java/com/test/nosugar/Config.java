@@ -89,7 +89,7 @@ public class Config {
     }
 
     public static boolean shouldBypassTag(TagKey<DamageType> tag) {
-        NoSugar.LOGGER.info(resolvedBypassTags.toString() + "ret: " + resolvedBypassTags.contains(tag));
+        //NoSugar.LOGGER.info(resolvedBypassTags.toString() + "ret: " + resolvedBypassTags.contains(tag));
         return resolvedBypassTags.contains(tag);
     }
 }

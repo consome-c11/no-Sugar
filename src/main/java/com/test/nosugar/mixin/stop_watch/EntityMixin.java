@@ -50,7 +50,7 @@ public class EntityMixin {
         }
     }*/
 
-    /*@Inject(method = "getPosition", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getPosition", at = @At("HEAD"), cancellable = true)
     private void nosugar$ongetPosition(float p_20319_, CallbackInfoReturnable<Vec3> cir) {
         Entity self = (Entity) (Object) this;
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
@@ -58,10 +58,11 @@ public class EntityMixin {
             double d1 = self.getY();
             double d2 = self.getZ();
             cir.setReturnValue(new Vec3(d0, d1, d2));
+            cir.cancel();
         }
     }
 
-    @Inject(method = "getXRot", at = @At("RETURN"), cancellable = true)
+    /*@Inject(method = "getXRot", at = @At("RETURN"), cancellable = true)
     private void nosugar$onGetXRot(CallbackInfoReturnable<Float> cir) {
         Entity self = (Entity) (Object) this;
         EntityAccessor iself = (EntityAccessor) self;

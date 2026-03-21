@@ -24,3 +24,10 @@ mandatory = true
 versionRange = "[1.20.1]"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.nosugar]]
+modId = "curios"
+mandatory = false
+versionRange = "[5.12.1,)"
+ordering = "NONE"
+side = "BOTH"

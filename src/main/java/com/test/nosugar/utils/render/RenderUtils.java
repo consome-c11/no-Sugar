@@ -434,6 +434,7 @@ public class RenderUtils {
         return currentX;
     }
 
+    //サンキューチャッピー
     public static float renderWavingTextDirect(
             Font font,
             String text,
@@ -452,20 +453,18 @@ public class RenderUtils {
         Matrix4f baseMatrix = poseStack.last().pose();
 
         float currentX = x;
-        int charIndex = 0; // 表示文字数カウンター（サロゲートペア対応）
+        int charIndex = 0;
 
-        // ✅ codePoint 単位で処理
         for (int i = 0; i < text.length(); ) {
             int codePoint = text.codePointAt(i);
-            char c = (char) codePoint; // BMP 内と仮定、必要ならグリフ取得部分を調整
+            char c = (char) codePoint;
 
-            int waveColorInt = waveGrayWhiteColor((long) (timeSec * 1000), charIndex, (int) (waveSpeed * 1000));
+            int waveColorInt = waveGrayWhiteColor((long) (timeSec * 30), charIndex, 6);
             float r = (float) ((waveColorInt >> 16) & 0xFF) / 255.0F;
             float g = (float) ((waveColorInt >> 8) & 0xFF) / 255.0F;
             float b = (float) (waveColorInt & 0xFF) / 255.0F;
             float a = 1.0F;
 
-            // ✅ 位相差を小さく滑らかに (0.15〜0.25 を推奨)
             float phaseOffset = charIndex * 0.2f;
             float waveOffset = (float) (Math.sin(timeSec * waveSpeed + phaseOffset) * waveAmplitude);
 

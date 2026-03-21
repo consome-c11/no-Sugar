@@ -6,6 +6,7 @@ import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.client.renderer.ClientEntityCache;
 import com.test.nosugar.client.renderer.PlayerModelDrawer;
 import com.test.nosugar.client.utils.RenderQueue;
+import com.test.nosugar.items.SugarSword_Item;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.*;
 import com.test.nosugar.utils.DestroyMode;
@@ -124,33 +125,6 @@ public class ClientEvents {
                 }
             }
         }
-        if (stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
-            if (ModKeyBindings.TOGGLE_RANGE.consumeClick()) {
-                DestroyMode current = DestroyMode.getMode(mc.player.getMainHandItem());
-
-                DestroyMode next = DestroyMode.values()[(current.ordinal() + 1) % DestroyMode.values().length];
-                ItemStack held = mc.player.getMainHandItem();
-
-                if (mc.player.isShiftKeyDown()) {
-                    boolean nextSilk = !DestroyMode.isSilkTouchEnabled(held);
-
-                    PacketHandler.CHANNEL.sendToServer(new WorldDestroyerChangeModePacket(current, nextSilk));
-
-                } else {
-                    boolean silk = DestroyMode.isSilkTouchEnabled(held);
-
-                    PacketHandler.CHANNEL.sendToServer(new WorldDestroyerChangeModePacket(next, silk));
-                }
-            }
-        }
-
-        if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
-            if (ModKeyBindings.TOGGLE_SHOOT_MODE.consumeClick()) {
-                ShootMode current = ShootMode.getMode(mc.player.getMainHandItem());
-                ShootMode next = ShootMode.values()[(current.ordinal() + 1) % ShootMode.values().length];
-                PacketHandler.CHANNEL.sendToServer(new SugarBowSetModePacket(next));
-            }
-        }
 
         if (isInGameWorld() && mc.options.keyAttack.isDown() &&
                 (stack.getItem() == ModItems.WORLD_DESTROYER.get() || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL))) {
@@ -215,10 +189,10 @@ public class ClientEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
         ItemStack stack = mc.player.getMainHandItem();
-        if (event.getButton() == 1 && event.getAction() == 1 && mc.player.isShiftKeyDown() && stack.getItem() == ModItems.SUGAR_SWORD.get()) {
+        /*if (event.getButton() == 1 && event.getAction() == 1 && mc.player.isShiftKeyDown() && stack.getItem() == ModItems.SUGAR_SWORD.get()) {
             PacketHandler.CHANNEL.sendToServer(new EraserRangeAttackPacket());
             mc.player.swing(mc.player.getUsedItemHand());
-        }
+        }*/
         if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
 
             /*HitResult hit = mc.hitResult;
@@ -274,6 +248,53 @@ public class ClientEvents {
             buffer.endBatch();
         }
     }*/
+
+    @SubscribeEvent
+    public static void onInput(InputEvent.Key event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+
+        ItemStack stack = mc.player.getMainHandItem();
+        ItemStack offstack = mc.player.getOffhandItem();
+
+        if (ModKeyBindings.RANGE_ATTACK.consumeClick() && (stack.getItem() == ModItems.SUGAR_SWORD.get() || offstack.getItem() == ModItems.SUGAR_SWORD.get())) {
+            if(!SugarSword_Item.isOnCustomCooldown(mc.player.getMainHandItem()) && !SugarSword_Item.isOnCustomCooldown(mc.player.getOffhandItem())) {
+                PacketHandler.CHANNEL.sendToServer(new EraserRangeAttackPacket());
+                if(stack.getItem() == ModItems.SUGAR_SWORD.get())SugarSword_Item.startRangeAttackCooldown(stack, 10);
+                else SugarSword_Item.startRangeAttackCooldown(offstack, 10);
+                mc.player.swing(InteractionHand.MAIN_HAND);
+            }
+        }
+
+        if (stack.getItem() == ModItems.WORLD_DESTROYER.get()) {
+            if (ModKeyBindings.TOGGLE_RANGE.consumeClick()) {
+                DestroyMode current = DestroyMode.getMode(mc.player.getMainHandItem());
+
+                DestroyMode next = DestroyMode.values()[(current.ordinal() + 1) % DestroyMode.values().length];
+                ItemStack held = mc.player.getMainHandItem();
+
+                if (mc.player.isShiftKeyDown()) {
+                    boolean nextSilk = !DestroyMode.isSilkTouchEnabled(held);
+
+                    PacketHandler.CHANNEL.sendToServer(new WorldDestroyerChangeModePacket(current, nextSilk));
+
+                } else {
+                    boolean silk = DestroyMode.isSilkTouchEnabled(held);
+
+                    PacketHandler.CHANNEL.sendToServer(new WorldDestroyerChangeModePacket(next, silk));
+                }
+            }
+        }
+
+        if (stack.getItem() == ModItems.SUGAR_BOW.get()) {
+            if (ModKeyBindings.TOGGLE_SHOOT_MODE.consumeClick()) {
+                ShootMode current = ShootMode.getMode(mc.player.getMainHandItem());
+                ShootMode next = ShootMode.values()[(current.ordinal() + 1) % ShootMode.values().length];
+                PacketHandler.CHANNEL.sendToServer(new SugarBowSetModePacket(next));
+            }
+        }
+
+    }
 
     public static boolean isInGameWorld() {
         return Minecraft.getInstance().screen == null;
