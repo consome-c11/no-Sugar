@@ -60,4 +60,7 @@ public interface LivingEntityAccessor {
 
     @Invoker("getSoundVolume")
     float invokegetSoundVolume();
+
+    @Accessor("hurtTime")
+    int gethurtTime();
 }

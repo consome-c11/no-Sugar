@@ -4,6 +4,7 @@ import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.ITransformerModule;
 import com.test.nosugar.transformer.MethodMatcher;
 import com.test.nosugar.transformer.TransformerCore.Phase;
+import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.AsmUtil;
 import org.objectweb.asm.Opcodes;
@@ -26,12 +27,20 @@ public class LivingEntityTransformer implements ITransformerModule {
             "m_6084_", "isAlive", "()Z", false
     );
 
-    private static final String HOOK_CLASS = "com/test/nosugar/transformer/hook/livingentity/LivingEntityMethodsImpl";
-    private static final String HOOK_FIELD = "INSTANCE";
-    private static final String HOOK_DESC = "Lcom/test/nosugar/transformer/hook/livingentity/ILivingEntityHook;";
-    private static final String PHASE_INTERNAL = "com/test/nosugar/transformer/event/LivingEntityMethodEvent$MethodPhase";
-    private static final String PHASE_DESC = "L" + PHASE_INTERNAL + ";";
+    private static final MethodMatcher HURTTIME_FIELD = MethodMatcher.ofField(
+            "net/minecraft/world/entity/LivingEntity",
+            "f_20916_", "hurtTime", "I", false
+    );
 
+    private static final String METHOD_HOOK_CLASS = "com/test/nosugar/transformer/hook/livingentity/LivingEntityMethodImpl";
+    private static final String HOOK_FIELD = "INSTANCE";
+    private static final String METHOD_HOOK_DESC = "Lcom/test/nosugar/transformer/hook/livingentity/ILivingEntityMethodHook;";
+    private static final String METHOD_PHASE_INTERNAL = "com/test/nosugar/transformer/event/LivingEntityMethodEvent$MethodPhase";
+    private static final String METHOD_PHASE_DESC = "L" + METHOD_PHASE_INTERNAL + ";";
+    private static final String FIELD_PHASE_INTERNAL = "com/test/nosugar/transformer/event/LivingEntityFieldEvent$FieldPhase";
+    private static final String FIELD_PHASE_DESC = "L" + FIELD_PHASE_INTERNAL + ";";
+    private static final String FIELD_HOOK_CLASS = "com/test/nosugar/transformer/hook/livingentity/LivingEntityFieldImpl";
+    private static final String FIELD_HOOK_DESC = "Lcom/test/nosugar/transformer/hook/livingentity/ILivingEntityFieldHook;";
     @Override
     public boolean matchesClass(String className) {
         return true;
@@ -54,6 +63,14 @@ public class LivingEntityTransformer implements ITransformerModule {
                 }
             }
         }
+
+        for (AbstractInsnNode insn : method.instructions.toArray()) {
+            if (insn instanceof FieldInsnNode finsn && finsn.getOpcode() == Opcodes.PUTFIELD) {
+                if (HURTTIME_FIELD.matchesCall(finsn)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -66,7 +83,7 @@ public class LivingEntityTransformer implements ITransformerModule {
             for (AbstractInsnNode insn : method.instructions.toArray()) {
                 if (insn.getOpcode() == Opcodes.FRETURN) {
                     injectInterfaceHook(method, insn, "getHealth",
-                            "(FLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")F");
+                            "(FLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")F");
                     dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: getHealth@FRETURN");
                     modified = true;
                     continue;
@@ -78,7 +95,7 @@ public class LivingEntityTransformer implements ITransformerModule {
             for (AbstractInsnNode insn : method.instructions.toArray()) {
                 if (insn.getOpcode() == Opcodes.IRETURN) {
                     injectInterfaceHook(method, insn, "isDeadOrDying",
-                            "(ZLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")Z");
+                            "(ZLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")Z");
                     dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isDeadOrDying@IRETURN");
                     modified = true;
                     continue;
@@ -90,7 +107,7 @@ public class LivingEntityTransformer implements ITransformerModule {
             for (AbstractInsnNode insn : method.instructions.toArray()) {
                 if (insn.getOpcode() == Opcodes.IRETURN) {
                     injectInterfaceHook(method, insn, "isAlive",
-                            "(ZLnet/minecraft/world/entity/Entity;" + PHASE_DESC + ")Z");
+                            "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
                     dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isAlive@IRETURN");
                     modified = true;
                     continue;
@@ -104,22 +121,33 @@ public class LivingEntityTransformer implements ITransformerModule {
 
             if (GET_HEALTH.matchesCall(callInsn, classNode.name)) {
                 injectPostCallHook(method, callInsn, "getHealth",
-                        "(FLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")F");
+                        "(FLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")F");
                 dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: getHealth@" + callInsn.name + "\n method owner: " + callInsn.owner);
                 modified = true;
             }
             else if (IS_DEAD_OR_DYING.matchesCall(callInsn, classNode.name)) {
                 injectPostCallHook(method, callInsn, "isDeadOrDying",
-                        "(ZLnet/minecraft/world/entity/LivingEntity;" + PHASE_DESC + ")Z");
+                        "(ZLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")Z");
                 dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isDeadOrDying@" + callInsn.name + "\n method owner: " + callInsn.owner);
                 modified = true;
             }
             else if (IS_ALIVE.matchesCall(callInsn, classNode.name)) {
                 injectPostCallHook(method, callInsn, "isAlive",
-                        "(ZLnet/minecraft/world/entity/Entity;" + PHASE_DESC + ")Z");
+                        "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
                 dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isAlive@" + callInsn.name + "\n method owner: " + callInsn.owner);
                 modified = true;
             }
+        }
+
+        for (AbstractInsnNode insn : method.instructions.toArray()) {
+            if (!(insn instanceof FieldInsnNode fieldInsn)) continue;
+            if (fieldInsn.getOpcode() != Opcodes.PUTFIELD) continue;
+            if (!HURTTIME_FIELD.matchesCall(fieldInsn)) continue;
+
+            injectFieldWriteHook(method, fieldInsn, "onWriteHurtTime",
+                    "(Lnet/minecraft/world/entity/LivingEntity;ILjava/lang/String;" + FIELD_PHASE_DESC + ")I");
+            dumpInsnContext(classNode.name, method, fieldInsn, "HOOK_FIELD: hurtTime@PUTFIELD");
+            modified = true;
         }
 
         return modified;
@@ -205,20 +233,20 @@ public class LivingEntityTransformer implements ITransformerModule {
 
     private void pushEnumConstant(InsnList list, LivingEntityMethodEvent.MethodPhase phase) {
         String name = phase.name();
-        list.add(new FieldInsnNode(Opcodes.GETSTATIC, PHASE_INTERNAL, name, PHASE_DESC));
+        list.add(new FieldInsnNode(Opcodes.GETSTATIC, METHOD_PHASE_INTERNAL, name, METHOD_PHASE_DESC));
     }
 
     private void injectInterfaceHook(MethodNode method, AbstractInsnNode returnInsn,
                                      String hookMethod, String hookDesc,
                                      LivingEntityMethodEvent.MethodPhase phase) {
         InsnList injection = new InsnList();
-        injection.add(new FieldInsnNode(Opcodes.GETSTATIC, HOOK_CLASS, HOOK_FIELD, HOOK_DESC));
+        injection.add(new FieldInsnNode(Opcodes.GETSTATIC, METHOD_HOOK_CLASS, HOOK_FIELD, METHOD_HOOK_DESC));
         injection.add(new InsnNode(Opcodes.SWAP));
         injection.add(new VarInsnNode(Opcodes.ALOAD, 0));
 
         pushEnumConstant(injection, phase);
         injection.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                "com/test/nosugar/transformer/hook/livingentity/ILivingEntityHook",
+                "com/test/nosugar/transformer/hook/livingentity/ILivingEntityMethodHook",
                 hookMethod,
                 hookDesc,
                 true));
@@ -246,17 +274,41 @@ public class LivingEntityTransformer implements ITransformerModule {
 
         InsnList postPatch = new InsnList();
 
-        postPatch.add(new FieldInsnNode(Opcodes.GETSTATIC, HOOK_CLASS, HOOK_FIELD, HOOK_DESC));
+        postPatch.add(new FieldInsnNode(Opcodes.GETSTATIC, METHOD_HOOK_CLASS, HOOK_FIELD, METHOD_HOOK_DESC));
         postPatch.add(new InsnNode(Opcodes.DUP_X2));
         postPatch.add(new InsnNode(Opcodes.POP));
         postPatch.add(new InsnNode(Opcodes.SWAP));
         pushEnumConstant(postPatch, LivingEntityMethodEvent.MethodPhase.AFTER);
         postPatch.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                "com/test/nosugar/transformer/hook/livingentity/ILivingEntityHook",
+                "com/test/nosugar/transformer/hook/livingentity/ILivingEntityMethodHook",
                 hookMethod, hookDesc, true));
 
         method.instructions.insert(originalCall, postPatch);
         method.maxStack = Math.max(method.maxStack, method.maxStack + 4);
+    }
+
+    private void pushEnumConstant(InsnList list, LivingEntityFieldEvent.FieldPhase phase) {
+        list.add(new FieldInsnNode(Opcodes.GETSTATIC,
+                FIELD_PHASE_INTERNAL, phase.name(), FIELD_PHASE_DESC));
+    }
+
+    private void injectFieldWriteHook(MethodNode method, FieldInsnNode targetField,
+                                      String hookMethod, String hookDesc) {
+        InsnList injection = new InsnList();
+        injection.add(new InsnNode(Opcodes.DUP2));
+        injection.add(new FieldInsnNode(Opcodes.GETSTATIC, FIELD_HOOK_CLASS, "INSTANCE", FIELD_HOOK_DESC));
+        injection.add(new InsnNode(Opcodes.DUP_X2));
+        injection.add(new InsnNode(Opcodes.POP));
+        injection.add(new LdcInsnNode(targetField.name));
+        pushEnumConstant(injection, LivingEntityFieldEvent.FieldPhase.BEFORE);
+        injection.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
+                "com/test/nosugar/transformer/hook/livingentity/ILivingEntityFieldHook",
+                hookMethod, hookDesc, true));
+        injection.add(new InsnNode(Opcodes.SWAP));
+        injection.add(new InsnNode(Opcodes.POP));
+
+        method.instructions.insertBefore(targetField, injection);
+        method.maxStack = Math.max(method.maxStack, 8);
     }
 
     @Override

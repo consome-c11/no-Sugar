@@ -4,7 +4,7 @@ import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
-public interface ILivingEntityHook {
+public interface ILivingEntityMethodHook {
     float getHealth(float original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase);
 
     boolean isDeadOrDying(boolean original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase);

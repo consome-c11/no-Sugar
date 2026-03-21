@@ -2,6 +2,7 @@ package com.test.nosugar.events;
 
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.SnackArmor;
+import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,7 +22,7 @@ public class CommonEvents {
                 return;
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
-                event.setReturnValue(1.f);
+                event.setReturnValue(player.getMaxHealth());
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
@@ -39,6 +40,14 @@ public class CommonEvents {
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(false);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingField(LivingEntityFieldEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity self) || !(self instanceof Player player)) return;
+        if(event.getFieldType() == LivingEntityFieldEvent.FieldType.HURT_TIME && SnackArmor.SnackProtector.isFullSet(player)) {
+            event.setNewValue(0);
         }
     }
 }

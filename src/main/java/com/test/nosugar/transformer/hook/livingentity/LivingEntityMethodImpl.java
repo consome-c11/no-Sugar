@@ -6,11 +6,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 
-public class LivingEntityMethodsImpl implements ILivingEntityHook {
+public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
 
-    public static final ILivingEntityHook INSTANCE = new LivingEntityMethodsImpl();
+    public static final ILivingEntityMethodHook INSTANCE = new LivingEntityMethodImpl();
 
-    private LivingEntityMethodsImpl() {}
+    private LivingEntityMethodImpl() {}
 
     @Override
     public float getHealth(float original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase) {

@@ -3,6 +3,7 @@ package com.test.nosugar.transformer;
 import com.test.nosugar.NoSugar;
 import net.minecraft.server.level.ServerPlayer;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -14,18 +15,16 @@ public class MethodMatcher {
     private final String obfName;
     private final String mappedName;
     private final String desc;
-    private final boolean isInterface;
+    private final boolean isMethod; // true: method, false: field
 
-    public MethodMatcher(String owner, String obfName, String mappedName, String desc, boolean isInterface) {
+    public MethodMatcher(String owner, String obfName, String mappedName, String desc, boolean isInterface, boolean isMethod) {
         this.owner = owner;
         this.obfName = obfName;
         this.mappedName = mappedName;
         this.desc = desc;
-        this.isInterface = isInterface;
+        this.isMethod = isMethod;
     }
 
-    //粉みかんさん感謝
-    //あとチャッピー
     public static boolean isSubclass(String className, String superClass) {
         if (className.equals(superClass) || superClass.equals("java/lang/Object")) {
             return true;
@@ -55,31 +54,58 @@ public class MethodMatcher {
     }
 
     public static MethodMatcher of(String owner, String obfName, String mappedName, String desc, boolean isInterface) {
-        return new MethodMatcher(owner, obfName, mappedName, desc, isInterface);
+        return new MethodMatcher(owner, obfName, mappedName, desc, isInterface, true);
+    }
+
+    public static MethodMatcher ofField(String owner, String obfName, String mappedName, String desc, boolean isInterface) {
+        return new MethodMatcher(owner, obfName, mappedName, desc, isInterface, false);
     }
 
     public boolean matches(MethodInsnNode insn) {
+        if (!isMethod) return false;
         if (!desc.equals(insn.desc)) return false;
         if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
         return owner.equals(insn.owner);
     }
 
     public boolean matches(MethodNode method, String classname) {
+        if (!isMethod) return false;
         if (!desc.equals(method.desc) ||
                 !obfName.equals(method.name) && !mappedName.equals(method.name)) return false;
-        return isSubclass(classname, owner)/* || isOverride(method, classname)*/;
+        return isSubclass(classname, owner);
     }
 
     public boolean matchesCall(MethodInsnNode insn) {
+        if (!isMethod) return false;
         if (!desc.equals(insn.desc)) return false;
         if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
         return owner.equals(insn.owner) || isSubclass(insn.owner, owner);
     }
 
     public boolean matchesCall(MethodInsnNode insn, String classname) {
+        if (!isMethod) return false;
         if (!desc.equals(insn.desc)) return false;
         if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
         return owner.equals(insn.owner) || isSubclass(insn.owner, owner);
     }
 
+    public boolean matches(FieldInsnNode insn) {
+        if (isMethod) return false;
+        if (!desc.equals(insn.desc)) return false;
+        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
+        return owner.equals(insn.owner);
+    }
+
+    public boolean matchesCall(FieldInsnNode insn) {
+        if (isMethod) return false;
+        if (!desc.equals(insn.desc)) return false;
+        if (!obfName.equals(insn.name) && !mappedName.equals(insn.name)) return false;
+        return owner.equals(insn.owner) || isSubclass(insn.owner, owner);
+    }
+
+    public String getOwner() { return owner; }
+    public String getObfName() { return obfName; }
+    public String getMappedName() { return mappedName; }
+    public String getDesc() { return desc; }
+    public boolean isMethod() { return isMethod; }
 }
