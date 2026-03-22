@@ -32,13 +32,13 @@ public class TransformerCore {
 
     public static boolean transform(Phase phase, ClassNode classNode) {
 
-        if (classNode.name.startsWith("com/test/nosugar/transformer")) {
+        if (classNode.name.startsWith("com.test.nosugar.transformer")) {
             return false;
         }
 
         String key = classNode.name + ":" + phase.name();
         if (!transformedClasses.add(key)) {
-            //return false;
+            return false;
         }
 
         boolean modified = false;

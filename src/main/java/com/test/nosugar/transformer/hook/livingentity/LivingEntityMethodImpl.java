@@ -29,15 +29,6 @@ public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
 
         if (returnValue != null) {
             NoSugar.LOGGER.warn("Invalid return type from event: expected Number, got {}", returnValue.getClass());
-        } else {
-            StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-            for (StackTraceElement element : stack) {
-                String className = element.getClassName();
-                NoSugar.LOGGER.info("getHealth NOT updated called from: {}.{}({}:{})",
-                        className, element.getMethodName(), element.getFileName(), element.getLineNumber());
-                break;
-
-            }
         }
         return original;
     }
@@ -66,6 +57,25 @@ public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
         LivingEntityMethodEvent event = new LivingEntityMethodEvent(
                 entity,
                 LivingEntityMethodEvent.MethodType.IS_ALIVE,
+                phase,
+                original
+        );
+        MinecraftForge.EVENT_BUS.post(event);
+        Object returnValue = event.getReturnValue();
+        if (returnValue instanceof Boolean) {
+            return (Boolean) returnValue;
+        }
+        if (returnValue != null) {
+            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
+        }
+        return original;
+    }
+
+    @Override
+    public boolean isRemoved(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase) {
+        LivingEntityMethodEvent event = new LivingEntityMethodEvent(
+                entity,
+                LivingEntityMethodEvent.MethodType.IS_REMOVED,
                 phase,
                 original
         );

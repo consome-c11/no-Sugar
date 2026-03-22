@@ -10,4 +10,6 @@ public interface ILivingEntityMethodHook {
     boolean isDeadOrDying(boolean original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase);
 
     boolean isAlive(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase);
+
+    boolean isRemoved(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase);
 }

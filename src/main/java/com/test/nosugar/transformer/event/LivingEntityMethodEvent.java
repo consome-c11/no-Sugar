@@ -44,5 +44,6 @@ public class LivingEntityMethodEvent extends Event {
         GET_HEALTH,
         IS_DEAD_OR_DYING,
         IS_ALIVE,
+        IS_REMOVED
     }
 }

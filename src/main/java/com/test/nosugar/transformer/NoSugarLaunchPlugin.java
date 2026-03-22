@@ -16,7 +16,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public EnumSet<Phase> handlesClass(Type type, boolean isEmpty) {
-        if (type.getClassName().startsWith("com/test/nosugar/transformer")) {
+        if (type.getClassName().startsWith("com.test.nosugar.transformer")) {
             return EnumSet.noneOf(Phase.class);
         }
         return EnumSet.of(Phase.BEFORE);
@@ -24,7 +24,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public boolean processClass(Phase phase, ClassNode classNode, Type classType, String reason) {
-        if (classNode.name.startsWith("com/test/nosugar/transformer")) {
+        if (classNode.name.startsWith("com.test.nosugar.transformer")) {
             return false;
         }
 

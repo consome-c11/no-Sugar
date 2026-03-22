@@ -27,6 +27,11 @@ public class LivingEntityTransformer implements ITransformerModule {
             "m_6084_", "isAlive", "()Z", false
     );
 
+    private static final MethodMatcher IS_REMOVED = MethodMatcher.of(
+            "net/minecraft/world/entity/Entity",
+            "m_213877_", "isRemoved", "()Z", false
+    );
+
     private static final MethodMatcher HURTTIME_FIELD = MethodMatcher.ofField(
             "net/minecraft/world/entity/LivingEntity",
             "f_20916_", "hurtTime", "I", false
@@ -50,7 +55,8 @@ public class LivingEntityTransformer implements ITransformerModule {
     public boolean matchesMethod(String className, MethodNode method) {
         if (GET_HEALTH.matches(method, className) ||
                 IS_DEAD_OR_DYING.matches(method, className) ||
-                IS_ALIVE.matches(method, className)) {
+                IS_ALIVE.matches(method, className) ||
+                IS_REMOVED.matches(method, className)) {
             return true;
         }
 
@@ -58,7 +64,8 @@ public class LivingEntityTransformer implements ITransformerModule {
             if (insn instanceof MethodInsnNode minsn && isInvocation(minsn.getOpcode())) {
                 if (GET_HEALTH.matchesCall(minsn) ||
                         IS_DEAD_OR_DYING.matchesCall(minsn) ||
-                        IS_ALIVE.matchesCall(minsn)) {
+                        IS_ALIVE.matchesCall(minsn) ||
+                        IS_REMOVED.matchesCall(minsn)) {
                     return true;
                 }
             }
@@ -115,6 +122,17 @@ public class LivingEntityTransformer implements ITransformerModule {
             }
         }
 
+        if (IS_REMOVED.matches(method, classNode.name) && method.desc.endsWith("Z")) {
+            for (AbstractInsnNode insn : method.instructions.toArray()) {
+                if (insn.getOpcode() == Opcodes.IRETURN) {
+                    injectInterfaceHook(method, insn, "isRemoved",
+                            "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
+                    dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isRemoved@IRETURN");
+                    modified = true;
+                    continue;
+                }
+            }
+        }
         for (AbstractInsnNode insn : method.instructions.toArray()) {
             if (!(insn instanceof MethodInsnNode callInsn)) continue;
             if (!isInvocation(callInsn.getOpcode())) continue;
@@ -135,6 +153,12 @@ public class LivingEntityTransformer implements ITransformerModule {
                 injectPostCallHook(method, callInsn, "isAlive",
                         "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
                 dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isAlive@" + callInsn.name + "\n method owner: " + callInsn.owner);
+                modified = true;
+            }
+            else if (IS_REMOVED.matchesCall(callInsn, classNode.name)) {
+                injectPostCallHook(method, callInsn, "isRemoved",
+                        "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
+                dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isRemoved@" + callInsn.name + "\n method owner: " + callInsn.owner);
                 modified = true;
             }
         }

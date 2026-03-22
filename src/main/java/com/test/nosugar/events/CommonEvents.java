@@ -5,6 +5,7 @@ import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,6 +39,17 @@ public class CommonEvents {
                 return;
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
+                event.setReturnValue(false);
+            }
+        }
+        else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_REMOVED) {
+            if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
+                event.setReturnValue(true);
+                return;
+            }
+            if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true) &&
+                    self.getRemovalReason() != Entity.RemovalReason.CHANGED_DIMENSION &&
+                    self.getRemovalReason() != Entity.RemovalReason.DISCARDED) {
                 event.setReturnValue(false);
             }
         }
