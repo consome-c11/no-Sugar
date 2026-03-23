@@ -78,6 +78,7 @@
     "sugar_sword.PersistentEntitySectionManagerCallbackAccessor",
     "sugar_sword.PersistentEntitySectionManagerCallbackMixin",
     "sugar_sword.PlayerListMixin",
+    "sugar_sword.ServerChunkCacheAccessor",
     "sugar_sword.ServerLevelAccessor",
     "sugar_sword.ServerLevelEntityCallbacksMixin",
     "sugar_sword.SynchedEntityDataAccessor",
