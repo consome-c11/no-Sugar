@@ -10,6 +10,7 @@ import com.test.nosugar.utils.TaskScheduler;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.entity.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -126,8 +128,10 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
+        self.getCombatTracker().recordDamage(src, Float.POSITIVE_INFINITY);
         if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
         if (attacker != null) ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
+
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
@@ -154,6 +158,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             if(self instanceof TamableAnimal animal && animal.isTame()) self.die(src);
             this.setErased(true);
             forcedie(src);
+            self.level().broadcastEntityEvent(self, (byte) 60);
+            self.level().broadcastEntityEvent(self, (byte) 60);
             //MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(self, src, Float.POSITIVE_INFINITY));
             MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(self, src));
             self.playSound(((LivingEntityAccessor)self).invokegetDeathSound());
@@ -242,7 +248,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     @Override
     public void forceErase() {
         LivingEntity self = (LivingEntity) (Object) this;
-        self.level().broadcastEntityEvent(self, (byte) 60);
 
         //フィールド書き換えてるだけ
         ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
@@ -250,15 +255,32 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         if (self.level() instanceof ServerLevel serverLevel) {
             ServerBossEvent event = getBossBar(serverLevel);
             if (event != null) event.removeAllPlayers();
-            boolean debug = true;
             self.stopRiding();
             self.invalidateCaps();
 
             EntityTickList tickList = ((ServerLevelAccessor) serverLevel).getEntityTickList();
 
+            if (((EntityTickListAccessor) tickList).getIterated() == ((EntityTickListAccessor) tickList).getActive()) {
+                ((EntityTickListAccessor) tickList).getPassive().clear();
+
+                for(Int2ObjectMap.Entry<Entity> entry : Int2ObjectMaps.fastIterable(((EntityTickListAccessor) tickList).getActive())) {
+                    ((EntityTickListAccessor) tickList).getPassive().put(entry.getIntKey(), entry.getValue());
+                }
+
+                Int2ObjectMap<Entity> int2objectmap = ((EntityTickListAccessor) tickList).getActive();
+                ((EntityTickListAccessor) tickList).setActive(((EntityTickListAccessor) tickList).getPassive());
+                ((EntityTickListAccessor) tickList).setPassive(int2objectmap);
+            }
+
             Int2ObjectMap<Entity> active = ((EntityTickListAccessor) tickList).getActive();
             active.remove(self.getId());
+            Int2ObjectMap<Entity> passive = ((EntityTickListAccessor) tickList).getPassive();
+            passive.remove(self.getId());
+            Int2ObjectMap<Entity> iterated = ((EntityTickListAccessor) tickList).getIterated();
+            if (iterated != null)
+                iterated.remove(self.getId());
 
+            ((EntityAccessor)((Entity)self)).isAddedToWorld(false);
             removefromSectionManager(serverLevel);
 
             ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
@@ -318,7 +340,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             if (((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSection().isEmpty())
                 ((PersistentEntitySectionManagerAccessor<?>) manager).getSectionStorage().remove(((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSectionKey());
         }
-
+        //((EntityAccessor) self).getLevelCallBack().onRemove(Entity.RemovalReason.KILLED);
+        acc.getCallbacks().onTickingEnd(self);
         acc.getCallbacks().onTrackingEnd(self);
         acc.getCallbacks().onDestroyed(self);
     }

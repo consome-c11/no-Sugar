@@ -3,6 +3,7 @@ package com.test.nosugar.mixin.sugar_sword;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
+import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -25,4 +26,7 @@ public interface EntityAccessor {
 
     @Accessor("levelCallback")
     void setlevelCallback(EntityInLevelCallback callback);
+
+    @Accessor(value = "isAddedToWorld", remap = false)
+    void isAddedToWorld(boolean flag);
 }

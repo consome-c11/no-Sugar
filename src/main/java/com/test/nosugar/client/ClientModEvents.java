@@ -1,16 +1,21 @@
 package com.test.nosugar.client;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.client.renderer.SugarBowBakedModel;
+import com.test.nosugar.shader.ModShaders;
 import com.test.nosugar.utils.Res;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -79,4 +84,10 @@ public class ClientModEvents {
             NoSugar.LOGGER.debug("Original model not found for: " + originalModelLocation);
         }
     }
+
+    @SubscribeEvent
+    public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
+        ModShaders.register(event);
+    }
+
 }

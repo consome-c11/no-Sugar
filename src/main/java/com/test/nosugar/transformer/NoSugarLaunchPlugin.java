@@ -19,7 +19,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
         if (type.getClassName().startsWith("com.test.nosugar.transformer")) {
             return EnumSet.noneOf(Phase.class);
         }
-        return EnumSet.of(Phase.BEFORE);
+        return EnumSet.of(Phase.AFTER, Phase.BEFORE);
     }
 
     @Override
