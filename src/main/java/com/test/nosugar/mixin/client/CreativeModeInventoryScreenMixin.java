@@ -22,7 +22,7 @@ public abstract class CreativeModeInventoryScreenMixin
         super(menu, inv, title);
     }
 
-    @Inject(method = "renderLabels(Lnet/minecraft/client/gui/GuiGraphics;II)V", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "renderLabels(Lnet/minecraft/client/gui/GuiGraphics;II)V", at = @At("HEAD"), cancellable = true)
     private void injectRenderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
         CreativeModeTab currentTab = CreativeModeInventoryScreenAccess.getSelectedTab();
         if (currentTab == null || !ModCreativeTabs.ERASER_TAB.isPresent()) return;
@@ -43,6 +43,6 @@ public abstract class CreativeModeInventoryScreenMixin
                 x += this.font.width(String.valueOf(c));
             }
         }
-    }
+    }*/
 }
 

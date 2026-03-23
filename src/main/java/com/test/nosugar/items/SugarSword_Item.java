@@ -101,7 +101,7 @@ public class SugarSword_Item extends SwordItem {
                     killIfParentFound(living, player, 32);
                 }
             }
-            player.sweepAttack();
+            if(hitResult.getType() != HitResult.Type.BLOCK)player.sweepAttack();
             player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS,
                     1.0F, 1.0F);
             return true;
