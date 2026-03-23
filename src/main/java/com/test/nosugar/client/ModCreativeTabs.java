@@ -18,7 +18,7 @@ public class ModCreativeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, NoSugar.MODID);
     public static final RegistryObject<CreativeModeTab> ERASER_TAB =
             TABS.register("nosugar_tab", () -> CreativeModeTab.builder()
-                    .title(Component.literal("NoSugar"))
+                    .title(Component.literal(":_SNoSugar"))
                     .icon(() -> new ItemStack(ModItems.SUGAR_SWORD.get()))
                     .displayItems((parameters, output) -> {
                         ModItems.getAllItems().forEach(item -> output.accept(new ItemStack(item)));
