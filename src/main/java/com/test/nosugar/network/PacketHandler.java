@@ -16,10 +16,6 @@ public class PacketHandler {
             PROTOCOL_VERSION::equals
     );
 
-    public static void init() {
-        ModPackets.register();
-    }
-
     public static void sendToPlayer(Object msg, ServerPlayer player) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }

@@ -87,7 +87,7 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
-        ModShaders.register(event);
+        //ModShaders.register(event);
     }
 
 }

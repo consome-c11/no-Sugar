@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.Config;
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
@@ -43,8 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 @Mixin(value = LivingEntity.class, priority = 0)
 public abstract class LivingEntityMixin implements ILivingEntity {
@@ -235,7 +234,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                         return event;
 
                     } catch (ReflectiveOperationException | ClassCastException ex) {
-                        LOGGER.error("Failed to get boss bar from {} (id={}, uuid={})",
+                        NoSugar.LOGGER.error("Failed to get boss bar from {} (id={}, uuid={})",
                                 self.getName().getString(), self.getId(), self.getUUID(), ex);
                     }
                 }

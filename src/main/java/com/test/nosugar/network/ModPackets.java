@@ -87,13 +87,5 @@ public class ModPackets {
                 SugarBowSetModePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
-        PacketHandler.CHANNEL.registerMessage(
-                id++,
-                SyncPacket.class,
-                SyncPacket::encode,
-                SyncPacket::decode,
-                SyncPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
-        );
     }
 }

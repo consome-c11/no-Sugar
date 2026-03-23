@@ -19,7 +19,7 @@ import java.util.List;
 @Mixin(value = Inventory.class, priority = 0)
 public class InventoryMixin {
 
-    private static Player player_;
+    /*private static Player player_;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onConstruct(Player player, CallbackInfo ci) {
@@ -135,7 +135,7 @@ public class InventoryMixin {
         itemsList.setEditingAllowed(false);
         armorList.setEditingAllowed(false);
         offhandList.setEditingAllowed(false);
-    }*/
+    }
 
     @Inject(method = "addResource(ILnet/minecraft/world/item/ItemStack;)I", at = @At("HEAD"))
     private void onAddResourceStart(int slot, ItemStack stack, CallbackInfoReturnable<Integer> cir) {
@@ -185,5 +185,5 @@ public class InventoryMixin {
         if (targetList != null && targetList.isProtectionActive()) {
             ci.cancel();
         }
-    }
+    }*/
 }

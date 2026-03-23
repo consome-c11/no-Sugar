@@ -6,6 +6,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,10 +15,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public class EntityMixin {
 
+    @Unique
+    private boolean prevstop;
+
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void nosugar$ontick(CallbackInfo ci) {
         Entity self = (Entity) (Object) this;
         EntityAccessor iself = (EntityAccessor) self;
+        if(!prevstop && TimeStopManager.isStopped(self.level())) {
+            self.baseTick();
+            ci.cancel();
+            return;
+        }
+        prevstop = TimeStopManager.isStopped(self.level());
         if(TimeStopManager.isStopped(self.level()) && !TimeStopManager.CanMove(self)) {
             ci.cancel();
         }

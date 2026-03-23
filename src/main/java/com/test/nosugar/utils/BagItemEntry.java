@@ -8,8 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
-
 public record BagItemEntry(Item item, long count, CompoundTag tag) {
 
     public static BagItemEntry fromItemStack(ItemStack stack) {
@@ -34,19 +32,19 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
     }
 
     public ItemStack toItemStack() {
-        LOGGER.debug("BagItemEntry.toItemStack called. Item: {}, Long Count: {}, Tag: {}", this.item, this.count, this.tag);
+        NoSugar.LOGGER.debug("BagItemEntry.toItemStack called. Item: {}, Long Count: {}, Tag: {}", this.item, this.count, this.tag);
 
         if (this.item == null || this.item == Items.AIR) {
-            LOGGER.debug("BagItemEntry.item is null or AIR, returning EMPTY.");
+            NoSugar.LOGGER.debug("BagItemEntry.item is null or AIR, returning EMPTY.");
             return ItemStack.EMPTY;
         }
 
         int itemStackCount = (int) Math.min(this.count, Integer.MAX_VALUE);
 
-        LOGGER.debug("BagItemEntry.count (long): {} converted to int count: {}", this.count, itemStackCount);
+        NoSugar.LOGGER.debug("BagItemEntry.count (long): {} converted to int count: {}", this.count, itemStackCount);
 
         if (itemStackCount <= 0) {
-            LOGGER.warn("BagItemEntry.count resulted in itemStackCount <= 0 (was: {}). Returning EMPTY.", itemStackCount);
+            NoSugar.LOGGER.warn("BagItemEntry.count resulted in itemStackCount <= 0 (was: {}). Returning EMPTY.", itemStackCount);
             return ItemStack.EMPTY;
         }
 
@@ -55,7 +53,7 @@ public record BagItemEntry(Item item, long count, CompoundTag tag) {
             stack.setTag(this.tag.copy());
         }
 
-        LOGGER.debug("BagItemEntry.toItemStack returning ItemStack: {} with count: {}", stack.getItem(), stack.getCount());
+        NoSugar.LOGGER.debug("BagItemEntry.toItemStack returning ItemStack: {} with count: {}", stack.getItem(), stack.getCount());
 
         return stack;
     }
