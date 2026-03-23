@@ -26,9 +26,14 @@
     "client.SetScreenMixin",
     "client.TransientEntitySectionManagerAccessor",
     "snackprotector.GameRendererMixin",
+    "stop_watch.ClientLevelAccessor",
     "stop_watch.ClientLevelMixin",
     "stop_watch.EntityRendererMixin",
-    "stop_watch.LivingEntityRendererMixin"
+    "stop_watch.LivingEntityRendererMixin",
+    "stop_watch.MinecraftAccessor",
+    "stop_watch.MinecraftMixin",
+    "stop_watch.TimerAccessor",
+    "stop_watch.TimerMixin"
   ],
   "mixins": [
     "common.DamageSourceMixin",

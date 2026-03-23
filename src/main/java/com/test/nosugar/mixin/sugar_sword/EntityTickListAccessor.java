@@ -10,4 +10,16 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface EntityTickListAccessor {
     @Accessor("active")
     Int2ObjectMap<Entity> getActive();
+
+    @Accessor("active")
+    void setActive(Int2ObjectMap<Entity> active);
+
+    @Accessor("passive")
+    Int2ObjectMap<Entity> getPassive();
+
+    @Accessor("passive")
+    void setPassive(Int2ObjectMap<Entity> passive);
+
+    @Accessor("iterated")
+    Int2ObjectMap<Entity> getIterated();
 }
