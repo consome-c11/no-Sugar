@@ -12,6 +12,7 @@ import com.test.nosugar.network.packets.*;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.Res;
 import com.test.nosugar.utils.ShootMode;
+import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.client.Minecraft;
@@ -294,6 +295,16 @@ public class ClientEvents {
             }
         }
 
+        if (ModKeyBindings.HALO_TIMESTOP.consumeClick()) {
+            if (EntityUtils.hasHaloOfSugar(mc.player)) {
+                PacketHandler.CHANNEL.sendToServer(new TimeStopPacket());
+            }
+        }
+        if (ModKeyBindings.HALO_STRAGE.consumeClick()) {
+            if (EntityUtils.hasHaloOfSugar(mc.player)) {
+                PacketHandler.CHANNEL.sendToServer(new OpenHaloStragePacket());
+            }
+        }
     }
 
     public static boolean isInGameWorld() {

@@ -4,6 +4,8 @@ import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.mixin.sugar_sword.LivingEntityAccessor;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,6 +32,14 @@ public abstract class LivingEntityMixin {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
             ci.cancel();
+        }
+    }
+    @Inject(method = "canFreeze", at = @At("HEAD"), cancellable = true)
+    private void snackProtector$oncanFreeze(CallbackInfoReturnable<Boolean> cir){
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            cir.setReturnValue(false);
+            cir.cancel();
         }
     }
 
@@ -103,8 +113,12 @@ public abstract class LivingEntityMixin {
     )
     private MobEffectInstance snackProtector$modifyEffectInstance(MobEffectInstance original) {
         if ((Object) this instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
+            MobEffectInstance newEffect = new MobEffectInstance(original);
+            if(newEffect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                newEffect =  new MobEffectInstance(MobEffect.byId(0));
+            }
             return new MobEffectInstance(
-                    original.getEffect(),
+                    newEffect.getEffect(),
                     (original.getDuration() * 7),//効果7倍! アンパソマソ!
                     original.getAmplifier(),
                     original.isAmbient(),

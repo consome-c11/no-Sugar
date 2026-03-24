@@ -1,23 +1,7 @@
 package com.test.nosugar.mixin.common;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.test.nosugar.Config;
-import com.test.nosugar.NoSugar;
-import com.test.nosugar.additional.ModItems;
-import com.test.nosugar.utils.item.TicUtils;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-
-import static com.test.nosugar.utils.entity.EntityUtils.enable_tag;
-import static com.test.nosugar.utils.entity.EntityUtils.getretInvulnerable;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {

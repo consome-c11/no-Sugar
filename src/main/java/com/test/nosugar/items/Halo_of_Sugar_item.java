@@ -8,10 +8,8 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import top.theillusivec4.curios.api.SlotContext;
@@ -20,10 +18,12 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
 public class Halo_of_Sugar_item  extends Item implements ICurioItem {
+    private static final Random RANDOM = new Random();
 
     public Halo_of_Sugar_item(Properties p_41383_) {
         super(p_41383_);
@@ -34,34 +34,37 @@ public class Halo_of_Sugar_item  extends Item implements ICurioItem {
         return "head".equals(slotContext.identifier());
     }
 
-    private static final String SLOT_IDENTIFIER_KEY = "curios.slot.head";
     @Override
     public ICurio.DropRule getDropRule(SlotContext slotContext, DamageSource source, int lootingLevel, boolean recentlyHit, ItemStack stack){
         return ICurio.DropRule.ALWAYS_KEEP;
     }
 
+    @Override
+    public Component getName(ItemStack stack) {
+        return makeWaveLine(Component.translatable("item.nosuger.halo_of_sugar.name").getString(), true);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static String getRandomSugarLine() {
+        String fullText = Component.translatable("item.nosugar.halo.of.sugar.desc").getString();
+        String[] lines = fullText.split("\n");
+        return lines[RANDOM.nextInt(lines.length)];
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public List<Component> getSlotsTooltip(List<Component> tooltips, ItemStack stack) {
-        final String SLOT_KEY = Component.translatable("curios.modifiers.head").getString();
 
-        for (int i = 0; i < tooltips.size(); i++) {
-            String lineStr = tooltips.get(i).getString();
+        if (Screen.hasShiftDown()) {
+            tooltips.add(ColorUtils.makeWaveLine(
+                    " " + getRandomSugarLine(), true));
+            addActiveBypassTooltips(tooltips, 2);
 
-            if (lineStr.contains(SLOT_KEY)) {
-                if (Screen.hasShiftDown()) {
-                    addActiveBypassTooltips(tooltips, i + 1);
-                    tooltips.add(i + 1, ColorUtils.makeWaveLine(
-                            " " + Component.translatable("item.nosugar.halo.of.sugar.desc").getString(),
-                            true));
-                } else {
-                    tooltips.add(i + 1, ColorUtils.makeWaveLine(
-                            " " + Component.translatable("item.nosugar.show_advanced").getString(),
-                            true));
-                }
-                break;
-            }
+        } else {
+            tooltips.add(ColorUtils.makeWaveLine(
+                    " " + Component.translatable("item.nosugar.show_advanced").getString()));
         }
+
         return tooltips;
     }
 
@@ -80,9 +83,10 @@ public class Halo_of_Sugar_item  extends Item implements ICurioItem {
         for (Map.Entry<TagKey<DamageType>, String> entry : tagToKeyMap.entrySet()) {
             if (Config.shouldBypassTag(entry.getKey())) {
                 String text = " " + Component.translatable(entry.getValue()).getString();
-                tooltip.add(insertIndex + offset, makeWaveLine(text, true));
+                tooltip.add(insertIndex + offset, makeWaveLine(text));
                 offset++;
             }
         }
     }
+
 }

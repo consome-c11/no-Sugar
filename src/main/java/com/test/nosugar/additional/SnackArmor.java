@@ -1,5 +1,6 @@
 package com.test.nosugar.additional;
 
+import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -106,7 +107,7 @@ public class SnackArmor {
 
         public static boolean isFullSet(Player player, boolean real) {
             if (player == null || player.getInventory() == null) return false;
-
+            if(EntityUtils.hasHaloOfSugar(player))return true;
             ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
@@ -118,18 +119,18 @@ public class SnackArmor {
 
         public static boolean isFullSet(Player player) {
             if (player == null || player.getInventory() == null) return false;
-
+            if(EntityUtils.hasHaloOfSugar(player))return true;
             ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
 
-            return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
+            return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet));
         }
 
         public static boolean hasSnackProtector(Player player) {
             if (player == null || player.getInventory() == null) return false;
-
+            if(EntityUtils.hasHaloOfSugar(player))return true;
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (slot.getType() == EquipmentSlot.Type.ARMOR) {
                     ItemStack stack = player.getItemBySlot(slot);

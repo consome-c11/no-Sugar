@@ -1,6 +1,5 @@
 package com.test.nosugar.mixin.stop_watch;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

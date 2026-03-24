@@ -1,9 +1,8 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.gui.BagMenu;
-import com.test.nosugar.network.PacketHandler;
-import com.test.nosugar.network.packets.SyncBagPagesPacket;
-import com.test.nosugar.utils.BagSavedData;
+import com.test.nosugar.utils.BagManager;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -18,11 +17,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +48,9 @@ public class UltimaCanteen extends Item {
                 float healAmount = maxHp * 0.4f;
                 float newHp = Math.min(player.getHealth() + healAmount, maxHp);
                 player.setHealth(newHp);
-
+                if(player instanceof ILivingEntity iliving) {
+                    iliving.setDelta(0);
+                }
                 try {
                     int currentFood = player.getFoodData().getFoodLevel();
                     if (currentFood < FOOD_LEVEL_TARGET) {
@@ -78,24 +76,7 @@ public class UltimaCanteen extends Item {
 
                 UUID bagId = getOrCreateBagId(stack);
 
-                int totalPages = Integer.MAX_VALUE;
-                int currentPage = 0;
-
-                BagSavedData data = BagSavedData.get(level);
-                List<ItemStack> prevPage = (currentPage > 0) ? data.getPage(bagId, currentPage - 1) : Collections.emptyList();
-                List<ItemStack> currentPageItems = data.getPage(bagId, currentPage);
-                List<ItemStack> nextPage = (currentPage < data.getTotalPages(bagId) - 1) ? data.getPage(bagId, currentPage + 1) : Collections.emptyList();
-
-                PacketHandler.CHANNEL.send(
-                        PacketDistributor.PLAYER.with(() -> serverPlayer),
-                        new SyncBagPagesPacket(bagId, currentPage, prevPage, currentPageItems, nextPage)
-                );
-
-                NetworkHooks.openScreen(serverPlayer, new BagMenuProvider(bagId, currentPage, totalPages), buf -> {
-                    buf.writeUUID(bagId);
-                    buf.writeInt(currentPage);
-                    buf.writeInt(totalPages);
-                });
+                BagManager.OpenBag(serverPlayer, bagId);
             }
         }
 

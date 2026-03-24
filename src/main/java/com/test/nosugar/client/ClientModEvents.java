@@ -1,11 +1,10 @@
 package com.test.nosugar.client;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.additional.ModItems;
+import com.test.nosugar.client.renderer.HaloRenderer;
 import com.test.nosugar.client.renderer.SugarBowBakedModel;
-import com.test.nosugar.shader.ModShaders;
 import com.test.nosugar.utils.Res;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +13,8 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 import java.io.IOException;
 import java.util.Map;
@@ -88,6 +89,16 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
         //ModShaders.register(event);
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            CuriosRendererRegistry.register(
+                    ModItems.HALO_OF_SUGAR.get(),
+                    HaloRenderer::new
+            );
+        });
     }
 
 }

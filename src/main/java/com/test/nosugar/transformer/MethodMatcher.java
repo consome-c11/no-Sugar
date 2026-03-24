@@ -1,7 +1,6 @@
 package com.test.nosugar.transformer;
 
 import com.test.nosugar.NoSugar;
-import net.minecraft.server.level.ServerPlayer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;

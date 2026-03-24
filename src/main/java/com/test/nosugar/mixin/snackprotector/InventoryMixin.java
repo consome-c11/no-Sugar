@@ -1,20 +1,7 @@
 package com.test.nosugar.mixin.snackprotector;
 
-import com.google.common.collect.ImmutableList;
-import com.test.nosugar.additional.SnackArmor;
-import com.test.nosugar.utils.ProtectedNonNullList;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
 
 @Mixin(value = Inventory.class, priority = 0)
 public class InventoryMixin {

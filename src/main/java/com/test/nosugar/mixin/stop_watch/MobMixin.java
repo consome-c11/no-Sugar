@@ -2,7 +2,6 @@ package com.test.nosugar.mixin.stop_watch;
 
 import com.test.nosugar.utils.TimeStopManager;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

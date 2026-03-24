@@ -4,7 +4,6 @@ import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.items.SugarSword_Item;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.Eraser_Utils;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;

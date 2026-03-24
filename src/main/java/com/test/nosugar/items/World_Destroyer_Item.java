@@ -1,13 +1,11 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModTiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,8 +13,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
 import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
 @Mod.EventBusSubscriber(modid = NoSugar.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)

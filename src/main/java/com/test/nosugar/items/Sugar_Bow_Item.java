@@ -4,7 +4,6 @@ import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.entity.HomingArrowEntity;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.utils.ShootMode;
-import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

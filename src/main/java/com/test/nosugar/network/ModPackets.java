@@ -87,5 +87,27 @@ public class ModPackets {
                 SugarBowSetModePacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
+
+        PacketHandler.CHANNEL.registerMessage(
+                id++, TimeStopPacket.class,
+                TimeStopPacket::encode,
+                TimeStopPacket::decode,
+                TimeStopPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, OpenHaloStragePacket.class,
+                OpenHaloStragePacket::encode,
+                OpenHaloStragePacket::decode,
+                OpenHaloStragePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, SyncDeltaPacket.class,
+                SyncDeltaPacket::encode,
+                SyncDeltaPacket::decode,
+                SyncDeltaPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
     }
 }

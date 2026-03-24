@@ -1,6 +1,7 @@
 package com.test.nosugar.items;
 
-import com.test.nosugar.utils.TimeStopManager;
+import com.test.nosugar.network.PacketHandler;
+import com.test.nosugar.network.packets.TimeStopPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -29,31 +30,12 @@ public class StopWatch extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(1, makeWaveLine(Component.literal("[Warning] This item is currently under development. It may contain critical bugs :(").getString(), 0xFFFF0000, 0xFFFFFF00));
     }
+
     @Override
-    public InteractionResultHolder<ItemStack> use(Level p_41432_, Player p_41433_, InteractionHand p_41434_) {
-        if (!p_41432_.isClientSide()) {
-            toggleTimeStop(p_41432_, p_41433_);
-            if (TimeStopManager.isStopped(p_41432_)) p_41433_.displayClientMessage(
-                    Component.translatable("item.nosugar.stopwatch.stopped"),
-                    true
-            );
-            else p_41433_.displayClientMessage(
-                    Component.translatable("item.nosugar.stopwatch.resumed"),
-                    true
-            );
-        }
-        return InteractionResultHolder.success(p_41433_.getItemInHand(p_41434_));
-    }
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        if(player.level().isClientSide)PacketHandler.CHANNEL.sendToServer(new TimeStopPacket());
 
-    private void toggleTimeStop(Level level, Player player) {
-        boolean newState = !TimeStopManager.isStopped(level);
-        TimeStopManager.setStopped(level, newState);
-
-        if (newState) {
-            TimeStopManager.addEntity(player);
-        } else {
-            TimeStopManager.removeEntity(player);
-        }
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 
 }

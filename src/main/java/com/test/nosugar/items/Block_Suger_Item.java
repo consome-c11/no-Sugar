@@ -1,7 +1,6 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.entity.BlockSugerEntity;
-import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

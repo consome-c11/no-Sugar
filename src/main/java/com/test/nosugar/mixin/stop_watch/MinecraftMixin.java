@@ -1,10 +1,7 @@
 package com.test.nosugar.mixin.stop_watch;
 
-import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.TimeStopManager;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Timer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -42,4 +39,14 @@ public class MinecraftMixin {
             }*/
         }
     }
+
+    /*@Inject(method = "getDeltaFrameTime", at = @At("HEAD"), cancellable = true)
+    public void getDeltaFrameTime(CallbackInfoReturnable<Float> cir) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+        if (TimeStopManager.isStopped(mc.level)) {
+            cir.setReturnValue(0.0F);
+            cir.cancel();
+        }
+    }*/
 }

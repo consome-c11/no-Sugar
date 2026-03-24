@@ -6,7 +6,6 @@ import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +24,9 @@ public class CommonEvents {
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(player.getMaxHealth());
             }
+            if(iliving.getDelta() > 0.f) {
+                event.setReturnValue((Float)event.getReturnValue() - iliving.getDelta());
+            }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
                 event.setReturnValue(false);
@@ -33,6 +35,9 @@ public class CommonEvents {
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(true);
             }
+            if(iliving.getDelta() > 0.f) {
+                event.setReturnValue(self.getHealth() > 0.f);
+            }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_DEAD_OR_DYING) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
                 event.setReturnValue(true);
@@ -40,6 +45,9 @@ public class CommonEvents {
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
                 event.setReturnValue(false);
+            }
+            if(iliving.getDelta() > 0.f) {
+                event.setReturnValue(!self.isAlive());
             }
         }
         else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_REMOVED) {

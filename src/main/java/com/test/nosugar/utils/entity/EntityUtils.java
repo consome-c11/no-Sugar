@@ -10,21 +10,28 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
-import org.spongepowered.asm.mixin.Unique;
+import top.theillusivec4.curios.api.CuriosApi;
 
 public class EntityUtils {
 
+    public static boolean hasHaloOfSugar(LivingEntity living) {
+        return CuriosApi.getCuriosInventory(living)
+                .map(inv -> inv.findFirstCurio(ModItems.HALO_OF_SUGAR.get()).isPresent())
+                .orElse(false);
+    }
+
     public static boolean enable_tag(DamageSource source, TagKey<DamageType> tag){
+        if(!(source.getEntity() instanceof LivingEntity living)) return false;
         //if(source.getEntity() != null) NoSugar.LOGGER.info("Source Entity: " + source.getEntity().getName());
 
-        boolean isNoSugarItem = source.getEntity() instanceof LivingEntity living
-                && (living.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
+        boolean isNoSugarItem = (living.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
                 || living.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
                 || living.getMainHandItem().getItem() == ModItems.TAIL_OF_NINE.get()
                 || TicUtils.hasSugarMod(living.getMainHandItem())
                 || BlessingUtils.isBlessed(living.getMainHandItem()));
         //NoSugar.LOGGER.info(tag.toString());
-        if (isNoSugarItem && Config.shouldBypassTag(tag)) {
+
+        if ((isNoSugarItem || hasHaloOfSugar(living)) && Config.shouldBypassTag(tag)) {
             return true;
         }
         return false;

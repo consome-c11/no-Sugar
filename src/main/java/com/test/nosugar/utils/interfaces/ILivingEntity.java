@@ -38,4 +38,8 @@ public interface ILivingEntity {
     long getLastDeathTime();
 
     void setLastDeathTime(long time);
+
+    float getDelta();
+
+    void setDelta(float delta);
 }

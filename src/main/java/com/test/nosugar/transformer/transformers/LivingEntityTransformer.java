@@ -1,12 +1,10 @@
 package com.test.nosugar.transformer.transformers;
 
-import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.ITransformerModule;
 import com.test.nosugar.transformer.MethodMatcher;
 import com.test.nosugar.transformer.TransformerCore.Phase;
 import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
-import com.test.nosugar.utils.AsmUtil;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;

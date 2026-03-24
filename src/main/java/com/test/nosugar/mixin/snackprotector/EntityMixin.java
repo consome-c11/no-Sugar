@@ -1,7 +1,6 @@
 package com.test.nosugar.mixin.snackprotector;
 
 import com.test.nosugar.additional.SnackArmor;
-import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -36,4 +35,12 @@ public class EntityMixin {
         }
     }
 
+    @Inject(method = "isOnFire", at = @At("HEAD"), cancellable = true)
+    private void snackProtector$isOnFire(CallbackInfoReturnable<Boolean> cir) {
+        Entity self = (Entity) (Object) this;
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+            cir.setReturnValue(false);
+            cir.cancel();
+        }
+    }
 }

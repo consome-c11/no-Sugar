@@ -21,7 +21,7 @@
   "item.nosugar.block_sugar.name": "block sugar",
   "item.nosugar.block_sugar.desc": "Cube!",
   "item.nosugar.sugar_sword.name": "Sugar Sword",
-  "key.categories.nosugar": "NoSugar",
+  "key.categories.nosugar": ":_SNoSugar",
   "key.sugarbow.toggle_mode": "Toggle Shoot Mode",
   "item.nosuger.world_destroyer": "Snack Destryer",
   "item.nosuger.sugar_totem.desc": "Yeah. Work in progress \n soon™",
@@ -43,5 +43,8 @@
   "item.nosugar.stopwatch.stopped": "Stopped",
   "item.nosugar.stopwatch.resumed": "Resumed",
   "key.sugar.sword.range.attack": "RangeAttack",
-  "item.nosugar.halo.of.sugar.desc": "1. Sugar is [Deleted]\\n2. Sugar is the world\\n3. The world is sugar\\n4. The world is yours\\n5. [Deleted]"
+  "item.nosugar.halo.of.sugar.desc": "You are Sugar\nSugar is The World\nThe World is Sugar\nThe World is You\n[Deleted]",
+  "item.nosuger.halo_of_sugar.name": "Halo of Sugar",
+  "key.halo.of.sugar.time.stop": "Halo Time Stop",
+  "key.halo.of.sugar.open.strage": "Halo Open Storage"
 }

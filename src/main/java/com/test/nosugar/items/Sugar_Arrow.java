@@ -1,6 +1,5 @@
 package com.test.nosugar.items;
 
-import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;

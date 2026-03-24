@@ -1,6 +1,7 @@
 package com.test.nosugar.network;
 
 import com.test.nosugar.network.packets.EraseEntityPacket;
+import com.test.nosugar.network.packets.SyncDeltaPacket;
 import com.test.nosugar.utils.TaskScheduler;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.client.Minecraft;
@@ -41,4 +42,15 @@ public class ClientPacketHandler {
         }
     }
 
+    public static void handleSetDelta(SyncDeltaPacket msg) {
+
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null) {
+            Entity entity = mc.level.getEntity(msg.entityId);
+            if (entity != null && entity instanceof ILivingEntity iliving) {
+                iliving.setDelta(msg.deltaValue);
+            }
+        }
+
+    }
 }

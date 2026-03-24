@@ -9,6 +9,8 @@ public class ModKeyBindings {
     public static KeyMapping TOGGLE_RANGE;
     public static KeyMapping TOGGLE_SHOOT_MODE;
     public static KeyMapping RANGE_ATTACK;
+    public static KeyMapping HALO_TIMESTOP;
+    public static KeyMapping HALO_STRAGE;
 
     public static void init(RegisterKeyMappingsEvent event) {
         TOGGLE_RANGE = new KeyMapping(
@@ -29,8 +31,22 @@ public class ModKeyBindings {
                 GLFW.GLFW_KEY_R,
                 "key.categories.nosugar"
         );
+        HALO_TIMESTOP = new KeyMapping(
+                "key.halo.of.sugar.time.stop",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_H,
+                "key.categories.nosugar"
+        );
+        HALO_STRAGE = new KeyMapping(
+                "key.halo.of.sugar.open.strage",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_B,
+                "key.categories.nosugar"
+        );
         event.register(ModKeyBindings.TOGGLE_RANGE);
         event.register(ModKeyBindings.TOGGLE_SHOOT_MODE);
         event.register(ModKeyBindings.RANGE_ATTACK);
+        event.register(ModKeyBindings.HALO_TIMESTOP);
+        event.register(ModKeyBindings.HALO_STRAGE);
     }
 }

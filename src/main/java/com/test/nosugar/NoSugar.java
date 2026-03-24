@@ -12,7 +12,6 @@ import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.network.ModPackets;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;

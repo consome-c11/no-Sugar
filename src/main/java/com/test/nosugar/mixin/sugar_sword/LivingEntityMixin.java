@@ -5,9 +5,11 @@ import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
-import com.test.nosugar.utils.entity.LivingEntityUtils;
+import com.test.nosugar.network.packets.SyncDeltaPacket;
 import com.test.nosugar.utils.SynchedEntityDataUtil;
 import com.test.nosugar.utils.TaskScheduler;
+import com.test.nosugar.utils.entity.EntityUtils;
+import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -28,7 +30,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.entity.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -57,6 +58,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     private boolean erased = false;
     @Unique
     private boolean Fullset = false;
+    @Unique
+    private float delta = 0;
 
     @Unique
     private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {//サンキューチャッピー
@@ -121,8 +124,27 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     }
 
     @Override
+    public float getDelta() {
+        return delta;
+    }
+
+    @Override
+    public void setDelta(float d) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if(delta != d && !self.level().isClientSide)
+            for (ServerPlayer sp : ((ServerLevel) self.level()).players()) {
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new SyncDeltaPacket(self.getId(), d));
+            }
+        delta = d;
+    }
+
+    @Override
     public void instantKill(LivingEntity attacker, boolean SkipAnimation, DamageSource src) {
         LivingEntity self = (LivingEntity) (Object) this;
+        if(EntityUtils.hasHaloOfSugar(self)) {
+            setDelta(getDelta() + 1.f);
+            if(self.getHealth() > 0.f)return;
+        }
         //self.setPose(Pose.DYING);
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;

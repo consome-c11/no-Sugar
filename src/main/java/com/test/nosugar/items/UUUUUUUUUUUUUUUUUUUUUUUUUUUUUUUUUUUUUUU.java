@@ -1,12 +1,9 @@
 package com.test.nosugar.items;
 
-import com.test.nosugar.entity.HomingArrowEntity;
-import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.mixin.sugar_sword.EntityLookupAccessor;
 import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;
 import com.test.nosugar.mixin.sugar_sword.ServerLevelAccessor;
-import com.test.nosugar.utils.ShootMode;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
