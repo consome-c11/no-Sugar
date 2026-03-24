@@ -28,7 +28,7 @@ public abstract class EntityMixin {
         }
     }
 
-    @ModifyVariable(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"), argsOnly = true)
+    /*@ModifyVariable(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"), argsOnly = true)
     private Vec3 nosugar$onsetDeltaMovement(Vec3 velocity) {
         Entity entity = (Entity) (Object) this;
         if(entity instanceof Projectile projectile) {
@@ -37,7 +37,7 @@ public abstract class EntityMixin {
         }
 
         return velocity;
-    }
+    }*/
 
     private static float getMultiplier(Entity entity) {
         if (entity.level().isClientSide) return 1.0f;

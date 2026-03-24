@@ -10,6 +10,9 @@ public interface TransientEntitySectionManagerAccessor<T extends EntityAccess> {
     @Accessor("sectionStorage")
     EntitySectionStorage<T> getSectionStorage();
 
+    @Accessor("entityStorage")
+    EntityLookup<T> getEntityStorage();
+
     @Accessor("callbacks")
     LevelCallback<T> getCallbacks();
 

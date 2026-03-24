@@ -8,9 +8,12 @@ import net.minecraft.world.level.Level;
 public class SugarTotem {
 
     public static boolean hasTotem(Player player) {
-        Level level = player.level();
-        if (level == null) return false;
-        return player.getMainHandItem().getItem() == ModItems.SUGAR_TOTEM.get() || player.getOffhandItem().getItem() == ModItems.SUGAR_TOTEM.get();
+        if (player == null || player.level() == null || player.getInventory() == null) return false;
+
+        ItemStack mainHand = player.getMainHandItem();
+        ItemStack offHand = player.getOffhandItem();
+
+        return (!mainHand.isEmpty() && mainHand.is(ModItems.SUGAR_TOTEM.get())) || (!offHand.isEmpty() && offHand.is(ModItems.SUGAR_TOTEM.get()));
     }
 
     public static void onDead(Player player) {
