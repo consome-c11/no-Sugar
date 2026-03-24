@@ -33,6 +33,7 @@ public class ModCommands {
                         .executes(context -> {
                             CommandSourceStack source = context.getSource();
                             ServerPlayer player =source.getPlayer();
+                            if(player == null) return Command.SINGLE_SUCCESS;
                             player.displayClientMessage(Component.literal("HP: " + player.getHealth() + " isDeadOrDying: " + player.isDeadOrDying() + " isAlive: " + player.isAlive() + " isRemoved: " + player.isRemoved()), true);
                             return Command.SINGLE_SUCCESS;
                         })

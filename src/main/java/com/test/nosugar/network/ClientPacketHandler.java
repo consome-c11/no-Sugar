@@ -32,7 +32,7 @@ public class ClientPacketHandler {
             if (((LivingEntity) e) instanceof ILivingEntity erased) {
                 //LOGGER.info("[NoSugar] Received EraseEntityPacket for: " + e.getName().getString());
                 erased.setErased(true);
-                if (!(e instanceof Player player)) {
+                if (!(e instanceof Player)) {
                     erased.markErased(e.getUUID());
                 }
 
@@ -47,7 +47,7 @@ public class ClientPacketHandler {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) {
             Entity entity = mc.level.getEntity(msg.entityId);
-            if (entity != null && entity instanceof ILivingEntity iliving) {
+            if (entity instanceof ILivingEntity iliving) {
                 iliving.setDelta(msg.deltaValue);
             }
         }

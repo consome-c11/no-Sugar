@@ -31,13 +31,10 @@ public class EntityUtils {
                 || BlessingUtils.isBlessed(living.getMainHandItem()));
         //NoSugar.LOGGER.info(tag.toString());
 
-        if ((isNoSugarItem || hasHaloOfSugar(living)) && Config.shouldBypassTag(tag)) {
-            return true;
-        }
-        return false;
+        return (isNoSugarItem || hasHaloOfSugar(living)) && Config.shouldBypassTag(tag);
     }
 
-    public static boolean getretInvulnerable(LivingEntity target, DamageSource source){
+    /*public static boolean getretInvulnerable(DamageSource source){
         if(source.getEntity() instanceof LivingEntity attacker) {
             boolean isNoSugarItem = (attacker.getMainHandItem().getItem() == ModItems.SUGAR_SWORD.get()
                     || attacker.getMainHandItem().getItem() == ModItems.WORLD_DESTROYER.get()
@@ -50,5 +47,5 @@ public class EntityUtils {
             }
         }
         return true;
-    }
+    }*/
 }
