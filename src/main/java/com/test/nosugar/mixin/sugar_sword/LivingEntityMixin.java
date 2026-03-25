@@ -268,52 +268,56 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     @Override
     public void forceErase() {
-        LivingEntity self = (LivingEntity) (Object) this;
+        try {
+            LivingEntity self = (LivingEntity) (Object) this;
 
-        //フィールド書き換えてるだけ
-        ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
+            //フィールド書き換えてるだけ
+            ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
-        if (self.level() instanceof ServerLevel serverLevel) {
-            ServerBossEvent event = getBossBar(serverLevel);
-            if (event != null) event.removeAllPlayers();
-            self.stopRiding();
-            self.invalidateCaps();
+            if (self.level() instanceof ServerLevel serverLevel) {
+                ServerBossEvent event = getBossBar(serverLevel);
+                if (event != null) event.removeAllPlayers();
+                self.stopRiding();
+                self.invalidateCaps();
 
-            EntityTickList tickList = ((ServerLevelAccessor) serverLevel).getEntityTickList();
+                EntityTickList tickList = ((ServerLevelAccessor) serverLevel).getEntityTickList();
 
-            if (((EntityTickListAccessor) tickList).getIterated() == ((EntityTickListAccessor) tickList).getActive()) {
-                ((EntityTickListAccessor) tickList).getPassive().clear();
+                if (((EntityTickListAccessor) tickList).getIterated() == ((EntityTickListAccessor) tickList).getActive()) {
+                    ((EntityTickListAccessor) tickList).getPassive().clear();
 
-                for(Int2ObjectMap.Entry<Entity> entry : Int2ObjectMaps.fastIterable(((EntityTickListAccessor) tickList).getActive())) {
-                    ((EntityTickListAccessor) tickList).getPassive().put(entry.getIntKey(), entry.getValue());
+                    for (Int2ObjectMap.Entry<Entity> entry : Int2ObjectMaps.fastIterable(((EntityTickListAccessor) tickList).getActive())) {
+                        ((EntityTickListAccessor) tickList).getPassive().put(entry.getIntKey(), entry.getValue());
+                    }
+
+                    Int2ObjectMap<Entity> int2objectmap = ((EntityTickListAccessor) tickList).getActive();
+                    ((EntityTickListAccessor) tickList).setActive(((EntityTickListAccessor) tickList).getPassive());
+                    ((EntityTickListAccessor) tickList).setPassive(int2objectmap);
                 }
 
-                Int2ObjectMap<Entity> int2objectmap = ((EntityTickListAccessor) tickList).getActive();
-                ((EntityTickListAccessor) tickList).setActive(((EntityTickListAccessor) tickList).getPassive());
-                ((EntityTickListAccessor) tickList).setPassive(int2objectmap);
+                Int2ObjectMap<Entity> active = ((EntityTickListAccessor) tickList).getActive();
+                active.remove(self.getId());
+                Int2ObjectMap<Entity> passive = ((EntityTickListAccessor) tickList).getPassive();
+                passive.remove(self.getId());
+                Int2ObjectMap<Entity> iterated = ((EntityTickListAccessor) tickList).getIterated();
+                if (iterated != null)
+                    iterated.remove(self.getId());
+
+                ((EntityAccessor) ((Entity) self)).isAddedToWorld(false);
+                removefromSectionManager(serverLevel);
+
+                ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
+                ((ChunkMapAccessor) chunkMap).removeEntity(self);
+                Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
+                entityMap.remove(self.getId());
+                if (self instanceof TrackedEntityAccessor accessor) {
+                    accessor.invokeBroadcastRemoved();
+                }
+                ((EntityAccessor) self).setlevelCallback(EntityInLevelCallback.NULL);
             }
-
-            Int2ObjectMap<Entity> active = ((EntityTickListAccessor) tickList).getActive();
-            active.remove(self.getId());
-            Int2ObjectMap<Entity> passive = ((EntityTickListAccessor) tickList).getPassive();
-            passive.remove(self.getId());
-            Int2ObjectMap<Entity> iterated = ((EntityTickListAccessor) tickList).getIterated();
-            if (iterated != null)
-                iterated.remove(self.getId());
-
-            ((EntityAccessor)((Entity)self)).isAddedToWorld(false);
-            removefromSectionManager(serverLevel);
-
-            ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
-            ((ChunkMapAccessor) chunkMap).removeEntity(self);
-            Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
-            entityMap.remove(self.getId());
-            if (self instanceof TrackedEntityAccessor accessor) {
-                accessor.invokeBroadcastRemoved();
-            }
-            ((EntityAccessor) self).setlevelCallback(EntityInLevelCallback.NULL);
         }
-
+        catch (Throwable throwable) {
+            NoSugar.LOGGER.warn("An error occurred while trying to erase the entity", throwable);
+        }
     }
 
     @Unique

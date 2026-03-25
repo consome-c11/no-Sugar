@@ -247,6 +247,7 @@ public class SnackArmor {
         private static void resetAbilities(Player player) {
             player.getAbilities().mayfly = false;
             //player.getAbilities().invulnerable = false;
+            player.getAbilities().flying = false;
             player.onUpdateAbilities();
             if (player instanceof ILivingEntity Iliving) Iliving.setwasFullset(false);
         }

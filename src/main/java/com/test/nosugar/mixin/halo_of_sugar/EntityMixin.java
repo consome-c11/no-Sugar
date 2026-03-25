@@ -1,16 +1,17 @@
 package com.test.nosugar.mixin.halo_of_sugar;
 
-import com.test.nosugar.NoSugar;
 import com.test.nosugar.utils.entity.EntityUtils;
-import mods.flammpfeil.slashblade.entity.Projectile;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -22,12 +23,32 @@ public abstract class EntityMixin {
 
     @Inject(method = "isPickable", at = @At("HEAD"), cancellable = true)
     private void nosugar$isPickable(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof LivingEntity living && EntityUtils.hasHaloOfSugar(living)) {
-            cir.setReturnValue(true);
+        Entity self = (Entity)(Object)this;
+        if (self instanceof LivingEntity living&& EntityUtils.hasHaloOfSugar(living)) {
+            cir.setReturnValue(false);
+            cir.cancel();
+        }
+
+    }
+
+    @Inject(method = "isAttackable", at = @At("HEAD"), cancellable = true)
+    private void nosugar$isAttackable(CallbackInfoReturnable<Boolean> cir) {
+        Entity self = (Entity)(Object)this;
+        if (self instanceof LivingEntity living&& EntityUtils.hasHaloOfSugar(living)) {
+            cir.setReturnValue(false);
+            cir.cancel();
+        }
+
+    }
+
+    @Inject(method = "canBeHitByProjectile", at = @At("HEAD"), cancellable = true)
+    private void nosugar$canBeHitByProjectile(CallbackInfoReturnable<Boolean> cir) {
+        Entity self = (Entity)(Object)this;
+        if (self instanceof LivingEntity living&& EntityUtils.hasHaloOfSugar(living)) {
+            cir.setReturnValue(false);
             cir.cancel();
         }
     }
-
     /*@ModifyVariable(method = "setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"), argsOnly = true)
     private Vec3 nosugar$onsetDeltaMovement(Vec3 velocity) {
         Entity entity = (Entity) (Object) this;
@@ -39,23 +60,64 @@ public abstract class EntityMixin {
         return velocity;
     }*/
 
-    private static float getMultiplier(Entity entity) {
-        if (entity.level().isClientSide) return 1.0f;
+    @Inject(method = "baseTick", at = @At("HEAD"))
+    private void onTick(CallbackInfo ci) {
+        Entity self = (Entity) (Object) this;
 
-        List<Player> players = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(10.0));
+        if (self.isRemoved() || self instanceof Player) {
+            return;
+        }
 
-        float closestMultiplier = 1.0f;
+        double searchRange = 6.0D;
+        List<Player> nearbyPlayers = self.level().getEntitiesOfClass(
+                Player.class,
+                self.getBoundingBox().inflate(searchRange)
+        );
 
-        for (Player player : players) {
-            if (player != entity && EntityUtils.hasHaloOfSugar(player)) {
-                double dist = entity.distanceTo(player);
-                float multiplier = (float) clamp((dist - 1.5) / 3.5, 0.0, 1.0);
-
-                if (multiplier < closestMultiplier) {
-                    closestMultiplier = multiplier;
-                }
+        for (Player player : nearbyPlayers) {
+            if (EntityUtils.hasHaloOfSugar(player)) {
+                nosugar$applyAABB(self, player);
+                break;
             }
         }
-        return closestMultiplier;
+    }
+
+    @Unique
+    private void nosugar$applyAABB(Entity entity, Player player) {
+        AABB entityBox = entity.getBoundingBox();
+        AABB playerBox = player.getBoundingBox();
+        Vec3 entityCenter = entityBox.getCenter();
+        Vec3 playerCenter = playerBox.getCenter();
+        Vec3 toTarget = playerCenter.subtract(entityCenter).normalize();
+
+        double dist = nosugar$getDistanceBetweenBoxes(entityBox, playerBox);
+
+        Vec3 motion = entity.getDeltaMovement();
+        if (motion.lengthSqr() > 1.0E-4D) {
+            double dot = motion.normalize().dot(toTarget);
+            if (dot <= 0) return;
+        }
+
+        double keepDistance = 1.D;
+        double slowdownRange = 3.0D;
+
+        if (dist < slowdownRange) {
+            Vec3 forwardComponent = toTarget.scale(motion.dot(toTarget));
+            Vec3 sideComponent = motion.subtract(forwardComponent);
+
+            double strength = (dist - keepDistance) / (slowdownRange - keepDistance);
+            strength = Math.max(0.0D, Math.pow(strength, 2));
+
+            entity.setDeltaMovement(sideComponent.add(forwardComponent.scale(strength)));
+            entity.hasImpulse = true;
+        }
+    }
+
+    @Unique
+    private double nosugar$getDistanceBetweenBoxes(AABB box1, AABB box2) {
+        double dx = Math.max(0, Math.max(box1.minX - box2.maxX, box2.minX - box1.maxX));
+        double dy = Math.max(0, Math.max(box1.minY - box2.maxY, box2.minY - box1.maxY));
+        double dz = Math.max(0, Math.max(box1.minZ - box2.maxZ, box2.minZ - box1.maxZ));
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 }

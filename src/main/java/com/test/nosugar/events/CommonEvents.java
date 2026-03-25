@@ -25,7 +25,8 @@ public class CommonEvents {
                 event.setReturnValue(player.getMaxHealth());
             }
             if(iliving.getDelta() > 0.f) {
-                event.setReturnValue((Float)event.getReturnValue() - iliving.getDelta());
+                float maxHealthCap = self.getMaxHealth() - iliving.getDelta();
+                event.setReturnValue(Math.min((Float) event.getReturnValue(), maxHealthCap));
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
             if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
