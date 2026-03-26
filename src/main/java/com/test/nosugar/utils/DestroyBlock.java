@@ -161,31 +161,31 @@ public class DestroyBlock {
 
     public static void breakSameIdByIdNormal(ServerLevel level, ServerPlayer player, BlockPos center,
                                              ItemStack tool, ResourceLocation blockId) {
-        breakSameIdById(level, player, center, tool, 0, false, 32, blockId);
+        breakSameIdById(level, player, center, tool, 0, false, 128, blockId);
     }
 
     public static void breakSameIdByIdFortune(ServerLevel level, ServerPlayer player, BlockPos center,
                                               ItemStack tool, int fortuneLevel, ResourceLocation blockId) {
-        breakSameIdById(level, player, center, tool, fortuneLevel, false, 32, blockId);
+        breakSameIdById(level, player, center, tool, fortuneLevel, false, 128, blockId);
     }
 
     public static void breakSameIdByIdSilk(ServerLevel level, ServerPlayer player, BlockPos center,
                                            ItemStack tool, ResourceLocation blockId) {
-        breakSameIdById(level, player, center, tool, 0, true, 32, blockId);
+        breakSameIdById(level, player, center, tool, 0, true, 128, blockId);
     }
 
     public static void breakSameIdNormal(ServerLevel level, ServerPlayer player, BlockPos center, ItemStack tool) {
-        breakSameId(level, player, center, tool, 0, false, 32,
+        breakSameId(level, player, center, tool, 0, false, 128,
                 state -> state.getBlock() == level.getBlockState(center).getBlock());
     }
 
     public static void breakSameIdFortune(ServerLevel level, ServerPlayer player, BlockPos center, ItemStack tool, int fortuneLevel) {
-        breakSameId(level, player, center, tool, fortuneLevel, false, 32,
+        breakSameId(level, player, center, tool, fortuneLevel, false, 128,
                 state -> state.getBlock() == level.getBlockState(center).getBlock());
     }
 
     public static void breakSameIdSilk(ServerLevel level, ServerPlayer player, BlockPos center, ItemStack tool) {
-        breakSameId(level, player, center, tool, 0, true, 32,
+        breakSameId(level, player, center, tool, 0, true, 128,
                 state -> state.getBlock() == level.getBlockState(center).getBlock());
     }
 

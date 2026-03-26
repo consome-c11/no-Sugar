@@ -28,8 +28,6 @@
     "snackprotector.GameRendererMixin",
     "stop_watch.ClientLevelAccessor",
     "stop_watch.ClientLevelMixin",
-    "stop_watch.EntityRendererMixin",
-    "stop_watch.GameRendererMixin",
     "stop_watch.LevelRendererMixin",
     "stop_watch.LivingEntityRendererMixin",
     "stop_watch.MinecraftAccessor",

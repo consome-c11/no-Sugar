@@ -3,8 +3,11 @@ package com.test.nosugar.mixin.halo_of_sugar;
 import com.test.nosugar.utils.entity.EntityUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,6 +78,7 @@ public abstract class EntityMixin {
         );
 
         for (Player player : nearbyPlayers) {
+            if(self instanceof TraceableEntity projectile && projectile.getOwner() != null && projectile.getOwner().getId() == player.getId()) continue;
             if (EntityUtils.hasHaloOfSugar(player)) {
                 nosugar$applyAABB(self, player);
                 break;

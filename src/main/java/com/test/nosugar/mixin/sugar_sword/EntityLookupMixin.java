@@ -32,8 +32,10 @@ public abstract class EntityLookupMixin<T extends EntityAccess> implements Erase
         Int2ObjectMap<T> vanillaById = this.getById();
         Map<UUID, T> vanillaByUuid = this.getByUuid();
 
-        if (vanillaByUuid != null) vanillaByUuid.remove(uuid);
-        if (vanillaById != null) vanillaById.remove(id);
+        if (vanillaByUuid != null) if(vanillaByUuid.remove(uuid) != null);
+        else NoSugar.LOGGER.info("failed to remove to uuidmap: {}", entity.getUUID().toString());
+        if (vanillaById != null) if(vanillaById.remove(id) != null);
+        else  NoSugar.LOGGER.info("failed to remove to idmap: {}", entity.getUUID().toString());
 
         this.setByUuid(vanillaByUuid);
         this.setById(vanillaById);

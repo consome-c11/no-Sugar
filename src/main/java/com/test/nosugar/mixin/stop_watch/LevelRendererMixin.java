@@ -55,7 +55,7 @@ public class LevelRendererMixin {
             if (TimeStopManager.CanMove(entity)) {
                 return this.lastRealPartialTicks;
             }
-            else return 0.f;
+            else return 1.0E-6F;
         }
 
         return original;

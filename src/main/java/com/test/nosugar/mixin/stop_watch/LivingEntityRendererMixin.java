@@ -41,7 +41,7 @@ public abstract class LivingEntityRendererMixin {
             argsOnly = true)
     private float nosugar$modifyWalkSpeed(float value, LivingEntity entity) {
         if (TimeStopManager.isStopped(entity.level()) && !TimeStopManager.CanMove(entity)) {
-            return 0.0F;
+            return 1.0E-6F;
         }
         return value;
     }
@@ -53,7 +53,7 @@ public abstract class LivingEntityRendererMixin {
             argsOnly = true)
     private float nosugar$modifyWalkPosition(float value, LivingEntity entity) {
         if (TimeStopManager.isStopped(entity.level()) && !TimeStopManager.CanMove(entity)) {
-            return 0.0F;
+            return 1.0E-6F;
         }
         return value;
     }
@@ -65,7 +65,7 @@ public abstract class LivingEntityRendererMixin {
             argsOnly = true)
     private float nosugar$modifyAttackTime(float value, LivingEntity entity) {
         if (TimeStopManager.isStopped(entity.level()) && !TimeStopManager.CanMove(entity)) {
-            return 0.0F;
+            return 1.0E-6F;
         }
         return value;
     }
