@@ -95,4 +95,7 @@ public interface RenderStateShardAccessor {
     static RenderStateShard.LayeringStateShard getNoLayering() {
         throw new AssertionError();
     }
+
+    @Accessor("BLOCK_SHEET_MIPPED")
+    static RenderStateShard.TextureStateShard getBlockSheetMipped() {throw new AssertionError();}
 }

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 //Thanks @Sakurafuld
-// from: HyperLink/helper/Deets.java
+// from: https://github.com/Sakurafuld/Hyperlink/blob/1.20.1/src/main/java/com/sakurafuld/hyperdaimc/infrastructure/Deets.java
 
 public class Deets {
     public static final String HYPERDAIMC = "hyperdaimc";

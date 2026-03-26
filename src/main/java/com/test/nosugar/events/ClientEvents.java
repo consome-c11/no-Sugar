@@ -1,10 +1,7 @@
 package com.test.nosugar.events;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
-import com.test.nosugar.client.renderer.ClientEntityCache;
-import com.test.nosugar.client.renderer.PlayerModelDrawer;
 import com.test.nosugar.client.utils.RenderQueue;
 import com.test.nosugar.items.SugarSword_Item;
 import com.test.nosugar.network.PacketHandler;
@@ -52,7 +49,7 @@ import static com.test.nosugar.utils.render.RenderUtils.renderBlockList;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEvents {
-
+    public static int renderTime = 0;
     public static final List<Entity> erasedEntities = new ArrayList<>();
     private static final Map<UUID, Long> lastUpdate = new HashMap<>();
     private static int tick = 0;
@@ -238,17 +235,6 @@ public class ClientEvents {
 
 
     }
-    /*@SubscribeEvent //shitty shield effect rendering
-    public static void onRenderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            PoseStack poseStack = event.getPoseStack();
-            MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-
-            ShieldEffectRenderer.render(poseStack, buffer, event.getPartialTick());
-
-            buffer.endBatch();
-        }
-    }*/
 
     @SubscribeEvent
     public static void onInput(InputEvent.Key event) {
@@ -311,84 +297,14 @@ public class ClientEvents {
         return Minecraft.getInstance().screen == null;
     }
 
-    /*@SubscribeEvent
-    public static void onRenderLiving(RenderLivingEvent.Pre<LivingEntity, ?> event) {
-        LivingEntity entity = event.getEntity();
-        UUID uuid = entity.getUUID();
-        if (entity instanceof ILivingEntity living && living.isErased(entity.getUUID())) {
-            entity.setDeltaMovement(new Vec3(0, 0, 0));
-            long now = System.currentTimeMillis();
-            long last = lastUpdate.getOrDefault(uuid, 0L);
-            if (now - last >= 50) {//1tick?
-                entity.deathTime++;
-                entity.setPose(Pose.DYING);
-                lastUpdate.put(uuid, now);
-            }
-            //if (entity.deathTime > 20) event.setCanceled(true);
-        }
-    }*/
-
-    public static boolean erase() {
-        /*Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        int[] ids = erasedEntities.stream()
-                .mapToInt(Entity::getId)
-                .toArray();
-
-        for (int id : ids) {
-            Entity e = level.getEntity(id);
-            if (e != null) {
-                ClientPacketListener connection = mc.getConnection();
-
-                ClientboundRemoveEntitiesPacket packet =
-                        new ClientboundRemoveEntitiesPacket(e.getId());
-
-                packet.handle(connection);
-                return true;
-            }
-
-        }*/
-        return false;
-    }
-
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             Minecraft mc = Minecraft.getInstance();
-            PoseStack poseStack = event.getPoseStack();
-            Vec3 camera = event.getCamera().getPosition();
 
-            /*for (RenderQueue.RenderEntry entry : RenderQueue.getEntries()) {
-                if(entry == null) break;
-                RenderUtils.renderBlockBox(poseStack, camera, entry.pos, entry.color);
-            }*/
             renderBlockList(event.getPoseStack(), event.getCamera().getPosition(), RenderQueue.getPositions(), 0xFFFFFFFF);
-
-            //RenderQueue.clear();
-
             ItemStack stack = mc.player.getMainHandItem();
 
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
-
-        PoseStack poseStack = event.getPoseStack();
-        float partialTick = event.getPartialTick();
-
-        for (var entry : ClientEntityCache.entityCache.entrySet()) {
-            var data = entry.getValue();
-            if (data.entity != null && System.currentTimeMillis() - data.lastUpdate < 5000) {
-                PlayerModelDrawer.renderEntity(
-                        data.entity,
-                        poseStack,
-                        0, 0, 0,
-                        1.0f,
-                        partialTick
-                );
-            }
         }
     }
 
@@ -407,11 +323,11 @@ public class ClientEvents {
     }
 
 
-    /*@SubscribeEvent
-    public static void onRenderLivingEntity(RenderLivingEvent event){
-        if(event.getEntity() instanceof ILivingEntity iliving && (iliving.isErased() || iliving.isErased(event.getEntity().getUUID())) && erasedEntities.equals(event.getEntity())){
-            //event.setCanceled(true);
+    @SubscribeEvent
+    public static void clientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && !Minecraft.getInstance().isPaused()) {
+            renderTime++;
         }
-    }*/
+    }
 }
 

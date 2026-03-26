@@ -12,6 +12,7 @@ import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.core.SectionPos;
@@ -33,6 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.server.command.ForgeCommand;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,10 +42,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(value = LivingEntity.class, priority = 0)
@@ -62,29 +61,22 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     private float delta = 0;
 
     @Unique
-    private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {//サンキューチャッピー
-        Class<?> c = self.getClass();
-        List<Entity> list = byClass.get(c);
-        if (list != null) {
-            list.remove(self);
-            if (list.isEmpty()) {
-                byClass.remove(c);
-            }
-        }
-        List<Class<?>> keysToRemove = new java.util.ArrayList<>();
+    private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {
+        if (byClass == null || self == null) return;
 
-        for (Map.Entry<Class<?>, List<Entity>> e : byClass.entrySet()) {
-            List<Entity> l = e.getValue();
-            if (l != null && !l.isEmpty()) {
-                l.remove(self);
-                if (l.isEmpty()) {
-                    keysToRemove.add(e.getKey());
+        Iterator<Map.Entry<Class<?>, List<Entity>>> entryIterator = byClass.entrySet().iterator();
+
+        while (entryIterator.hasNext()) {
+            Map.Entry<Class<?>, List<Entity>> entry = entryIterator.next();
+            List<Entity> list = entry.getValue();
+
+            if (list != null) {
+                list.removeIf(e -> e == self);
+
+                if (list.isEmpty()) {
+                    entryIterator.remove();
                 }
             }
-        }
-
-        for (Class<?> key : keysToRemove) {
-            byClass.remove(key);
         }
     }
 
@@ -148,6 +140,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         //self.setPose(Pose.DYING);
         //SynchedEntityDataUtil.forceSet(self.getEntityData(), EntityAccessor.getDataPoseId(), 0.0F);
         if (this.isErased() || self.level().isClientSide) return;
+        this.setErased(true);
         EntityDataAccessor<Float> healthId = LivingEntityAccessor.getDataHealthId();
         self.getCombatTracker().recordDamage(src, Float.POSITIVE_INFINITY);
         if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
@@ -177,7 +170,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new EraseEntityPacket(self.getUUID(), SkipAnimation || Config.SKIP_DEATH_ANIMATION.get()));
             }
             if(self instanceof TamableAnimal animal && animal.isTame()) self.die(src);
-            this.setErased(true);
             forcedie(src);
             self.level().broadcastEntityEvent(self, (byte) 60);
             self.level().broadcastEntityEvent(self, (byte) 60);
@@ -186,7 +178,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             self.playSound(((LivingEntityAccessor)self).invokegetDeathSound());
             self.playSound(SoundEvents.PLAYER_ATTACK_STRONG, ((LivingEntityAccessor)self).invokegetSoundVolume(), self.getVoicePitch());
             if (!SkipAnimation && !Config.SKIP_DEATH_ANIMATION.get()) {
-                TaskScheduler.schedule(this::forceErase, 21);
+                TaskScheduler.schedule(this::forceErase, 19);
             } else forceErase();
         }
 
@@ -270,7 +262,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     public void forceErase() {
         try {
             LivingEntity self = (LivingEntity) (Object) this;
-
             //フィールド書き換えてるだけ
             ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
@@ -304,9 +295,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
                 ((EntityAccessor) ((Entity) self)).isAddedToWorld(false);
                 removefromSectionManager(serverLevel);
-
                 ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
-                ((ChunkMapAccessor) chunkMap).removeEntity(self);
                 Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
                 entityMap.remove(self.getId());
                 if (self instanceof TrackedEntityAccessor accessor) {
@@ -329,8 +318,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 (PersistentEntitySectionManagerAccessor<Entity>) manager;
 
         EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
-        ((EraseEntityLookupBridge<Entity>) vis).eraseEntity(self);
-
+        boolean removed = ((EraseEntityLookupBridge<Entity>) vis).eraseEntity(self);
+        NoSugar.LOGGER.info("Lookup Removal: {}", removed);
         LevelEntityGetter<Entity> getter = acc.getEntityGetter();
         EntityLookup<Entity> vis2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
         ((EraseEntityLookupBridge<Entity>) vis2).eraseEntity(self);
@@ -354,22 +343,33 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
             if (byClass != null) hardRemove(self, byClass);
         }
-        EntitySection<Entity> section3 =
-                ((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSection();
-        if (section3 != null) {
-            //((EntitySectionAccessor) section3).getStorage().remove(self);
-            ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section3).getStorage();
-            Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
-            if (byClass != null) hardRemove(self, byClass);
-            //これは泣いた
-            if (((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSection().isEmpty())
-                ((PersistentEntitySectionManagerAccessor<?>) manager).getSectionStorage().remove(((PersistentEntitySectionManagerCallbackAccessor) ((EntityAccessor) self).getLevelCallBack()).getCurrentSectionKey());
+        Object callback = ((EntityAccessor) self).getLevelCallBack();
+        if (callback instanceof PersistentEntitySectionManagerCallbackAccessor cbAcc) {
+            //NoSugar.LOGGER.info("what the hell???");
+            EntitySection<Entity> section3 = cbAcc.getCurrentSection();
+
+            if (section3 != null) {
+                ClassInstanceMultiMap<Entity> multiMap = ((EntitySectionAccessor<Entity>) section3).getStorage();
+                Map<Class<?>, List<Entity>> byClass = ((ClassInstanceMultiMapAccessor<Entity>) multiMap).getByClass();
+
+                if (byClass != null) {
+                    hardRemove(self, byClass);
+                }
+                if (section3.isEmpty()) {
+                    acc.getSectionStorage().remove(cbAcc.getCurrentSectionKey());
+                }
+            }
         }
+        else if(callback != null){
+            NoSugar.LOGGER.info("Class: " + callback.getClass().getName());
+        }
+        else NoSugar.LOGGER.info(":sob:");
         //((EntityAccessor) self).getLevelCallBack().onRemove(Entity.RemovalReason.KILLED);
         acc.getCallbacks().onTickingEnd(self);
         acc.getCallbacks().onTrackingEnd(self);
         acc.getCallbacks().onDestroyed(self);
     }
+
     /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void nosugar$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;

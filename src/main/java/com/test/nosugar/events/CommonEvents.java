@@ -52,7 +52,7 @@ public class CommonEvents {
             }
         }
         else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_REMOVED) {
-            if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
+            if (!self.level().isClientSide && (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased())) {
                 event.setReturnValue(true);
                 return;
             }

@@ -12,6 +12,6 @@ public interface ChunkMapAccessor {
     @Accessor("entityMap")
     Int2ObjectMap<?> getEntityMap();
 
-    @Invoker("removeEntity")
-    void removeEntity(Entity self);
+    /*@Invoker("removeEntity")
+    void removeEntity(Entity self);*/
 }

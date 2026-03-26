@@ -3,6 +3,7 @@ package com.test.nosugar.client;
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.client.renderer.HaloRenderer;
+import com.test.nosugar.client.renderer.SugarBakedModel;
 import com.test.nosugar.client.renderer.SugarBowBakedModel;
 import com.test.nosugar.utils.Res;
 import net.minecraft.client.resources.model.BakedModel;
@@ -17,6 +18,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -42,53 +45,34 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
-        Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
+        updateSugarBowModel(event, Res.getResource(NoSugar.MODID, "sugar_bow"));
+        List<String> affectedItems = new ArrayList<>();
 
-        ModelResourceLocation pulling0Location = new ModelResourceLocation(
-                Res.getResource(NoSugar.MODID, "sugar_bow_pulling_0"), "inventory");
-        BakedModel pulling0Model = modelRegistry.get(pulling0Location);
+        ModItems.getAllItems().forEach(item -> {
+            affectedItems.add(item.getDescriptionId());
+        });
 
-        if (pulling0Model == null) {
-            NoSugar.LOGGER.debug("Warning: pulling_0 model not found in assets");
-        }
-
-        ModelResourceLocation pulling1Location = new ModelResourceLocation(
-                Res.getResource(NoSugar.MODID, "sugar_bow_pulling_1"), "inventory");
-
-        BakedModel pulling1Model = modelRegistry.get(pulling1Location);
-
-        if (pulling1Model == null) {
-            NoSugar.LOGGER.debug("Warning: pulling_1 model not found in assets");
-        }
-
-        ModelResourceLocation pulling2Location = new ModelResourceLocation(
-                Res.getResource(NoSugar.MODID, "sugar_bow_pulling_2"), "inventory");
-        BakedModel pulling2Model = modelRegistry.get(pulling2Location);
-
-        if (pulling2Model == null) {
-            NoSugar.LOGGER.debug("Warning: pulling_2 model not found in assets");
-        }
-
-
-        ModelResourceLocation originalModelLocation = new ModelResourceLocation(
-                Res.getResource(NoSugar.MODID, "sugar_bow"), "inventory");
-
-        BakedModel originalModel = modelRegistry.get(originalModelLocation);
-
-        if (originalModel != null) {
-            BakedModel customModel = new SugarBowBakedModel(originalModel);
-
-            modelRegistry.put(originalModelLocation, customModel);
-
-            NoSugar.LOGGER.debug("Successfully replaced model for: " + originalModelLocation);
-        } else {
-            NoSugar.LOGGER.debug("Original model not found for: " + originalModelLocation);
+        for (String itemName : affectedItems) {
+            updateModel(event, Res.getResource(NoSugar.MODID, itemName));
         }
     }
 
-    @SubscribeEvent
-    public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
-        //ModShaders.register(event);
+    private static void updateModel(ModelEvent.ModifyBakingResult event, ResourceLocation location) {
+        ModelResourceLocation mrl = new ModelResourceLocation(location, "inventory");
+        BakedModel originalModel = event.getModels().get(mrl);
+
+        if (originalModel != null && !(originalModel instanceof SugarBakedModel)) {
+            event.getModels().put(mrl, new SugarBakedModel(originalModel));
+        }
+    }
+
+    private static void updateSugarBowModel(ModelEvent.ModifyBakingResult event, ResourceLocation location) {
+        ModelResourceLocation mrl = new ModelResourceLocation(location, "inventory");
+        BakedModel originalModel = event.getModels().get(mrl);
+
+        if (originalModel != null && !(originalModel instanceof SugarBowBakedModel)) {
+            event.getModels().put(mrl, new SugarBowBakedModel(originalModel));
+        }
     }
 
     @SubscribeEvent

@@ -1,0 +1,17 @@
+package com.test.nosugar.utils;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.world.level.entity.EntityLookup;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.util.Map;
+
+public class Mapping {
+    public static final String GET_HEALTH = "m_21223_";
+    public static final String IS_DEAD_OR_DYING = "m_21224_";
+    public static final String IS_ALIVE = "m_6084_";
+    public static final String IS_REMOVED = "m_213877_";
+
+    public static final String HURT_TIME = "f_20916_";
+
+}

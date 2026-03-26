@@ -1,10 +1,12 @@
 package com.test.nosugar.transformer.transformers;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.transformer.ITransformerModule;
 import com.test.nosugar.transformer.MethodMatcher;
 import com.test.nosugar.transformer.TransformerCore.Phase;
 import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
+import com.test.nosugar.utils.Mapping;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -12,27 +14,27 @@ import org.objectweb.asm.tree.*;
 public class LivingEntityTransformer implements ITransformerModule {
     private static final MethodMatcher GET_HEALTH = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
-            "m_21223_", "getHealth", "()F", false
+            Mapping.GET_HEALTH, "getHealth", "()F", false
     );
 
     private static final MethodMatcher IS_DEAD_OR_DYING = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
-            "m_21224_", "isDeadOrDying", "()Z", false
+            Mapping.IS_DEAD_OR_DYING, "isDeadOrDying", "()Z", false
     );
 
     private static final MethodMatcher IS_ALIVE = MethodMatcher.of(
             "net/minecraft/world/entity/Entity",
-            "m_6084_", "isAlive", "()Z", false
+            Mapping.IS_ALIVE, "isAlive", "()Z", false
     );
 
     private static final MethodMatcher IS_REMOVED = MethodMatcher.of(
             "net/minecraft/world/entity/Entity",
-            "m_213877_", "isRemoved", "()Z", false
+            Mapping.IS_REMOVED, "isRemoved", "()Z", false
     );
 
     private static final MethodMatcher HURTTIME_FIELD = MethodMatcher.ofField(
             "net/minecraft/world/entity/LivingEntity",
-            "f_20916_", "hurtTime", "I", false
+            Mapping.HURT_TIME, "hurtTime", "I", false
     );
 
     private static final String METHOD_HOOK_CLASS = "com/test/nosugar/transformer/hook/livingentity/LivingEntityMethodImpl";

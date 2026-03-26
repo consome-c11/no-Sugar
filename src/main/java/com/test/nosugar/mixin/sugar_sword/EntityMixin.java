@@ -40,12 +40,12 @@ public class EntityMixin {
         }
     }
 
-    @Inject(method = "isRemoved", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "isRemoved", at = @At("HEAD"), cancellable = true)
     private void nosugar$onisRemoved(CallbackInfoReturnable<Boolean> cir) {
         Entity self = (Entity) (Object) this;
         if (!self.level().isClientSide && self instanceof ILivingEntity living && living.isErased()  && !(living instanceof Player)) {
             cir.setReturnValue(true);
         }
-    }
+    }*/
 
 }

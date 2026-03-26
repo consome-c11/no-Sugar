@@ -25,13 +25,6 @@ public class ModPackets {
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
         PacketHandler.CHANNEL.registerMessage(
-                id++, ShieldEffectPacket.class,
-                ShieldEffectPacket::encode,
-                ShieldEffectPacket::decode,
-                ShieldEffectPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
-        );
-        PacketHandler.CHANNEL.registerMessage(
                 id++, RayCastPacket.class,
                 RayCastPacket::encode,
                 RayCastPacket::decode,

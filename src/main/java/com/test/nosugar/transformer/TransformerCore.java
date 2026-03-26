@@ -1,6 +1,7 @@
 package com.test.nosugar.transformer;
 
 import com.test.nosugar.transformer.transformers.LivingEntityTransformer;
+import com.test.nosugar.utils.Mapping;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -14,6 +15,7 @@ public class TransformerCore {
     private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
 
     static {
+
         registerModule(new LivingEntityTransformer());
         MODULES.sort(Comparator.comparingInt(ITransformerModule::getPriority));
     }

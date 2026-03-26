@@ -10,6 +10,7 @@ import com.test.nosugar.compat.tconstruct.TConstruct;
 import com.test.nosugar.entity.ModEntities;
 import com.test.nosugar.gui.ModMenus;
 import com.test.nosugar.network.ModPackets;
+import com.test.nosugar.utils.Mapping;
 import com.test.nosugar.utils.item.InventorySpecialItemsHolder;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
