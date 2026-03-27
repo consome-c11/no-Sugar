@@ -84,6 +84,9 @@ public class ModItems {
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY3 =
             DUMMY_ITEMS.register("sugar_bow_pulling_2", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> HALO_OF_SUGAR_DUMMY1 =
+            ITEMS.register("halo_of_sugar_layer1", () -> new Halo_of_Sugar_item(new Item.Properties().stacksTo(1)));
+
     //サンキューチャッピー again
     private static List<Item> cachedAllItems = null;
 

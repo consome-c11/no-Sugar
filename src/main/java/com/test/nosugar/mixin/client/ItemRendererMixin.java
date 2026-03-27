@@ -58,7 +58,8 @@ public abstract class ItemRendererMixin {
             "nosugar:world_destroyer",
             "nosugar:null_ingot",
             "nosugar:sugar_bow",
-            "nosugar:halo_of_sugar"
+            "nosugar:halo_of_sugar",
+            "nosugar:halo_of_sugar_layer1"
     ));
 
     @Unique
