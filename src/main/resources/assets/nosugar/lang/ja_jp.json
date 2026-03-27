@@ -30,5 +30,7 @@
   "item.nosugar.ignore.cooldown": "ダメージのクールダウンを無視する",
   "item.nosugar.show_advanced": "[Shiftを押して詳細を表示]",
   "item.nosugar.tail.of.nine.desc": "同じエンティティを9回攻撃すると、そのエンティティは強制的に倒される",
-  "item.nosugar.sugar.sword.desc": "攻撃したエンティティを強制的に倒す"
+  "item.nosugar.sugar.sword.desc": "攻撃したエンティティを強制的に倒す",
+  "item.nosugar.halo.of.sugar.canteen": "[KEY]を押してストレージを開く",
+  "item.nosugar.halo.of.sugar.stopwatch": "[KEY]を押して時間を止める"
 }

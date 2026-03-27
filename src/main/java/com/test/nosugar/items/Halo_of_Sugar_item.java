@@ -1,6 +1,7 @@
 package com.test.nosugar.items;
 
 import com.test.nosugar.Config;
+import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -59,7 +60,12 @@ public class Halo_of_Sugar_item  extends Item implements ICurioItem {
             tooltips.add(ColorUtils.makeWaveLine(
                     " " + getRandomSugarLine(), true));
             addActiveBypassTooltips(tooltips, 2);
-
+            tooltips.add(ColorUtils.makeWaveLine(
+                    " " + Component.translatable("item.nosugar.halo.of.sugar.stopwatch").getString()
+                            .replace("[KEY]", ModKeyBindings.HALO_TIMESTOP.getKey().getDisplayName().getString())));
+            tooltips.add(ColorUtils.makeWaveLine(
+                    " " + Component.translatable("item.nosugar.halo.of.sugar.canteen").getString()
+                            .replace("[KEY]", ModKeyBindings.HALO_STRAGE.getKey().getDisplayName().getString())));
         } else {
             tooltips.add(ColorUtils.makeWaveLine(
                     " " + Component.translatable("item.nosugar.show_advanced").getString()));

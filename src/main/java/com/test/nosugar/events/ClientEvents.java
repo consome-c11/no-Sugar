@@ -104,7 +104,7 @@ public class ClientEvents {
         if (DestroyMode.getMode(mc.player.getMainHandItem()) == DestroyMode.NORMAL || mc.player.getMainHandItem().getItem() != ModItems.WORLD_DESTROYER.get()) {
             RenderQueue.clear();
         } else
-            QueueRenderBreakBlock(mc.level, mc.player, pos, DestroyMode.getMode(mc.player.getMainHandItem()), same_id, 32, accept);
+            QueueRenderBreakBlock(mc.level, mc.player, pos, DestroyMode.getMode(mc.player.getMainHandItem()), same_id, 128, accept);
         ItemStack stack = mc.player.getMainHandItem();
         if (stack.getItem() == ModItems.SUGAR_SWORD.get()) {
             if (mc.options.keyShift.isDown()) {

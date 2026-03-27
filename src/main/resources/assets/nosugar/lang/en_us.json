@@ -46,5 +46,7 @@
   "item.nosugar.halo.of.sugar.desc": "You are Sugar\nSugar is The World\nThe World is Sugar\nThe World is You\n[Deleted]",
   "item.nosuger.halo_of_sugar.name": "Halo of Sugar",
   "key.halo.of.sugar.time.stop": "Halo Time Stop",
-  "key.halo.of.sugar.open.strage": "Halo Open Storage"
+  "key.halo.of.sugar.open.strage": "Halo Open Storage",
+  "item.nosugar.halo.of.sugar.stopwatch": "Press [KEY] to stop the time",
+  "item.nosugar.halo.of.sugar.canteen": "Press the [KEY] to open the storage"
 }
