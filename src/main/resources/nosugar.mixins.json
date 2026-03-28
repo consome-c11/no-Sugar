@@ -76,6 +76,7 @@
     "sugar_sword.LevelEntityGetterAdapterAccessor",
     "sugar_sword.LivingEntityAccessor",
     "sugar_sword.LivingEntityMixin",
+    "sugar_sword.MinecraftServerAccessor",
     "sugar_sword.PersistentEntitySectionManagerAccessor",
     "sugar_sword.PersistentEntitySectionManagerCallbackAccessor",
     "sugar_sword.PersistentEntitySectionManagerCallbackMixin",

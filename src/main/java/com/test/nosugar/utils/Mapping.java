@@ -14,4 +14,6 @@ public class Mapping {
 
     public static final String HURT_TIME = "f_20916_";
 
+    public static final String BY_ID = "f_156807_";
+    public static final String BY_UUID = "f_156808_";
 }

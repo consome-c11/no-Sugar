@@ -15,6 +15,7 @@ import com.test.nosugar.utils.item.TicUtils;
 import io.redspace.ironsspellbooks.entity.spells.acid_orb.AcidOrbRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,9 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Mixin(ItemRenderer.class)
@@ -45,6 +44,9 @@ public abstract class ItemRendererMixin {
     //キャッシュ使うとやっぱメモリ使用量とか下がるんかな
     @Unique
     private static final Set<Item> CACHED_AFFECTED_ITEMS = new HashSet<>();
+    @Unique
+    private static final Map<BakedModel, SugarBakedModel> CACHED_SUGAR_MODEL = new WeakHashMap<>();
+
     @Unique
     private static boolean cacheInitialized = false;
 
@@ -97,6 +99,12 @@ public abstract class ItemRendererMixin {
 
     @Unique
     private static boolean shouldApplyShader(ItemStack stack) {
+        String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        return AFFECTED_ITEM_IDS2.contains(itemId);
+    }
+
+    @Unique
+    private static boolean shouldApplyShader(ItemStack stack, int index) {
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
         return AFFECTED_ITEM_IDS2.contains(itemId);
     }
@@ -166,6 +174,32 @@ public abstract class ItemRendererMixin {
 
         poseStack.popPose();
     }
+
+    /*@WrapOperation(
+            method = "render",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V")
+    )
+    private void nosugar$wrapRenderModelLists(ItemRenderer instance, BakedModel model, ItemStack stack, int packedLight, int packedOverlay, PoseStack poseStack, VertexConsumer originalConsumer, Operation<Void> original, @Local(argsOnly = true) MultiBufferSource bufferSource) {
+
+        if (shouldApplyShader(stack)) {
+            SugarBakedModel sugarModel = CACHED_SUGAR_MODEL.computeIfAbsent(model, SugarBakedModel::new);
+
+            NoSugar.LOGGER.info("[NoSugar] Rendering with SugarModel for: " + stack.getItem());
+
+            BakedModel layer0 = sugarModel.getLayerModel(0);
+            original.call(instance, layer0, stack, packedLight, packedOverlay, poseStack, originalConsumer);
+
+            float time = (System.currentTimeMillis() % 100000) / 1000f;
+            ModShaders.updateUniforms(time, 0, 0);
+            VertexConsumer sugarConsumer = bufferSource.getBuffer(ModShaders.ITEM_RENDER_TYPE);
+
+            BakedModel layer1 = sugarModel.getLayerModel(1);
+            original.call(instance, layer1, stack, packedLight, packedOverlay, poseStack, sugarConsumer);
+
+        } else {
+            original.call(instance, model, stack, packedLight, packedOverlay, poseStack, originalConsumer);
+        }
+    }*/
 
     @Unique
     private static float getTransitionProgress(long currentTime) {

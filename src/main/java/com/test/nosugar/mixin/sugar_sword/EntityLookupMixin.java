@@ -1,8 +1,9 @@
 package com.test.nosugar.mixin.sugar_sword;
 
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.utils.Mapping;
+import com.test.nosugar.utils.UnsafeUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
-import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.level.entity.EntityAccess;
@@ -13,33 +14,43 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Mixin(EntityLookup.class)
-public abstract class EntityLookupMixin<T extends EntityAccess> implements EraseEntityLookupBridge<T>, EntityLookupAccessor<T> {
+public abstract class EntityLookupMixin<T extends EntityAccess> implements EraseEntityLookupBridge<T> {
+
+    @Unique private static final long BY_ID_OFFSET = UnsafeUtils.getFieldOffset(EntityLookup.class, "byId", Mapping.BY_ID);
+    @Unique private static final long BY_UUID_OFFSET = UnsafeUtils.getFieldOffset(EntityLookup.class, "byUuid", Mapping.BY_UUID);
 
     @Unique
     @Override
     public boolean eraseEntity(T entity) {
-        if (entity == null) return false;
-        UUID uuid = entity.getUUID();
-        int id = entity.getId();
-        Int2ObjectMap<T> idMap = this.getById();
-        Map<UUID, T> uuidMap = this.getByUuid();
-        NoSugar.LOGGER.info("Lookup Map Sizes: ID-Map={}, UUID-Map={}",
-                idMap != null ? idMap.size() : "NULL",
-                uuidMap != null ? uuidMap.size() : "NULL");
-        Int2ObjectMap<T> vanillaById = this.getById();
-        Map<UUID, T> vanillaByUuid = this.getByUuid();
+        if (entity == null) {
+            return false;
+        }
 
-        if (vanillaByUuid != null) if(vanillaByUuid.remove(uuid) != null);
-        else NoSugar.LOGGER.info("failed to remove to uuidmap: {}", entity.getUUID().toString());
-        if (vanillaById != null) if(vanillaById.remove(id) != null);
-        else  NoSugar.LOGGER.info("failed to remove to idmap: {}", entity.getUUID().toString());
+        UUID targetUuid = entity.getUUID();
+        int targetId = entity.getId();
 
-        this.setByUuid(vanillaByUuid);
-        this.setById(vanillaById);
+        Map<UUID, T> currentUuidMap = (Map<UUID, T>) UnsafeUtils.getObject(this, BY_UUID_OFFSET);
+        Int2ObjectMap<T> currentIdMap = (Int2ObjectMap<T>) UnsafeUtils.getObject(this, BY_ID_OFFSET);
 
+        if (currentUuidMap == null || currentIdMap == null) return false;
+
+        Map<UUID, T> nextUuidMap = new HashMap<>(currentUuidMap);
+        nextUuidMap.remove(targetUuid);
+
+        Int2ObjectMap<T> nextIdMap = new Int2ObjectLinkedOpenHashMap<>(currentIdMap);
+        nextIdMap.remove(targetId);
+
+        if(UnsafeUtils.SUCCESS) {
+            UnsafeUtils.setField(this, BY_UUID_OFFSET, nextUuidMap);
+            UnsafeUtils.setField(this, BY_ID_OFFSET, nextIdMap);
+        }
+        else {
+            ((EntityLookupAccessor) this).setById(nextIdMap);
+            ((EntityLookupAccessor) this).setByUuid(nextUuidMap);
+        }
         return true;
     }
 }
