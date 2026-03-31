@@ -1,15 +1,18 @@
 package com.test.nosugar.events;
 
+import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.client.utils.RenderQueue;
 import com.test.nosugar.items.SugarSword_Item;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.*;
+import com.test.nosugar.transformer.event.AbilitiesFieldEvent;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.Res;
 import com.test.nosugar.utils.ShootMode;
 import com.test.nosugar.utils.entity.EntityUtils;
+import com.test.nosugar.utils.entity.FlyManager;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.client.Minecraft;
@@ -124,9 +127,13 @@ public class ClientEvents {
             }
         }
 
-        if (isInGameWorld() && mc.options.keyAttack.isDown() &&
+        if (isInGameWorld()&&
                 (stack.getItem() == ModItems.WORLD_DESTROYER.get() || BlessingUtils.hasBlessedItem(BlessingUtils.ItemType.TOOL))) {
-            if (mc.options.keyShift.isDown() && tick < 7) {
+            if(!mc.options.keyAttack.isDown() || hit.getType() == HitResult.Type.MISS) {
+                tick = 8;
+                return;
+            }
+            if (tick < 7) {
                 tick++;
                 return;
             }
@@ -327,6 +334,23 @@ public class ClientEvents {
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !Minecraft.getInstance().isPaused()) {
             renderTime++;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAbilitiesField(AbilitiesFieldEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null || mc.level == null ||
+                (event.getType() != AbilitiesFieldEvent.FieldType.IS_FLYING &&
+                        event.getType() != AbilitiesFieldEvent.FieldType.MAY_FLY)) {
+            return;
+        }
+        boolean nextValue = (boolean) event.getNewValue();
+        if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly() && !nextValue) {
+            //NoSugar.LOGGER.info("nextValue: " + nextValue);
+            event.setNewValue(mc.player.getAbilities().flying);
+            PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
         }
     }
 }

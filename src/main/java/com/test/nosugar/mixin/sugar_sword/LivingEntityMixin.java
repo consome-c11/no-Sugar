@@ -187,7 +187,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             self.playSound(((LivingEntityAccessor)self).invokegetDeathSound());
             self.playSound(SoundEvents.PLAYER_ATTACK_STRONG, ((LivingEntityAccessor)self).invokegetSoundVolume(), self.getVoicePitch());
             if (!SkipAnimation && !Config.SKIP_DEATH_ANIMATION.get()) {
-                TaskScheduler.schedule(this::forceErase, 19);
+                TaskScheduler.schedule(this::forceErase, 21);
             } else forceErase();
         }
 

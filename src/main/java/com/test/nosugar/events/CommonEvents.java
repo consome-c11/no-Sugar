@@ -2,6 +2,7 @@ package com.test.nosugar.events;
 
 import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.SnackArmor;
+import com.test.nosugar.transformer.event.AbilitiesFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.interfaces.ILivingEntity;

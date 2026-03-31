@@ -47,7 +47,7 @@ public class Halo_of_Sugar_item  extends Item implements ICurioItem {
 
     @OnlyIn(Dist.CLIENT)
     public static String getRandomSugarLine() {
-        String fullText = Component.translatable("item.nosugar.halo.of.sugar.desc").getString();
+        String fullText = Component.translatable("item.nosugar.halo.of.sugar.desc.truth").getString();
         String[] lines = fullText.split("\n");
         return lines[RANDOM.nextInt(lines.length)];
     }
@@ -57,8 +57,7 @@ public class Halo_of_Sugar_item  extends Item implements ICurioItem {
     public List<Component> getSlotsTooltip(List<Component> tooltips, ItemStack stack) {
 
         if (Screen.hasShiftDown()) {
-            tooltips.add(ColorUtils.makeWaveLine(
-                    " " + getRandomSugarLine(), true));
+            tooltips.add(ColorUtils.makeWaveLine(Component.translatable("item.nosugar.halo.of.sugar.desc").getString().replace("[TRUTH]", getRandomSugarLine())));
             addActiveBypassTooltips(tooltips, 2);
             tooltips.add(ColorUtils.makeWaveLine(
                     " " + Component.translatable("item.nosugar.halo.of.sugar.stopwatch").getString()

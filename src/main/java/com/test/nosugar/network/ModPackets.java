@@ -102,5 +102,12 @@ public class ModPackets {
                 SyncDeltaPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, HaloFlyPacket.class,
+                HaloFlyPacket::encode,
+                HaloFlyPacket::decode,
+                HaloFlyPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
     }
 }

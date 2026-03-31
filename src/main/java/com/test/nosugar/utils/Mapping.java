@@ -16,4 +16,7 @@ public class Mapping {
 
     public static final String BY_ID = "f_156807_";
     public static final String BY_UUID = "f_156808_";
+
+    public static final String MAY_FLY = "f_35936_";
+    public static final String IS_FLYING = "f_35935_";
 }

@@ -48,7 +48,7 @@ public class TimeStopManager {
 
     public static boolean CanMove(Entity entity) {
         List<Entity> list = CanMoveEntities.get(entity.level().dimension());
-        return list != null && list.contains(entity) || !(entity instanceof LivingEntity);
+        return list != null && list.contains(entity) ;
     }
 
     public static void addEntity(Entity entity) {

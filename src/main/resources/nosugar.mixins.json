@@ -25,6 +25,7 @@
     "client.RenderStateShardAccessor",
     "client.SetScreenMixin",
     "client.TransientEntitySectionManagerAccessor",
+    "halo_of_sugar.LocalPlayerMixin",
     "snackprotector.GameRendererMixin",
     "stop_watch.ClientLevelAccessor",
     "stop_watch.ClientLevelMixin",
@@ -32,6 +33,8 @@
     "stop_watch.LivingEntityRendererMixin",
     "stop_watch.MinecraftAccessor",
     "stop_watch.MinecraftMixin",
+    "stop_watch.ParticleEngineMixin",
+    "stop_watch.SoundEngineMixin",
     "stop_watch.TimerAccessor",
     "stop_watch.TimerMixin"
   ],

@@ -27,15 +27,7 @@ public class LivingEntityFieldImpl implements ILivingEntityFieldHook {
         }
 
         if (returnValue != null) {
-            NoSugar.LOGGER.warn("Invalid return type from event: expected Number, got {}", returnValue.getClass());
-        } else {
-            StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-            for (StackTraceElement element : stack) {
-                String className = element.getClassName();
-                NoSugar.LOGGER.info("onWriteHurtTime NOT updated called from: {}.{}({}:{})",
-                        className, element.getMethodName(), element.getFileName(), element.getLineNumber());
-                break;
-            }
+            NoSugar.LOGGER.warn("Invalid return type from event (HURT_TIME): expected Number, got {}", returnValue.getClass());
         }
         return original;
     }

@@ -34,9 +34,9 @@ public class UnsafeUtils {
                 Field f = clazz.getDeclaredField(name);
                 return UNSAFE.objectFieldOffset(f);
             } catch (NoSuchFieldException e) {
-                NoSugar.LOGGER.warn("Could not find field " + name + " in class " + clazz.getName(), e);
             }
         }
+        NoSugar.LOGGER.warn("Could not find field of {}.", clazz.getSimpleName());
         return -1;
     }
 

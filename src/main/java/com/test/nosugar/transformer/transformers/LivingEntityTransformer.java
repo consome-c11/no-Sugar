@@ -137,12 +137,12 @@ public class LivingEntityTransformer implements ITransformerModule {
             for (AbstractInsnNode insn : method.instructions.toArray()) {
                 if (!(insn instanceof FieldInsnNode fieldInsn)) continue;
                 if (fieldInsn.getOpcode() != Opcodes.PUTFIELD) continue;
-                if (!HURTTIME_FIELD.matchesCall(fieldInsn)) continue;
 
-                injectFieldWriteHook(method, fieldInsn, "onWriteHurtTime",
-                        "(Lnet/minecraft/world/entity/LivingEntity;ILjava/lang/String;" + FIELD_PHASE_DESC + ")I");
-                dumpInsnContext(classNode.name, method, fieldInsn, "HOOK_FIELD: hurtTime@PUTFIELD");
-                modified = true;
+                if (HURTTIME_FIELD.matchesCall(fieldInsn)) {
+                    injectFieldWriteHook(method, fieldInsn, "onWriteHurtTime",
+                            "(Lnet/minecraft/world/entity/LivingEntity;ILjava/lang/String;" + FIELD_PHASE_DESC + ")I");
+                    modified = true;
+                }
             }
         }
         if(phase == Phase.BEFORE) {

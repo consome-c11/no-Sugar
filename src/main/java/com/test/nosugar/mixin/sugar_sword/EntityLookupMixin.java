@@ -31,17 +31,24 @@ public abstract class EntityLookupMixin<T extends EntityAccess> implements Erase
 
         UUID targetUuid = entity.getUUID();
         int targetId = entity.getId();
-
-        Map<UUID, T> currentUuidMap = (Map<UUID, T>) UnsafeUtils.getObject(this, BY_UUID_OFFSET);
-        Int2ObjectMap<T> currentIdMap = (Int2ObjectMap<T>) UnsafeUtils.getObject(this, BY_ID_OFFSET);
+        Map<UUID, T> currentUuidMap = ((EntityLookupAccessor)this).getByUuid();
+        Int2ObjectMap<T> currentIdMap = ((EntityLookupAccessor)this).getById();
+        if(UnsafeUtils.SUCCESS) {
+            currentUuidMap = (Map<UUID, T>) UnsafeUtils.getObject(this, BY_UUID_OFFSET);
+            currentIdMap = (Int2ObjectMap<T>) UnsafeUtils.getObject(this, BY_ID_OFFSET);
+        }
 
         if (currentUuidMap == null || currentIdMap == null) return false;
 
         Map<UUID, T> nextUuidMap = new HashMap<>(currentUuidMap);
         nextUuidMap.remove(targetUuid);
 
-        Int2ObjectMap<T> nextIdMap = new Int2ObjectLinkedOpenHashMap<>(currentIdMap);
-        nextIdMap.remove(targetId);
+        Int2ObjectMap<T> nextIdMap = new Int2ObjectLinkedOpenHashMap<>();
+        currentIdMap.int2ObjectEntrySet().forEach(e -> {
+            if (e.getIntKey() != targetId) {
+                nextIdMap.put(e.getIntKey(), e.getValue());
+            }
+        });
 
         if(UnsafeUtils.SUCCESS) {
             UnsafeUtils.setField(this, BY_UUID_OFFSET, nextUuidMap);

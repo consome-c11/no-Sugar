@@ -1,6 +1,7 @@
 package com.test.nosugar.mixin.halo_of_sugar;
 
 import com.test.nosugar.utils.entity.EntityUtils;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
@@ -63,7 +64,7 @@ public abstract class EntityMixin {
         return velocity;
     }*/
 
-    @Inject(method = "baseTick", at = @At("HEAD"))
+    /*@Inject(method = "baseTick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         Entity self = (Entity) (Object) this;
 
@@ -84,9 +85,9 @@ public abstract class EntityMixin {
                 break;
             }
         }
-    }
+    }*/
 
-    @Unique
+    /*@Unique
     private void nosugar$applyAABB(Entity entity, Player player) {
         AABB entityBox = entity.getBoundingBox();
         AABB playerBox = player.getBoundingBox();
@@ -123,5 +124,5 @@ public abstract class EntityMixin {
         double dy = Math.max(0, Math.max(box1.minY - box2.maxY, box2.minY - box1.maxY));
         double dz = Math.max(0, Math.max(box1.minZ - box2.maxZ, box2.minZ - box1.maxZ));
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
-    }
+    }*/
 }

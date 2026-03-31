@@ -1,5 +1,6 @@
 package com.test.nosugar.transformer;
 
+import com.test.nosugar.transformer.transformers.AbilitiesTransformer;
 import com.test.nosugar.transformer.transformers.LivingEntityTransformer;
 import com.test.nosugar.utils.Mapping;
 import org.objectweb.asm.tree.ClassNode;
@@ -17,6 +18,7 @@ public class TransformerCore {
     static {
 
         registerModule(new LivingEntityTransformer());
+        registerModule(new AbilitiesTransformer());
         MODULES.sort(Comparator.comparingInt(ITransformerModule::getPriority));
     }
 
