@@ -5,18 +5,45 @@ import net.minecraftforge.eventbus.api.Event;
 
 public class LivingEntityFieldEvent extends Event {
 
-    private final Entity entity;
+    private final Object entity;
     private final FieldType fieldType;
     private final String fieldName;
     private final FieldPhase phase;
     private Object newValue;
     private boolean isModified;
+    private boolean forwarded = false;
+
+    public boolean isForwarded() {
+        return forwarded;
+    }
+
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
+    }
 
     public enum FieldPhase {
         BEFORE
     }
 
-    public LivingEntityFieldEvent(Entity entity, FieldType fieldType, String fieldName,
+    public LivingEntityFieldEvent() {
+        this.entity = null;
+        this.fieldType = null;
+        this.fieldName = null;
+        this.phase = FieldPhase.BEFORE;
+        this.newValue = null;
+        this.isModified = false;
+    }
+
+    public LivingEntityFieldEvent(LivingEntityFieldEvent oldEvent) {
+        this.entity = oldEvent.getEntity();
+        this.fieldType = oldEvent.getFieldType();
+        this.fieldName = oldEvent.getFieldName();
+        this.phase = oldEvent.getFieldPhase();
+        this.newValue = oldEvent.getNewValue();
+        this.isModified = oldEvent.isModified();
+    }
+
+    public LivingEntityFieldEvent(Object entity, FieldType fieldType, String fieldName,
                                   FieldPhase phase, Object originalValue) {
         this.entity = entity;
         this.fieldType = fieldType;
@@ -26,11 +53,11 @@ public class LivingEntityFieldEvent extends Event {
         this.isModified = false;
     }
 
-    public LivingEntityFieldEvent(Entity entity, FieldType fieldType, String fieldName, Object originalValue) {
+    public LivingEntityFieldEvent(Object entity, FieldType fieldType, String fieldName, Object originalValue) {
         this(entity, fieldType, fieldName, FieldPhase.BEFORE, originalValue);
     }
 
-    public Entity getEntity() { return entity; }
+    public Object getEntity() { return entity; }
     public FieldType getFieldType() { return fieldType; }
     public String getFieldName() { return fieldName; }
     public FieldPhase getFieldPhase() { return phase; }

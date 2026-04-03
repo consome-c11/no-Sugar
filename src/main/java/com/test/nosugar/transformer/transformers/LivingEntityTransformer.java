@@ -1,12 +1,9 @@
 package com.test.nosugar.transformer.transformers;
 
-import com.test.nosugar.NoSugar;
-import com.test.nosugar.transformer.ITransformerModule;
-import com.test.nosugar.transformer.MethodMatcher;
+import com.test.nosugar.transformer.*;
 import com.test.nosugar.transformer.TransformerCore.Phase;
 import com.test.nosugar.transformer.event.LivingEntityFieldEvent;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
-import com.test.nosugar.utils.Mapping;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -83,101 +80,85 @@ public class LivingEntityTransformer implements ITransformerModule {
 
     @Override
     public boolean transform(Phase phase, ClassNode classNode, MethodNode method) {
-
         boolean modified = false;
-        if (phase == Phase.AFTER) {
-            if (GET_HEALTH.matches(method, classNode.name) && method.desc.endsWith("F")) {
-                for (AbstractInsnNode insn : method.instructions.toArray()) {
-                    if (insn.getOpcode() == Opcodes.FRETURN) {
-                        injectInterfaceHook(method, insn, "getHealth",
-                                "(FLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")F");
-                        dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: getHealth@FRETURN");
+        String className = classNode.name;
+        AbstractInsnNode[] insns = method.instructions.toArray();
+
+        if ((GET_HEALTH.matches(method, className) && method.desc.endsWith("F")) ||
+                (IS_DEAD_OR_DYING.matches(method, className) && method.desc.endsWith("Z")) ||
+                (IS_ALIVE.matches(method, className) && method.desc.endsWith("Z")) ||
+                (IS_REMOVED.matches(method, className) && method.desc.endsWith("Z"))) {
+
+            String hookMethod = null;
+            String hookDesc = null;
+
+            if (GET_HEALTH.matches(method, className)) {
+                hookMethod = "getHealth";
+                hookDesc = "(FLjava/lang/Object;" + METHOD_PHASE_DESC + ")F";
+            } else if (IS_DEAD_OR_DYING.matches(method, className)) {
+                hookMethod = "isDeadOrDying";
+                hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+            } else if (IS_ALIVE.matches(method, className)) {
+                hookMethod = "isAlive";
+                hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+            } else if (IS_REMOVED.matches(method, className)) {
+                hookMethod = "isRemoved";
+                hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+            }
+
+            if (hookMethod != null) {
+                for (AbstractInsnNode insn : insns) {
+                    int opcode = insn.getOpcode();
+                    if (opcode == Opcodes.FRETURN || opcode == Opcodes.IRETURN) {
+                        injectInterfaceHook(method, insn, hookMethod, hookDesc);
+                        dumpInsnContext(className, method, insn, "HOOK_DEF: " + hookMethod + "@" + AsmUtil.getOpcodeName(opcode));
                         modified = true;
-                        continue;
                     }
                 }
             }
+        }
 
-            if (IS_DEAD_OR_DYING.matches(method, classNode.name) && method.desc.endsWith("Z")) {
-                for (AbstractInsnNode insn : method.instructions.toArray()) {
-                    if (insn.getOpcode() == Opcodes.IRETURN) {
-                        injectInterfaceHook(method, insn, "isDeadOrDying",
-                                "(ZLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")Z");
-                        dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isDeadOrDying@IRETURN");
-                        modified = true;
-                        continue;
-                    }
-                }
-            }
-
-            if (IS_ALIVE.matches(method, classNode.name) && method.desc.endsWith("Z")) {
-                for (AbstractInsnNode insn : method.instructions.toArray()) {
-                    if (insn.getOpcode() == Opcodes.IRETURN) {
-                        injectInterfaceHook(method, insn, "isAlive",
-                                "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
-                        dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isAlive@IRETURN");
-                        modified = true;
-                        continue;
-                    }
-                }
-            }
-
-            if (IS_REMOVED.matches(method, classNode.name) && method.desc.endsWith("Z")) {
-                for (AbstractInsnNode insn : method.instructions.toArray()) {
-                    if (insn.getOpcode() == Opcodes.IRETURN) {
-                        injectInterfaceHook(method, insn, "isRemoved",
-                                "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
-                        dumpInsnContext(classNode.name, method, insn, "HOOK_DEF: isRemoved@IRETURN");
-                        modified = true;
-                        continue;
-                    }
-                }
-            }
-
-            for (AbstractInsnNode insn : method.instructions.toArray()) {
-                if (!(insn instanceof FieldInsnNode fieldInsn)) continue;
-                if (fieldInsn.getOpcode() != Opcodes.PUTFIELD) continue;
-
+        for (AbstractInsnNode insn : insns) {
+            if (insn instanceof FieldInsnNode fieldInsn && fieldInsn.getOpcode() == Opcodes.PUTFIELD) {
                 if (HURTTIME_FIELD.matchesCall(fieldInsn)) {
                     injectFieldWriteHook(method, fieldInsn, "onWriteHurtTime",
-                            "(Lnet/minecraft/world/entity/LivingEntity;ILjava/lang/String;" + FIELD_PHASE_DESC + ")I");
+                            "(Ljava/lang/Object;ILjava/lang/String;" + FIELD_PHASE_DESC + ")I");
                     modified = true;
                 }
             }
-        }
-        if(phase == Phase.BEFORE) {
-            for (AbstractInsnNode insn : method.instructions.toArray()) {
-                if (!(insn instanceof MethodInsnNode callInsn)) continue;
-                if (!isInvocation(callInsn.getOpcode())) continue;
 
-                if (GET_HEALTH.matchesCall(callInsn, classNode.name)) {
-                    injectPostCallHook(method, callInsn, "getHealth",
-                            "(FLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")F");
-                    dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: getHealth@" + callInsn.name + "\n method owner: " + callInsn.owner);
-                    modified = true;
-                } else if (IS_DEAD_OR_DYING.matchesCall(callInsn, classNode.name)) {
-                    injectPostCallHook(method, callInsn, "isDeadOrDying",
-                            "(ZLnet/minecraft/world/entity/LivingEntity;" + METHOD_PHASE_DESC + ")Z");
-                    dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isDeadOrDying@" + callInsn.name + "\n method owner: " + callInsn.owner);
-                    modified = true;
-                } else if (IS_ALIVE.matchesCall(callInsn, classNode.name)) {
-                    injectPostCallHook(method, callInsn, "isAlive",
-                            "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
-                    dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isAlive@" + callInsn.name + "\n method owner: " + callInsn.owner);
-                    modified = true;
-                } else if (IS_REMOVED.matchesCall(callInsn, classNode.name)) {
-                    injectPostCallHook(method, callInsn, "isRemoved",
-                            "(ZLnet/minecraft/world/entity/Entity;" + METHOD_PHASE_DESC + ")Z");
-                    dumpInsnContext(classNode.name, method, callInsn, "HOOK_CALL: isRemoved@" + callInsn.name + "\n method owner: " + callInsn.owner);
+            if (insn instanceof MethodInsnNode callInsn && isInvocation(callInsn.getOpcode())) {
+                String hookMethod = null;
+                String hookDesc = null;
+
+                if (GET_HEALTH.matchesCall(callInsn, className)) {
+                    hookMethod = "getHealth";
+                    hookDesc = "(FLjava/lang/Object;" + METHOD_PHASE_DESC + ")F";
+                } else if (IS_DEAD_OR_DYING.matchesCall(callInsn, className)) {
+                    hookMethod = "isDeadOrDying";
+                    hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+                } else if (IS_ALIVE.matchesCall(callInsn, className)) {
+                    hookMethod = "isAlive";
+                    hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+                } else if (IS_REMOVED.matchesCall(callInsn, className)) {
+                    hookMethod = "isRemoved";
+                    hookDesc = "(ZLjava/lang/Object;" + METHOD_PHASE_DESC + ")Z";
+                }
+
+                if (hookMethod != null) {
+                    injectPostCallHook(method, callInsn, hookMethod, hookDesc);
+                    dumpInsnContext(className, method, insn, "HOOK_CALL: " + hookMethod + "@IRETURN");
                     modified = true;
                 }
             }
         }
+
         return modified;
     }
 
     private void dumpInsnContext(String className, MethodNode method, AbstractInsnNode target, String label) {
-        /*AbstractInsnNode[] insns = method.instructions.toArray();
+        if(!TransformerCore.LOGGER.isDebugEnabled()) return;
+        AbstractInsnNode[] insns = method.instructions.toArray();
         int idx = -1;
         for (int i = 0; i < insns.length; i++) {
             if (insns[i] == target) {
@@ -187,8 +168,8 @@ public class LivingEntityTransformer implements ITransformerModule {
         }
         if (idx == -1) return;
 
-        int start = Math.max(0, idx - 10);
-        int end = Math.min(insns.length, idx + 30);
+        int start = Math.max(0, idx - 15);
+        int end = Math.min(insns.length, idx + 15);
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n[NoSugar Dump] ").append(label)
@@ -212,7 +193,7 @@ public class LivingEntityTransformer implements ITransformerModule {
                 sb.append(" ").append(operand);
             }
         }
-        NoSugar.LOGGER.info(sb.toString());*/
+        TransformerCore.LOGGER.info(sb.toString());
     }
 
     private String getOperandString(AbstractInsnNode insn) {
@@ -275,7 +256,7 @@ public class LivingEntityTransformer implements ITransformerModule {
                 true));
 
         method.instructions.insertBefore(returnInsn, injection);
-        method.maxStack = Math.max(method.maxStack, 6);
+        method.maxStack = Math.max(method.maxStack, 8);
     }
 
     private void injectInterfaceHook(MethodNode method, AbstractInsnNode returnInsn,

@@ -18,8 +18,6 @@ import java.util.List;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
-    @Shadow
-    public void play(SoundInstance p_120313_) {}
 
     @Unique
     private boolean prevstop;
@@ -31,7 +29,7 @@ public class SoundEngineMixin {
 
         if (prevstop && !TimeStopManager.isStopped(mc.level)) {
             for (SoundInstance sound : nosugar$delayedSounds) {
-                this.play(sound);
+                ((SoundEngineAccessor)this).playSound(sound);
             }
             nosugar$delayedSounds.clear();
         }

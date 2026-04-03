@@ -1,6 +1,5 @@
 package com.test.nosugar.transformer;
 
-import com.test.nosugar.NoSugar;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -41,7 +40,7 @@ public class MethodMatcher {
                 ClassReader classreader = new ClassReader(is);
                 currentName = classreader.getSuperName();
                 if (currentName.equals(superClass)) {
-                    NoSugar.LOGGER.debug("[NoSugar] sub Class Found: " + superClass);
+                    //TransformerCore.LOGGER.debug("[NoSugar] sub Class Found: " + superClass);
                     return true;
                 }
             } catch (Throwable e) {

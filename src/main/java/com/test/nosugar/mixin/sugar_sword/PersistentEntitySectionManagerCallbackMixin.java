@@ -12,12 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("remapping")
 @Mixin(targets = "net.minecraft.world.level.entity.PersistentEntitySectionManager$Callback")
 public abstract class PersistentEntitySectionManagerCallbackMixin {
-    @Shadow(remap = false)
-    private Entity realEntity;
-
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true, remap = true)
     private void nosugar$onMoveGuard(CallbackInfo ci) {
-        if (realEntity instanceof ILivingEntity erased && erased.isErased() && !(realEntity instanceof Player)) {
+        if (((PersistentEntitySectionManagerCallbackAccessor)this).getEntity() instanceof ILivingEntity erased && erased.isErased() && !(((PersistentEntitySectionManagerCallbackAccessor)this).getEntity() instanceof Player)) {
             ci.cancel();
         }
     }

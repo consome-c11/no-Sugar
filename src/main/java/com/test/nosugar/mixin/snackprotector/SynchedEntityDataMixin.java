@@ -23,8 +23,6 @@ import java.util.List;
 public abstract class SynchedEntityDataMixin {
     @Unique
     private static final EntityDataAccessor<Float> HEALTH_ID = LivingEntityAccessor.getDataHealthId();
-    @Shadow
-    private Entity entity;
 
     @Inject(
             method = "set",
@@ -32,6 +30,8 @@ public abstract class SynchedEntityDataMixin {
             cancellable = true
     )
     private <T> void preProtectHealthUpdate(EntityDataAccessor<T> accessor, T value, CallbackInfo ci) {
+        SynchedEntityDataAccessor dataAccessor = (SynchedEntityDataAccessor) this;
+        Entity entity = dataAccessor.getEntity();
         if (accessor != HEALTH_ID || entity.level().isClientSide) {
             return;
         }
@@ -49,18 +49,4 @@ public abstract class SynchedEntityDataMixin {
         }
     }
 
-    @Inject(
-            method = "packDirty",
-            at = @At(value = "HEAD"),
-            cancellable = true
-    )
-    private void skipHealthSyncIfProtected(CallbackInfoReturnable<List<SynchedEntityData.DataValue<?>>> cir) {
-        SynchedEntityDataAccessor dataAccessor = (SynchedEntityDataAccessor) this;
-        Entity entity = dataAccessor.getEntity();
-
-        if (entity == null || entity.level().isClientSide || !(entity instanceof LivingEntity living) || !(living instanceof Player player) || !SnackArmor.SnackProtector.isFullSet(player)) {
-            return;
-        }
-        ((ISynchedEntityDataItem) ((SynchedEntityDataAccessor) player.getEntityData()).invokeGetItem(LivingEntityAccessor.getDataHealthId())).CheckData();
-    }
 }

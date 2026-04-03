@@ -347,10 +347,10 @@ public class ClientEvents {
             return;
         }
         boolean nextValue = (boolean) event.getNewValue();
-        if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly() && !nextValue) {
+        if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly()) {
             //NoSugar.LOGGER.info("nextValue: " + nextValue);
             event.setNewValue(mc.player.getAbilities().flying);
-            PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
+            //PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
         }
     }
 }

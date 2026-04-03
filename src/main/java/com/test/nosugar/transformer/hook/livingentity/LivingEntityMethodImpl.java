@@ -1,6 +1,7 @@
 package com.test.nosugar.transformer.hook.livingentity;
 
-import com.test.nosugar.NoSugar;
+import com.test.nosugar.transformer.NoSugarBus;
+import com.test.nosugar.transformer.TransformerCore;
 import com.test.nosugar.transformer.event.LivingEntityMethodEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,14 +14,14 @@ public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
     private LivingEntityMethodImpl() {}
 
     @Override
-    public float getHealth(float original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase) {
+    public float getHealth(float original, Object entity, LivingEntityMethodEvent.MethodPhase phase) {
         LivingEntityMethodEvent event = new LivingEntityMethodEvent(
                 entity,
                 LivingEntityMethodEvent.MethodType.GET_HEALTH,
                 phase,
                 original
         );
-        MinecraftForge.EVENT_BUS.post(event);
+        NoSugarBus.BUS.post(event);
         Object returnValue = event.getReturnValue();
 
         if (returnValue instanceof Number num) {
@@ -28,64 +29,64 @@ public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
         }
 
         if (returnValue != null) {
-            NoSugar.LOGGER.warn("Invalid return type from event: expected Number, got {}", returnValue.getClass());
+            TransformerCore.LOGGER.warn("Invalid return type from event: expected Number, got {}", returnValue.getClass());
         }
         return original;
     }
 
     @Override
-    public boolean isDeadOrDying(boolean original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase) {
+    public boolean isDeadOrDying(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase) {
         LivingEntityMethodEvent event = new LivingEntityMethodEvent(
                 entity,
                 LivingEntityMethodEvent.MethodType.IS_DEAD_OR_DYING,
                 phase,
                 original
         );
-        MinecraftForge.EVENT_BUS.post(event);
+        NoSugarBus.BUS.post(event);
         Object returnValue = event.getReturnValue();
         if (returnValue instanceof Boolean) {
             return (Boolean) returnValue;
         }
         if (returnValue != null) {
-            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
+            TransformerCore.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
         }
         return original;
     }
 
     @Override
-    public boolean isAlive(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase) {
+    public boolean isAlive(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase) {
         LivingEntityMethodEvent event = new LivingEntityMethodEvent(
                 entity,
                 LivingEntityMethodEvent.MethodType.IS_ALIVE,
                 phase,
                 original
         );
-        MinecraftForge.EVENT_BUS.post(event);
+        NoSugarBus.BUS.post(event);
         Object returnValue = event.getReturnValue();
         if (returnValue instanceof Boolean) {
             return (Boolean) returnValue;
         }
         if (returnValue != null) {
-            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
+            TransformerCore.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
         }
         return original;
     }
 
     @Override
-    public boolean isRemoved(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase) {
+    public boolean isRemoved(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase) {
         LivingEntityMethodEvent event = new LivingEntityMethodEvent(
                 entity,
                 LivingEntityMethodEvent.MethodType.IS_REMOVED,
                 phase,
                 original
         );
-        MinecraftForge.EVENT_BUS.post(event);
+        NoSugarBus.BUS.post(event);
         Object returnValue = event.getReturnValue();
         if (returnValue instanceof Boolean) {
             return (Boolean) returnValue;
         }
         if (returnValue != null) {
-            NoSugar.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
+            TransformerCore.LOGGER.warn("Invalid return type from event: expected Boolean, got {}", returnValue.getClass());
         }
         return original;
     }

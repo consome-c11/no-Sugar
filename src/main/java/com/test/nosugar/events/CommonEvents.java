@@ -18,7 +18,7 @@ public class CommonEvents {
     public static void onLivingMethod(LivingEntityMethodEvent event) {
         if (!(event.getEntity() instanceof LivingEntity self) || !(self instanceof ILivingEntity iliving)) return;
         if (event.getMethodType() == LivingEntityMethodEvent.MethodType.GET_HEALTH) {
-            if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
+            if (iliving.isErased(self.getUUID()) || iliving.isErased()) {
                 event.setReturnValue(0.f);
                 return;
             }
@@ -30,7 +30,7 @@ public class CommonEvents {
                 event.setReturnValue(Math.min((Float) event.getReturnValue(), maxHealthCap));
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
-            if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
+            if (iliving.isErased(self.getUUID()) || iliving.isErased()) {
                 event.setReturnValue(false);
                 return;
             }
@@ -41,7 +41,7 @@ public class CommonEvents {
                 event.setReturnValue(self.getHealth() > 0.f);
             }
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_DEAD_OR_DYING) {
-            if (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased()) {
+            if (iliving.isErased(self.getUUID()) || iliving.isErased()) {
                 event.setReturnValue(true);
                 return;
             }
@@ -53,7 +53,7 @@ public class CommonEvents {
             }
         }
         else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_REMOVED) {
-            if (!self.level().isClientSide && (iliving.isErased(event.getEntity().getUUID()) || iliving.isErased())) {
+            if (!self.level().isClientSide && (iliving.isErased(self.getUUID()) || iliving.isErased())) {
                 event.setReturnValue(true);
                 return;
             }

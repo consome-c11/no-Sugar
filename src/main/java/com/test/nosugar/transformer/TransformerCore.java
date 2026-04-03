@@ -2,10 +2,13 @@ package com.test.nosugar.transformer;
 
 import com.test.nosugar.transformer.transformers.AbilitiesTransformer;
 import com.test.nosugar.transformer.transformers.LivingEntityTransformer;
-import com.test.nosugar.utils.Mapping;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +17,7 @@ public class TransformerCore {
     private static final List<ITransformerModule> MODULES = new ArrayList<>();
     private static final Map<String, ClassNode> classNodeCache = new ConcurrentHashMap<>();
     private static final Set<String> transformedClasses = ConcurrentHashMap.newKeySet();
-
+    public static final NoSugarLogger LOGGER = new NoSugarLogger("NoSugar");
     static {
 
         registerModule(new LivingEntityTransformer());
@@ -35,7 +38,6 @@ public class TransformerCore {
         if (classNode.name.startsWith("com.test.nosugar.transformer")) {
             return false;
         }
-
         String key = classNode.name + ":" + phase.name();
         if (!transformedClasses.add(key)) {
             return false;
@@ -54,7 +56,7 @@ public class TransformerCore {
                 }
             }
         } catch (Throwable e) {
-            com.test.nosugar.NoSugar.LOGGER.error(
+            TransformerCore.LOGGER.error(
                     "[NoSugar] Transformer error in class: " + classNode.name, e);
             return false;
         } finally {
@@ -63,6 +65,45 @@ public class TransformerCore {
         return modified;
     }
 
+    public static byte[] transformForAdvice(String internalClassName, byte[] classBytes) {
+        try {
+            if (classBytes == null || classBytes.length == 0) {
+                return classBytes;
+            }
+            if (internalClassName.startsWith("com/test/nosugar/transformer")) {
+                return classBytes;
+            }
+
+            ClassReader cr = new ClassReader(classBytes);
+            ClassNode classNode = new ClassNode(Opcodes.ASM9);
+            cr.accept(classNode, ClassReader.EXPAND_FRAMES);
+
+            boolean modified = transform(Phase.CLASS_LOADING, classNode);
+            if (!modified) {
+                return classBytes;
+            }
+
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            classNode.accept(cw);
+            return cw.toByteArray();
+
+        } catch (ArrayIndexOutOfBoundsException | NullPointerException | IllegalArgumentException e) {
+            LOGGER.warn("Frame computation failed for {}, skipping transformation...", internalClassName);
+            LOGGER.error(e.getMessage(), e);
+            return classBytes;
+        } catch (Throwable t) {
+            LOGGER.error("Failed to transform class: " + internalClassName, t);
+            return classBytes;
+        }
+    }
+
+    private static ClassLoader getTransformerClassLoader() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = TransformerCore.class.getClassLoader();
+        }
+        return cl != null ? cl : ClassLoader.getSystemClassLoader();
+    }
     public enum Phase {
         BEFORE,
         AFTER,

@@ -34,6 +34,7 @@
     "stop_watch.MinecraftAccessor",
     "stop_watch.MinecraftMixin",
     "stop_watch.ParticleEngineMixin",
+    "stop_watch.SoundEngineAccessor",
     "stop_watch.SoundEngineMixin",
     "stop_watch.TimerAccessor",
     "stop_watch.TimerMixin"
@@ -54,7 +55,6 @@
     "snackprotector.LivingEntityMixin",
     "snackprotector.PlayerListMixin",
     "snackprotector.ServerPlayerMixin",
-    "snackprotector.SynchedEntityDataItemMixin",
     "snackprotector.SynchedEntityDataMixin",
     "stop_watch.EntityAccessor",
     "stop_watch.EntityMixin",
@@ -91,7 +91,6 @@
     "sugar_sword.TrackedEntityAccessor",
     "sugar_totem.EntityMixin",
     "sugar_totem.ServerPlayerMixin",
-    "sugar_totem.SynchedEntityDataItemMixin",
     "world_destroyer.BlockStateBaseMixin",
     "world_destroyer.LevelChunkAccessor",
     "world_destroyer.LevelChunkMixin",

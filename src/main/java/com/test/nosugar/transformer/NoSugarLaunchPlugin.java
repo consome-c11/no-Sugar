@@ -4,7 +4,9 @@ import cpw.mods.modlauncher.api.ITransformerActivity;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-
+import cpw.mods.modlauncher.TransformationServiceDecorator;
+import cpw.mods.modlauncher.LaunchPluginHandler;
+import cpw.mods.modlauncher.ClassTransformer;
 import java.util.EnumSet;
 
 public class NoSugarLaunchPlugin implements ILaunchPluginService {
@@ -24,7 +26,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public boolean processClass(Phase phase, ClassNode classNode, Type classType, String reason) {
-        if (classNode.name.startsWith("com.test.nosugar.transformer")) {
+        /*if (classNode.name.startsWith("com.test.nosugar.transformer")) {
             return false;
         }
 
@@ -40,9 +42,10 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
             return TransformerCore.transform(corePhase, classNode);
         } catch (Throwable e) {
-            com.test.nosugar.NoSugar.LOGGER.error(
+            TransformerCore.LOGGER.error(
                     "[NoSugar] Transformer error in class: " + classNode.name, e);
             return false;
-        }
+        }*/
+        return false;
     }
 }

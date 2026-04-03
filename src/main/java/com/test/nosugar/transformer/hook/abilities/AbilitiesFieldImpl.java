@@ -1,9 +1,8 @@
 package com.test.nosugar.transformer.hook.abilities;
 
-import com.test.nosugar.NoSugar;
+import com.test.nosugar.transformer.NoSugarBus;
 import com.test.nosugar.transformer.event.AbilitiesFieldEvent;
 import net.minecraft.world.entity.player.Abilities;
-import net.minecraftforge.common.MinecraftForge;
 
 public class AbilitiesFieldImpl implements IAbilitiesFieldHook {
 
@@ -22,10 +21,8 @@ public class AbilitiesFieldImpl implements IAbilitiesFieldHook {
     }
 
     private boolean postAndGet(Object abilitiesObj, AbilitiesFieldEvent.FieldType type, String fieldName, boolean original) {
-        if (!(abilitiesObj instanceof Abilities abilities)) return original;
-
-        AbilitiesFieldEvent event = new AbilitiesFieldEvent(abilities, type, fieldName, original);
-        MinecraftForge.EVENT_BUS.post(event);
+        AbilitiesFieldEvent event = new AbilitiesFieldEvent(abilitiesObj, type, fieldName, original);
+        NoSugarBus.BUS.post(event);
 
         if (event.getNewValue() instanceof Boolean bool) {
             return bool;

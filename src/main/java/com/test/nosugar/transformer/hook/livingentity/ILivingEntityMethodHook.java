@@ -5,11 +5,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public interface ILivingEntityMethodHook {
-    float getHealth(float original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase);
+    float getHealth(float original, Object entity, LivingEntityMethodEvent.MethodPhase phase);
 
-    boolean isDeadOrDying(boolean original, LivingEntity entity, LivingEntityMethodEvent.MethodPhase phase);
+    boolean isDeadOrDying(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase);
 
-    boolean isAlive(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase);
+    boolean isAlive(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase);
 
-    boolean isRemoved(boolean original, Entity entity, LivingEntityMethodEvent.MethodPhase phase);
+    boolean isRemoved(boolean original, Object entity, LivingEntityMethodEvent.MethodPhase phase);
 }

@@ -6,15 +6,12 @@ import com.test.nosugar.additional.ModDamageSources;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.EraseEntityPacket;
 import com.test.nosugar.network.packets.SyncDeltaPacket;
-import com.test.nosugar.utils.Mapping;
 import com.test.nosugar.utils.SynchedEntityDataUtil;
 import com.test.nosugar.utils.TaskScheduler;
-import com.test.nosugar.utils.UnsafeUtils;
 import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.entity.LivingEntityUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.core.SectionPos;
@@ -37,7 +34,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.server.command.ForgeCommand;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -51,10 +47,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mixin(value = LivingEntity.class, priority = 0)
 public abstract class LivingEntityMixin implements ILivingEntity {
 
-
-    @Shadow
-    @Nullable
-    private DamageSource lastDamageSource;
     private static final Set<UUID> erasedUuids = ConcurrentHashMap.newKeySet();
     @Unique
     private boolean erased = false;

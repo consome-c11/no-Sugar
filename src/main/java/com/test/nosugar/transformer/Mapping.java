@@ -1,10 +1,4 @@
-package com.test.nosugar.utils;
-
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.world.level.entity.EntityLookup;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-import java.util.Map;
+package com.test.nosugar.transformer;
 
 public class Mapping {
     public static final String GET_HEALTH = "m_21223_";

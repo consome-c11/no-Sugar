@@ -1,7 +1,6 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.NoSugar;
-import com.test.nosugar.utils.Mapping;
+import com.test.nosugar.transformer.Mapping;
 import com.test.nosugar.utils.UnsafeUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
@@ -14,7 +13,6 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Mixin(EntityLookup.class)
 public abstract class EntityLookupMixin<T extends EntityAccess> implements EraseEntityLookupBridge<T> {

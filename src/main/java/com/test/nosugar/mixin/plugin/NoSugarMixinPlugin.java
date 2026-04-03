@@ -57,7 +57,7 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
 
     private static void registerTransformer() {
         try {
-            NoSugarLaunchPlugin plugin = new NoSugarLaunchPlugin();
+            /*NoSugarLaunchPlugin plugin = new NoSugarLaunchPlugin();
 
             Field field = Launcher.class.getDeclaredField("launchPlugins");
             field.setAccessible(true);
@@ -71,7 +71,7 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
             if (!map.containsKey(plugin.name())) {
                 map.put(plugin.name(), plugin);
                 NoSugar.LOGGER.info("[NoSugar] Transformer registered.");
-            }
+            }*/
         } catch (Exception e) {
             NoSugar.LOGGER.debug("[NoSugar] Failed to register Transformer: " + e);
         }

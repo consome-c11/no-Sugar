@@ -5,13 +5,30 @@ import net.minecraftforge.eventbus.api.Event;
 
 public class LivingEntityMethodEvent extends Event {
 
-    private final Entity entity;
+    private final Object entity;
     private final MethodType methodType;
     private final MethodPhase phase;
     private Object returnValue;
     private boolean isModified;
+    private boolean forwarded = false;
 
-    public LivingEntityMethodEvent(Entity entity, MethodType methodType, MethodPhase phase, Object originalReturnValue) {
+    public LivingEntityMethodEvent() {
+        this.entity = null;
+        this.methodType = null;
+        this.phase = MethodPhase.RETURN;
+        this.returnValue = null;
+        this.isModified = false;
+    }
+
+    public LivingEntityMethodEvent(LivingEntityMethodEvent oldEvent) {
+        this.entity = oldEvent.getEntity();
+        this.methodType = oldEvent.getMethodType();
+        this.phase = oldEvent.getMethodPhase();
+        this.returnValue = oldEvent.getReturnValue();
+        this.isModified = oldEvent.isModified();
+    }
+
+    public LivingEntityMethodEvent(Object entity, MethodType methodType, MethodPhase phase, Object originalReturnValue) {
         this.entity = entity;
         this.methodType = methodType;
         this.phase = phase;
@@ -19,11 +36,11 @@ public class LivingEntityMethodEvent extends Event {
         this.isModified = false;
     }
 
-    public LivingEntityMethodEvent(Entity entity, MethodType methodType, Object originalReturnValue) {
+    public LivingEntityMethodEvent(Object entity, MethodType methodType, Object originalReturnValue) {
         this(entity, methodType, MethodPhase.RETURN, originalReturnValue);
     }
 
-    public Entity getEntity() { return entity; }
+    public Object getEntity() { return entity; }
     public MethodType getMethodType() { return methodType; }
     public MethodPhase getMethodPhase() { return phase; }
     public Object getReturnValue() { return returnValue; }
@@ -35,6 +52,15 @@ public class LivingEntityMethodEvent extends Event {
 
     public boolean isModified() { return isModified; }
     public void setModified(boolean modified) { isModified = modified; }
+
+    public boolean isForwarded() {
+        return forwarded;
+    }
+
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
+    }
+
     public enum MethodPhase {
         RETURN,
         AFTER
