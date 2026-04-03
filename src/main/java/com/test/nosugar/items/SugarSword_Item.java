@@ -2,10 +2,12 @@ package com.test.nosugar.items;
 
 import com.test.nosugar.additional.ModTiers;
 import com.test.nosugar.client.renderer.SugarSwordItemRenderProperties;
+import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -22,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -111,26 +114,33 @@ public class SugarSword_Item extends SwordItem {
     }
 
     private List<Entity> findEntitiesInCone(Player player, double radius, double angle) {
-        Level level = player.level();
-        return level.getEntities(player, player.getBoundingBox().inflate(radius), entity -> {
-            if (entity == player) return false;
+        if (!(player.level() instanceof ServerLevel serverLevel)) return List.of();
 
-            double distanceSq = player.distanceToSqr(entity);
-            if (distanceSq > radius * radius) return false;
+        List<Entity> allEntities = EntityUtils.getEntities(serverLevel);
+        List<Entity> result = new ArrayList<>();
 
-            Vec3 playerDir = player.getLookAngle().normalize();
-            Vec3 toEntity = new Vec3(
-                    entity.getX() - player.getX(),
-                    entity.getY() - player.getY(),
-                    entity.getZ() - player.getZ()
-            );
+        Vec3 playerPos = player.position();
+        Vec3 playerDir = player.getLookAngle().normalize();
 
-            double dotProduct = playerDir.dot(toEntity);
+        for (Entity entity : allEntities) {
+            if (entity == player) {
+                continue;
+            }
+            double distanceSq = playerPos.distanceToSqr(entity.position());
+            if (distanceSq > radius * radius) {
+                continue;
+            }
+            Vec3 toEntity = entity.position().subtract(playerPos);
+            double dotProduct = playerDir.dot(toEntity.normalize());
             dotProduct = Math.max(-1.0, Math.min(1.0, dotProduct));
             double angleBetween = Math.acos(dotProduct) * 180 / Math.PI;
 
-            return angleBetween <= angle;
-        });
+            if (angleBetween <= angle) {
+                result.add(entity);
+            }
+        }
+
+        return result;
     }
 
     @Override

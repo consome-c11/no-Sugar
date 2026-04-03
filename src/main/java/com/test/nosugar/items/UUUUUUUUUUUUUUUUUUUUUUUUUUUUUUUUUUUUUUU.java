@@ -4,6 +4,7 @@ import com.test.nosugar.mixin.sugar_sword.EntityLookupAccessor;
 import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;
 import com.test.nosugar.mixin.sugar_sword.ServerLevelAccessor;
+import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.item.Eraser_Utils;
 import com.test.nosugar.utils.render.ColorUtils;
 import net.minecraft.network.chat.Component;
@@ -54,18 +55,10 @@ public class UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU extends Item {
         if (level.isClientSide()) {
             return InteractionResultHolder.fail(itemStack);
         }
-        //これで取得できなかったら泣くぞ
-        ServerLevel serverLevel = (ServerLevel) level;
-        PersistentEntitySectionManager<Entity> manager =
-                ((ServerLevelAccessor) serverLevel).getEntityManager();
-        PersistentEntitySectionManagerAccessor<Entity> acc =
-                (PersistentEntitySectionManagerAccessor<Entity>) manager;
 
-        LevelEntityGetter<Entity> getter = acc.getEntityGetter();
-        EntityLookup<Entity> vis = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
-        ((EntityLookupAccessor) vis).getById().values().stream().forEach((ent) -> {
+        EntityUtils.getEntities((ServerLevel) level).forEach((ent) -> {
             if (ent instanceof LivingEntity living) {
-                if (living.getId() != player.getId()) Eraser_Utils.killIfParentFound(living, player, true);
+                if (living.getId() != player.getId()) Eraser_Utils.killIfParentFound(living, player);
             }
         });
 
