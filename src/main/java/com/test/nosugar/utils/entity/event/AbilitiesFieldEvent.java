@@ -59,7 +59,10 @@ public class AbilitiesFieldEvent extends Event {
     public Object getAbilities() { return abilities; }
     public FieldType getType() { return type; }
     public Object getNewValue() { return newValue; }
-    public void setNewValue(Object newValue) { this.newValue = newValue; }
+    public void setNewValue(Object newValue) {
+        this.newValue = newValue;
+        this.isModified = true;
+    }
     public String getFieldName() {
         return fieldName;
     }

@@ -351,8 +351,11 @@ public class ClientEvents {
         boolean nextValue = (boolean) event.getNewValue();
         if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly() && !nextValue) {
             //TODO: Fix this
-            event.setNewValue(true);
-            //PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
+            event.setNewValue(mc.player.getAbilities().flying);
+            if(event.getType() == AbilitiesFieldEvent.FieldType.MAY_FLY) {
+                event.setNewValue(true);
+            }
+            PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
         }
     }
 }

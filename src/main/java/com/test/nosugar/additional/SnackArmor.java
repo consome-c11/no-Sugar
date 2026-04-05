@@ -1,6 +1,7 @@
 package com.test.nosugar.additional;
 
 import com.test.nosugar.utils.entity.EntityUtils;
+import com.test.nosugar.utils.entity.FlyManager;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -245,11 +246,13 @@ public class SnackArmor {
         }
 
         private static void resetAbilities(Player player) {
+            FlyManager.setCanDisableFly(true);
             player.getAbilities().mayfly = false;
             //player.getAbilities().invulnerable = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();
             if (player instanceof ILivingEntity Iliving) Iliving.setwasFullset(false);
+            FlyManager.setCanDisableFly(false);
         }
 
         @SubscribeEvent

@@ -22,9 +22,10 @@ public class AbilitiesFieldImpl implements IAbilitiesFieldHook {
     }
 
     private boolean postAndGet(Object abilitiesObj, AbilitiesFieldEvent.FieldType type, String fieldName, boolean original) {
+        //NoSugar.LOGGER.info("ori: " + original);
         AbilitiesFieldEvent event = new AbilitiesFieldEvent(abilitiesObj, type, fieldName, original);
         NoSugarBus.BUS.post(event);
-        NoSugar.LOGGER.info("val: {}", event.getNewValue());
+        //NoSugar.LOGGER.info("new val: {}", event.getNewValue());
         if (event.getNewValue() instanceof Boolean bool) {
             return bool;
         }

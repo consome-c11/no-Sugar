@@ -49,11 +49,11 @@ public class AbilitiesTransformer implements ITransformerModule {
             if (fieldInsn.getOpcode() != Opcodes.PUTFIELD) continue;
 
             if (MAY_FLY_FIELD.matchesCall(fieldInsn)) {
-                injectFieldHook(method, fieldInsn, "onWriteMayFly");
+                injectFieldHook(method, fieldInsn, "onWriteMayFly", "(Ljava/lang/Object;ZLjava/lang/String;" + FIELD_PHASE_DESC + ")Z");
                 AsmUtil.dumpInsnContext(classNode.name, method, fieldInsn, "HOOK_FIELD: mayfly");
                 modified = true;
             } else if (IS_FLYING_FIELD.matchesCall(fieldInsn)) {
-                injectFieldHook(method, fieldInsn, "onWriteFlying");
+                injectFieldHook(method, fieldInsn, "onWriteFlying", "(Ljava/lang/Object;ZLjava/lang/String;" + FIELD_PHASE_DESC + ")Z");
                 AsmUtil.dumpInsnContext(classNode.name, method, fieldInsn, "HOOK_FIELD: flying");
                 modified = true;
             }
@@ -61,7 +61,7 @@ public class AbilitiesTransformer implements ITransformerModule {
         return modified;
     }
 
-    private void injectFieldHook(MethodNode method, FieldInsnNode target, String hookMethod) {
+    private void injectFieldHook(MethodNode method, FieldInsnNode target, String hookMethod, String hookDesc) {
         InsnList insns = new InsnList();
         insns.add(new InsnNode(Opcodes.DUP2));
         insns.add(new FieldInsnNode(Opcodes.GETSTATIC, FIELD_HOOK_CLASS, "INSTANCE", FIELD_HOOK_DESC));
@@ -69,9 +69,7 @@ public class AbilitiesTransformer implements ITransformerModule {
         insns.add(new InsnNode(Opcodes.POP));
         insns.add(new LdcInsnNode(target.name));
         insns.add(new FieldInsnNode(Opcodes.GETSTATIC, FIELD_PHASE_INTERNAL, "BEFORE", FIELD_PHASE_DESC));
-        insns.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE,
-                "com/test/nosugar/utils/entity/hook/abilities/IAbilitiesFieldHook",
-                hookMethod, "(Ljava/lang/Object;ZLjava/lang/String;" + FIELD_PHASE_DESC + ")Z", true));
+        insns.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "com/test/nosugar/utils/entity/hook/abilities/IAbilitiesFieldHook", hookMethod, hookDesc, true));
         insns.add(new InsnNode(Opcodes.SWAP));
         insns.add(new InsnNode(Opcodes.POP));
         method.instructions.insertBefore(target, insns);

@@ -1,6 +1,7 @@
 package com.test.nosugar.network.packets;
 
 import com.test.nosugar.utils.entity.EntityUtils;
+import com.test.nosugar.utils.entity.FlyManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Abilities;
@@ -31,9 +32,10 @@ public class HaloFlyPacket {
             if (!EntityUtils.hasHaloOfSugar(player)) return;
 
             Abilities abilities = player.getAbilities();
+            FlyManager.setCanDisableFly(true);
             abilities.mayfly = true;
             abilities.flying = msg.isFlying;
-
+            FlyManager.setCanDisableFly(false);
         });
         ctx.setPacketHandled(true);
     }
