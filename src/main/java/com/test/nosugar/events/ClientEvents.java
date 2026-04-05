@@ -346,9 +346,11 @@ public class ClientEvents {
                         event.getType() != AbilitiesFieldEvent.FieldType.MAY_FLY)) {
             return;
         }
+
+        //:thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking: :thinking:
         boolean nextValue = (boolean) event.getNewValue();
         if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly() && !nextValue) {
-            NoSugar.LOGGER.info("now Value: " + mc.player.getAbilities().flying);
+            //TODO: Fix this
             event.setNewValue(true);
             //PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
         }

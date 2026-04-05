@@ -3,7 +3,8 @@ package com.test.nosugar.agent.transformer;
 import com.test.nosugar.agent.NSAgentLogger;
 import com.test.nosugar.agent.transformer.transformers.AbilitiesTransformer;
 import com.test.nosugar.agent.transformer.transformers.LivingEntityTransformer;
-
+import cpw.mods.modlauncher.TransformingClassLoader;
+import cpw.mods.cl.ModuleClassLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -34,15 +35,16 @@ public class TransformerCore {
     }
 
     public static boolean transform(Phase phase, ClassNode classNode) {
-
-        if (classNode.name.startsWith("com.test.nosugar.transformer")) {
+        if (classNode.name.startsWith("com.test.nosugar.agent")) {
             return false;
         }
+        //なんか無い方が良かった🤔
         String key = classNode.name + ":" + phase.name();
         if (!transformedClasses.add(key)) {
-            return false;
+            //LOGGER.info("Skipping transformation for class: " + key);
+            //return false;
         }
-
+        //LOGGER.info("Transforming " + classNode.name);
         boolean modified = false;
         try {
             for (ITransformerModule module : MODULES) {

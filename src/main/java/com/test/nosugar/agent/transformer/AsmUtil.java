@@ -11,6 +11,67 @@ import java.util.Map;
 public class AsmUtil {
     private static final Map<Integer, String> OPCODE_NAMES = new HashMap<>();
 
+    public static void dumpInsnContext(String className, MethodNode method, AbstractInsnNode target, String label) {
+        if(!TransformerCore.LOGGER.isDebugEnabled()) return;
+        AbstractInsnNode[] insns = method.instructions.toArray();
+        int idx = -1;
+        for (int i = 0; i < insns.length; i++) {
+            if (insns[i] == target) { idx = i; break; }
+        }
+        if (idx == -1) return;
+
+        int start = Math.max(0, idx - 15);
+        int end   = Math.min(insns.length, idx + 15);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n[NoSugar Dump] ").append(label)
+                .append(" | Method: ").append(method.name).append(method.desc)
+                .append(" | Class: ").append(className);
+
+        for (int i = start; i < end; i++) {
+            AbstractInsnNode insn = insns[i];
+            sb.append("\n  [").append(i).append("] ");
+            sb.append(i == idx ? ">>> " : "    ");
+
+            if (insn.getOpcode() >= 0) {
+                sb.append(AsmUtil.getOpcodeName(insn.getOpcode()));
+            } else {
+                sb.append(insn.getClass().getSimpleName());
+            }
+
+            String operand = getOperandString(insn);
+            if (operand != null && !operand.isEmpty()) {
+                sb.append(" ").append(operand);
+            }
+        }
+        TransformerCore.LOGGER.info(sb.toString());
+    }
+
+
+    private static String getOperandString(AbstractInsnNode insn) {
+        if (insn instanceof MethodInsnNode m)
+            return String.format("%s.%s%s", m.owner, m.name, m.desc);
+        if (insn instanceof FieldInsnNode f)
+            return String.format("%s.%s:%s", f.owner, f.name, f.desc);
+        if (insn instanceof TypeInsnNode t) return t.desc;
+        if (insn instanceof IntInsnNode ii)
+            return ii.operand >= 0 && ii.operand < 256
+                    ? String.valueOf(ii.operand) : "0x" + Integer.toHexString(ii.operand);
+        if (insn instanceof VarInsnNode v) return "var[" + v.var + "]";
+        if (insn instanceof LdcInsnNode ldc) {
+            if (ldc.cst instanceof String) return "\"" + ldc.cst + "\"";
+            if (ldc.cst instanceof Type)   return ((Type) ldc.cst).getDescriptor();
+            return String.valueOf(ldc.cst);
+        }
+        if (insn instanceof JumpInsnNode j) return "label[" + j.label.getLabel() + "]";
+        if (insn instanceof InvokeDynamicInsnNode id)
+            return String.format("%s%s [bsm=%s]", id.name, id.desc, id.bsm);
+        if (insn instanceof LabelNode l)     return "Label[" + l.getLabel() + "]";
+        if (insn instanceof FrameNode)       return "Frame";
+        if (insn instanceof LineNumberNode ln) return "line:" + ln.line;
+        return null;
+    }
+
     static {
         // Constants
         OPCODE_NAMES.put(Opcodes.NOP, "NOP");

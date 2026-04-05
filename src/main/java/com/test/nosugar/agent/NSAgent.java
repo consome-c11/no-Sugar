@@ -68,7 +68,7 @@ public class NSAgent {
 
     private static void retransformClassTransformer(Instrumentation inst) {
         for (Class<?> c : inst.getAllLoadedClasses()) {
-            if ("cpw.mods.modlauncher.ClassTransformer".equals(c.getName())) {
+            if ("cpw.mods.cl.ModuleClassLoader".equals(c.getName())) {
                 LOGGER.info("Found ClassTransformer: " + c.getName());
 
                 if (inst.isModifiableClass(c)) {

@@ -30,6 +30,6 @@ public class NSAgentLogger {
 
     public boolean isDebugEnabled(){
         //@test you Are stupid.
-         return true;
+         return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.test.nosugar.agent;
 
+import com.test.nosugar.agent.transformer.AsmUtil;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -19,8 +20,8 @@ public class NSTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        if (!"cpw/mods/modlauncher/ClassTransformer".equals(className)) return null;
-
+        if (!"cpw/mods/cl/ModuleClassLoader".equals(className)) return null;
+        LOGGER.info("Found Transform class " + className);
         if (!transformedClasses.add(className)) {
             //LOGGER.info("Already transformed, skipping: " + className);
             return null;
@@ -52,7 +53,7 @@ public class NSTransformer implements ClassFileTransformer {
     }
 
     private byte[] transformClass(byte[] bytes, ClassLoader loader) {
-        LOGGER.info("0: transformClass entry, bytes length: " + (bytes == null ? "null" : bytes.length));
+        LOGGER.info("transformClass entry, bytes length: " + (bytes == null ? "null" : bytes.length));
 
         if (bytes == null || bytes.length == 0) {
             LOGGER.warn("Empty class bytes, skipping");
@@ -68,11 +69,12 @@ public class NSTransformer implements ClassFileTransformer {
 
             if (cn.methods != null) {
                 for (MethodNode mn : cn.methods) {
-                    if ("transform".equals(mn.name) && "([BLjava/lang/String;Ljava/lang/String;)[B".equals(mn.desc)) {
-                        LOGGER.info("Found target method transform, injecting...");
-                        injectAdvice(mn);
+                    LOGGER.info("method name, {}, desc= {}",  mn.name, mn.desc);
+                    if ("getClassBytes".equals(mn.name) &&
+                            "(Ljava/lang/module/ModuleReader;Ljava/lang/module/ModuleReference;Ljava/lang/String;)[B".equals(mn.desc)) {
+                        LOGGER.info("Found target method, injecting...");
+                        injectHook(mn);
                         modified = true;
-                        LOGGER.info("Method injected successfully");
                         break;
                     }
                 }
@@ -93,30 +95,29 @@ public class NSTransformer implements ClassFileTransformer {
         }
     }
 
-    private void injectAdvice(MethodNode mn) {
-        InsnList il = new InsnList();
-        LabelNode end = new LabelNode();
+    private void injectHook(MethodNode mn) {
+        AbstractInsnNode returnNode = null;
+        for (AbstractInsnNode insn : mn.instructions) {
+            if (insn.getOpcode() == Opcodes.ARETURN) {
+                returnNode = insn;
+                InsnList il = new InsnList();
+                il.add(new VarInsnNode(Opcodes.ALOAD, 3));
+                il.add(new InsnNode(Opcodes.SWAP));
+                il.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        "com/test/nosugar/agent/transformer/TransformerCore",
+                        "transformForByte", "(Ljava/lang/String;[B)[B", false));
 
-        il.add(new VarInsnNode(Opcodes.ALOAD, 2));
-        il.add(new LdcInsnNode("."));
-        il.add(new LdcInsnNode("/"));
-        il.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/String", "replace",
-                "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", false));
+                mn.instructions.insertBefore(returnNode, il);
 
-        il.add(new VarInsnNode(Opcodes.ALOAD, 1));
-
-        il.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                "com/test/nosugar/agent/transformer/TransformerCore",
-                "transformForByte", "(Ljava/lang/String;[B)[B", false));
-
-        il.add(new VarInsnNode(Opcodes.ASTORE, 1));
-
-        il.add(new JumpInsnNode(Opcodes.GOTO, end));
-        il.add(end);
-        il.add(new FrameNode(Opcodes.F_SAME, 0, null, 0, null));
-
-        mn.instructions.insert(il);
-        mn.maxLocals = Math.max(mn.maxLocals, 4);
+                LOGGER.info("=== Dumping modified method: " + mn.name + mn.desc + " ===");
+                for (AbstractInsnNode node : mn.instructions) {
+                    //wtf hard coded ahh
+                    AsmUtil.dumpInsnContext("cpw/mods/cl/ModuleClassLoader", mn, node,
+                            "HOOK_DEF: " + "transformForByte" + "@" + AsmUtil.getOpcodeName(node.getOpcode()));
+                }
+                LOGGER.info("=== End of dump ===");
+            }
+        }
     }
 
     static class SafeClassWriter extends ClassWriter {
