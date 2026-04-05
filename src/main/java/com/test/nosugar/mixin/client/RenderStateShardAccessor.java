@@ -12,90 +12,58 @@ public interface RenderStateShardAccessor {
 
     // TransparencyStateShard
     @Accessor("TRANSLUCENT_TRANSPARENCY")
-    static RenderStateShard.TransparencyStateShard getTranslucentTransparency() {
-        throw new AssertionError();
-    }
+    RenderStateShard.TransparencyStateShard getTranslucentTransparency();
 
     @Accessor("LIGHTNING_TRANSPARENCY")
-    static RenderStateShard.TransparencyStateShard getLightningTransparency() {
-        throw new AssertionError();
-    }
+    RenderStateShard.TransparencyStateShard getLightningTransparency();
 
     // CullStateShard
     @Accessor("NO_CULL")
-    static RenderStateShard.CullStateShard getNoCull() {
-        throw new AssertionError();
-    }
+    RenderStateShard.CullStateShard getNoCull();
 
     @Accessor("CULL")
-    static RenderStateShard.CullStateShard getCull() {
-        throw new AssertionError();
-    }
+    RenderStateShard.CullStateShard getCull();
 
     // DepthTestStateShard
     @Accessor("NO_DEPTH_TEST")
-    static RenderStateShard.DepthTestStateShard getNoDepthTest() {
-        throw new AssertionError();
-    }
+    RenderStateShard.DepthTestStateShard getNoDepthTest();
 
     @Accessor("EQUAL_DEPTH_TEST")
-    static RenderStateShard.DepthTestStateShard getEqualDepthTest() {
-        throw new AssertionError();
-    }
+    RenderStateShard.DepthTestStateShard getEqualDepthTest();
 
     @Accessor("LEQUAL_DEPTH_TEST")
-    static RenderStateShard.DepthTestStateShard getLequalDepthTest() {
-        throw new AssertionError();
-    }
+    RenderStateShard.DepthTestStateShard getLequalDepthTest();
 
     @Accessor("GREATER_DEPTH_TEST")
-    static RenderStateShard.DepthTestStateShard getGreaterDepthTest() {
-        throw new AssertionError();
-    }
+    RenderStateShard.DepthTestStateShard getGreaterDepthTest();
 
     // WriteMaskStateShard
     @Accessor("COLOR_WRITE")
-    static RenderStateShard.WriteMaskStateShard getColorWrite() {
-        throw new AssertionError();
-    }
+    RenderStateShard.WriteMaskStateShard getColorWrite();
 
     @Accessor("DEPTH_WRITE")
-    static RenderStateShard.WriteMaskStateShard getDepthWrite() {
-        throw new AssertionError();
-    }
+    RenderStateShard.WriteMaskStateShard getDepthWrite();
 
     @Accessor("COLOR_DEPTH_WRITE")
-    static RenderStateShard.WriteMaskStateShard getColorDepthWrite() {
-        throw new AssertionError();
-    }
+    RenderStateShard.WriteMaskStateShard getColorDepthWrite();
 
     // LightmapStateShard
     @Accessor("NO_LIGHTMAP")
-    static RenderStateShard.LightmapStateShard getNoLightmap() {
-        throw new AssertionError();
-    }
+    RenderStateShard.LightmapStateShard getNoLightmap();
 
     @Accessor("LIGHTMAP")
-    static RenderStateShard.LightmapStateShard getLightmap() {
-        throw new AssertionError();
-    }
+    RenderStateShard.LightmapStateShard getLightmap();
 
     @Accessor("OVERLAY")
-    static RenderStateShard.OverlayStateShard getOverlay() {
-        throw new AssertionError();
-    }
+    RenderStateShard.OverlayStateShard getOverlay();
 
     // LayeringStateShard
     @Accessor("VIEW_OFFSET_Z_LAYERING")
-    static RenderStateShard.LayeringStateShard getViewOffsetZLayering() {
-        throw new AssertionError();
-    }
+    RenderStateShard.LayeringStateShard getViewOffsetZLayering();
 
     @Accessor("NO_LAYERING")
-    static RenderStateShard.LayeringStateShard getNoLayering() {
-        throw new AssertionError();
-    }
+    RenderStateShard.LayeringStateShard getNoLayering();
 
     @Accessor("BLOCK_SHEET_MIPPED")
-    static RenderStateShard.TextureStateShard getBlockSheetMipped() {throw new AssertionError();}
+    RenderStateShard.TextureStateShard getBlockSheetMipped();
 }

@@ -38,7 +38,6 @@ public class ModShaders {
                 shader -> {
                     ITEM_SHADER = shader;
                     time = shader.getUniform("time");
-
                     ITEM_RENDER_TYPE = RenderType.create(
                             NoSugar.MODID + ":item",
                             DefaultVertexFormat.NEW_ENTITY,
@@ -48,10 +47,10 @@ public class ModShaders {
                             false,
                             RenderType.CompositeState.builder()
                                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> ITEM_SHADER))
-                                    .setTransparencyState(RenderStateShardAccessor.getTranslucentTransparency())
-                                    .setTextureState(RenderStateShardAccessor.getBlockSheetMipped())
-                                    .setLightmapState(RenderStateShardAccessor.getLightmap())
-                                    .setOverlayState(RenderStateShardAccessor.getOverlay())
+                                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
+                                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                                    .setOverlayState(RenderStateShard.OVERLAY)
                                     .createCompositeState(false)
                     );
                 }

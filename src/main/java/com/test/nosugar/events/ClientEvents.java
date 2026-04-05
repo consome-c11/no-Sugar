@@ -4,10 +4,10 @@ import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.ModKeyBindings;
 import com.test.nosugar.client.utils.RenderQueue;
+import com.test.nosugar.utils.entity.event.AbilitiesFieldEvent;
 import com.test.nosugar.items.SugarSword_Item;
 import com.test.nosugar.network.PacketHandler;
 import com.test.nosugar.network.packets.*;
-import com.test.nosugar.transformer.event.AbilitiesFieldEvent;
 import com.test.nosugar.utils.DestroyMode;
 import com.test.nosugar.utils.Res;
 import com.test.nosugar.utils.ShootMode;
@@ -347,9 +347,9 @@ public class ClientEvents {
             return;
         }
         boolean nextValue = (boolean) event.getNewValue();
-        if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly()) {
-            //NoSugar.LOGGER.info("nextValue: " + nextValue);
-            event.setNewValue(mc.player.getAbilities().flying);
+        if (EntityUtils.hasHaloOfSugar(mc.player) && !FlyManager.isCanDisableFly() && !nextValue) {
+            NoSugar.LOGGER.info("now Value: " + mc.player.getAbilities().flying);
+            event.setNewValue(true);
             //PacketHandler.CHANNEL.sendToServer(new HaloFlyPacket(mc.player.getAbilities().flying));
         }
     }

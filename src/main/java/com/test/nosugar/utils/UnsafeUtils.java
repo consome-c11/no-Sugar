@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 
 //なんか名前がかっこよくて使ってみたかっただけなんや....
 //絶対使わなくていいよな:skull:
+//追記: 普通にAgentのアタッチに使うわ
 public class UnsafeUtils {
     private static final Unsafe UNSAFE;
     public static final boolean SUCCESS;
@@ -53,5 +54,34 @@ public class UnsafeUtils {
                 NoSugar.LOGGER.warn("Could not set field " + offset + " in class " + instance.getClass().getName(), e);
             }
         }
+    }
+
+    public static boolean allowAttachSelf() {
+        if (!SUCCESS) return false;
+
+        String[] targets = {
+                "sun.tools.attach.HotSpotVirtualMachineImpl",
+                "sun.tools.attach.VirtualMachineImpl",
+                "sun.tools.attach.HotSpotVirtualMachine"
+        };
+
+        for (String className : targets) {
+            try {
+                Class<?> clazz = Class.forName(className);
+                for (Field f : clazz.getDeclaredFields()) {
+                    if (f.getType() == boolean.class && f.getName().toLowerCase().contains("allowattach")) {
+                        long offset = UNSAFE.staticFieldOffset(f);
+                        Object base = UNSAFE.staticFieldBase(f);
+                        UNSAFE.putBoolean(base, offset, true);
+                        NoSugar.LOGGER.info("Self-attach enabled: {}", className + "." + f.getName());
+                        return true;
+                    }
+                }
+            } catch (ClassNotFoundException ignored) {}
+            catch (Exception e) {
+                NoSugar.LOGGER.warn("Failed to enable self-attach for {}", className, e);
+            }
+        }
+        return false;
     }
 }

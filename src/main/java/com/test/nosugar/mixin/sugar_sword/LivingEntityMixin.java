@@ -146,7 +146,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         self.getCombatTracker().recordDamage(src, Float.POSITIVE_INFINITY);
         if (attacker instanceof Player player) ((LivingEntityAccessor) self).setLastHurtByPlayer(player);
         if (attacker != null) ((LivingEntityAccessor) self).setLastHurtByMob(attacker);
-
+        ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);//0以上かで判断してるし1でもええやろ(フラグ)
         if (Config.isNormalDieEntity(self) || self instanceof Player) {
 
             self.getEntityData().set(healthId, 0.f, true);
@@ -216,7 +216,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     player.awardStat(Stats.ENTITY_KILLED_BY.get(killer.getType()));
                 killer.awardKillScore(self, 0, source);
             }
-            ((LivingEntityAccessor) self).setLastHurtByPlayerTime(1);//0以上かで判断してるし1でもええやろ(フラグ)
             if(!LivingEntityUtils.isAlive(self) && LivingEntityUtils.isDeadOrDying(self))((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
             //((LivingEntityAccessor)self).invokedropFromLootTable(source,false);
             //((LivingEntityAccessor)self).invokedropExperience();

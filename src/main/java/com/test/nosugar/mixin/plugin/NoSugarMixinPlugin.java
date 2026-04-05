@@ -1,7 +1,8 @@
 package com.test.nosugar.mixin.plugin;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.transformer.NoSugarLaunchPlugin;
+import com.test.nosugar.utils.NSAgentLoader;
+import com.test.nosugar.agent.transformer.NoSugarLaunchPlugin;
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
@@ -19,11 +20,13 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
     private static boolean registered = false;
 
     static{
+        NoSugar.LOGGER.info("[NoSugar] Loading NoSugarMixinPlugin");
         if (!registered) {
             registerTransformer();
             registered = true;
         }
     }
+
     @Override
     public void onLoad(String mixinPackage) {
     }
@@ -53,27 +56,22 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+    public void postApply(String s, ClassNode classNode, String s1, IMixinInfo iMixinInfo) {
+
+    }
 
     private static void registerTransformer() {
         try {
-            /*NoSugarLaunchPlugin plugin = new NoSugarLaunchPlugin();
-
-            Field field = Launcher.class.getDeclaredField("launchPlugins");
-            field.setAccessible(true);
-            LaunchPluginHandler pluginHandler = (LaunchPluginHandler) field.get(Launcher.INSTANCE);
-
-            field = LaunchPluginHandler.class.getDeclaredField("plugins");
-            field.setAccessible(true);
-            Map<String, ILaunchPluginService> map =
-                    (Map<String, ILaunchPluginService>) field.get(pluginHandler);
-
-            if (!map.containsKey(plugin.name())) {
-                map.put(plugin.name(), plugin);
-                NoSugar.LOGGER.info("[NoSugar] Transformer registered.");
-            }*/
+            if (NSAgentLoader.load()) {
+                NoSugar.LOGGER.info("[NoSugar] Agent loaded :)");
+                return;
+            }
+            else{
+                NoSugar.LOGGER.info("[NoSugar] Agent not loaded...");
+            }
         } catch (Exception e) {
-            NoSugar.LOGGER.debug("[NoSugar] Failed to register Transformer: " + e);
+            NoSugar.LOGGER.warn("[NoSugar] Failed to register Agent: " + e);
         }
+
     }
 }

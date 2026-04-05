@@ -11,58 +11,52 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 version = mod_version
 group = mod_group_id
-
-base {
-    archivesName = "No-Sugar"
-}
-
+base { archivesName = "No-Sugar" }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 configurations {
-    annotationProcessor {
-        exclude group: 'org.spongepowered', module: 'mixin'
-    }
+    shadowImpl
+    agentImpl
+    embeddedAgentCompileOnly
+    embeddedAgentImplementation.extendsFrom agentImpl
+    compileOnly.extendsFrom shadowImpl
 }
 
 sourceSets {
-    main {
-        resources { srcDir 'src/generated/resources' }
-        java {
-            include 'com/test/nosugar/transformer/**'
-        }
-        resources {
-            include 'com/test/nosugar/transformer/**'
-            exclude 'nosugar.mixins.json'
-            exclude '*.mixins.json'
-        }
-    }
-
-    embeddedMain {
+    embeddedAgent {
         java {
             srcDirs = ['src/main/java']
-            include 'com/test/nosugar/**'
-            exclude 'com/test/nosugar/transformer/**'
+            include 'com/test/nosugar/agent/**'
         }
         resources {
             srcDirs = ['src/main/resources']
-            include 'assets/**'
-            include 'data/**'
-            include 'nosugar.mixins.json'
-            include 'META-INF/mods.toml'
-            include 'pack.mcmeta'
-            exclude 'com/test/nosugar/transformer/**'
+            include 'com/test/nosugar/agent/**'
+            exclude 'assets/**', 'data/**', 'META-INF/mods.toml', 'pack.mcmeta', 'nosugar.mixins.json'
         }
-        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
-        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+        compileClasspath += configurations.minecraft
+        compileClasspath += configurations.agentImpl
+    }
+    main {
+        java {
+            srcDirs = ['src/main/java']
+            include 'com/test/nosugar/**'
+            exclude 'com/test/nosugar/agent/**'
+        }
+        resources {
+            srcDirs = ['src/main/resources', 'src/generated/resources']
+            exclude 'com/test/nosugar/agent/**'
+        }
+        compileClasspath += sourceSets.embeddedAgent.output
+        runtimeClasspath += sourceSets.embeddedAgent.output
     }
 }
 
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     copyIdeResources = true
-
     runs {
         configureEach {
             workingDirectory project.file('run')
@@ -71,7 +65,7 @@ minecraft {
             mods {
                 "${mod_id}" {
                     source sourceSets.main
-                    source sourceSets.embeddedMain
+                    source sourceSets.embeddedAgent
                 }
             }
         }
@@ -97,20 +91,11 @@ repositories {
     maven { url "https://www.cursemaven.com" }
     flatDir { dirs 'libs' }
 }
-configurations {
-    shadowImpl
-    compileOnly.extendsFrom shadowImpl
-}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation jarJar("io.github.llamalad7:mixinextras-forge:0.5.3") {
-        jarJar.ranged(it, "[0.5.3,)")
-    }
+    implementation jarJar("io.github.llamalad7:mixinextras-forge:0.5.3") { jarJar.ranged(it, "[0.5.3,)") }
     compileOnly("io.github.llamalad7:mixinextras-common:0.5.3")
-    shadowImpl "net.bytebuddy:byte-buddy:1.14.12"
-    shadowImpl "net.bytebuddy:byte-buddy-agent:1.14.12"
-
     implementation fg.deobf("curse.maven:geckolib-388172:7553267")
     implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
     implementation fg.deobf("curse.maven:curios-309927:6418456")
@@ -118,84 +103,92 @@ dependencies {
     implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:7691158")
     implementation fg.deobf("curse.maven:tinkers-construct-74072:7449219")
     implementation fg.deobf("curse.maven:mantle-74924:7563777")
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:0.5.3"
 
-    embeddedMainAnnotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-    embeddedMainAnnotationProcessor "io.github.llamalad7:mixinextras-common:0.5.3"
+    agentImpl "org.ow2.asm:asm:9.9.1"
+    agentImpl "org.ow2.asm:asm-tree:9.9.1"
+    agentImpl "org.ow2.asm:asm-commons:9.9.1"
+
 }
 
 def replaceProperties = [
-        minecraft_version      : minecraft_version,
-        minecraft_version_range: minecraft_version_range,
-        forge_version          : forge_version,
-        forge_version_range    : forge_version_range,
-        loader_version_range   : loader_version_range,
-        mod_id                 : mod_id,
-        mod_name               : mod_name,
-        mod_license            : mod_license,
-        mod_version            : mod_version,
-        mod_authors            : mod_authors,
-        mod_description        : mod_description,
+        minecraft_version      : minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version          : forge_version,         forge_version_range    : forge_version_range,
+        loader_version_range   : loader_version_range,  mod_id                 : mod_id,
+        mod_name               : mod_name,              mod_license            : mod_license,
+        mod_version            : mod_version,           mod_authors            : mod_authors,
+        mod_description        : mod_description
 ]
 
 tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.properties replaceProperties
-    from('src/main/resources') {
-        filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-            expand replaceProperties + [project: project]
-        }
-        filesMatching('META-INF/coremods.toml') {
-            rename 'coremods.toml', 'mods.toml'
-            expand replaceProperties + [project: project]
-        }
-    }
-    exclude 'META-INF/mods.toml'
-    exclude 'META-INF/coremods.toml'
-    exclude { it.file.path.contains('com/test/nosugar') && !it.file.path.contains('transformer') }
-}
-
-tasks.named('processEmbeddedMainResources', ProcessResources).configure {
-    inputs.properties replaceProperties
-    exclude 'META-INF/coremods.toml'
+    from sourceSets.main.resources.srcDirs
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
 }
 
-tasks.register('embeddedMainJar', ShadowJar) {
-    dependsOn 'compileEmbeddedMainJava', 'processEmbeddedMainResources'
-    from sourceSets.embeddedMain.output
-    from("${buildDir}/tmp/compileEmbeddedMainJava/") {
-        include 'compileEmbeddedMainJava-refmap.json'
-        rename 'compileEmbeddedMainJava-refmap.json', 'nosugar.refmap.json'
+tasks.named('processEmbeddedAgentResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
     }
-    exclude 'META-INF/services/cpw.mods.modlauncher.serviceapi.ILaunchPluginService'
+}
+
+tasks.register('embeddedAgentJar', ShadowJar) {
+    dependsOn 'compileEmbeddedAgentJava', 'processEmbeddedAgentResources'
+    from sourceSets.embeddedAgent.output
+    configurations = [project.configurations.agentImpl]
+
+    relocate 'org.objectweb.asm', 'com.test.nosugar.shadow.asm'
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory = layout.buildDirectory.dir('embedded')
-    archiveBaseName = 'nosugar-main'
+    archiveBaseName = 'nosugar-agent'
     archiveVersion = ""
     archiveClassifier = ''
     archiveExtension = 'jar'
+
     manifest {
-        attributes(['ModLauncher-LauncherAPI': '1.0', 'MixinConfigs': 'nosugar.mixins.json'])
+        attributes(
+                'Manifest-Version': '1.0',
+                'Agent-Class': 'com.test.nosugar.agent.NSAgent',
+                'Can-Retransform-Classes': 'true',
+                'Can-Redefine-Classes': 'true',
+                'Premain-Class': 'com.test.nosugar.agent.NSAgent',
+                'Boot-Class-Path': 'nosugar-agent.jar'
+        )
     }
 }
 
 tasks.register('reobfEmbeddedJar', JavaExec) {
-    dependsOn 'embeddedMainJar', 'createMcpToSrg'
-    def inputJar = layout.buildDirectory.file('embedded/nosugar-main.jar')
-    def outputJar = layout.buildDirectory.file('embedded/nosugar-main.jar.embed')
+    dependsOn 'embeddedAgentJar', 'createMcpToSrg'
+    def inputJar = layout.buildDirectory.file('embedded/nosugar-agent.jar')
+    def outputJar = layout.buildDirectory.file('embedded/nosugar-agent.jar.embed')
     def mappingsFile = tasks.named('createMcpToSrg').flatMap { it.output }
 
     inputs.file(inputJar)
     inputs.file(mappingsFile)
     outputs.file(outputJar)
 
-    classpath = configurations.detachedConfiguration(dependencies.create('net.minecraftforge:renamer:2.0.4:all'))
+    classpath = configurations.detachedConfiguration(
+            dependencies.create('net.minecraftforge:renamer:2.0.4:all')
+    )
     mainClass = 'net.minecraftforge.renamer.Main'
 
     doFirst {
-        def argsList = ['--input', inputJar.get().asFile.absolutePath, '--output', outputJar.get().asFile.absolutePath, '--names', mappingsFile.get().asFile.absolutePath, '--disable-abstract-param']
-        sourceSets.embeddedMain.compileClasspath.files.each { if (it.exists()) argsList.addAll(['--lib', it.absolutePath]) }
+        def argsList = [
+                '--input', inputJar.get().asFile.absolutePath,
+                '--output', outputJar.get().asFile.absolutePath,
+                '--names', mappingsFile.get().asFile.absolutePath,
+                '--disable-abstract-param'
+        ]
+        sourceSets.embeddedAgent.compileClasspath.files.each {
+            if (it.exists()) argsList.addAll(['--lib', it.absolutePath])
+        }
         args = argsList
     }
 }
@@ -205,14 +198,35 @@ shadowJar {
     configurations = [project.configurations.shadowImpl]
     from sourceSets.main.output
 
-    into('META-INF/jars') {
-        from layout.buildDirectory.file('embedded/nosugar-main.jar.embed')
+    exclude 'META-INF/maven/**', 'META-INF/NOTICE', 'META-INF/versions/**', 'module-info.class'
+
+
+    archiveClassifier = 'all'
+}
+
+tasks.named('jar', Jar) {
+    archiveClassifier = 'raw'
+    from sourceSets.main.output
+    from sourceSets.embeddedAgent.output
+}
+
+tasks.named('jarJar') {
+    dependsOn('shadowJar')
+    archiveClassifier = ''
+
+    into('META-INF/jarjar') {
+        from(tasks.named('reobfEmbeddedJar')) {
+            rename { it.replace('.embed', '') }
+        }
     }
 
-    relocate 'net.bytebuddy', 'com.test.nosugar.shadow.bytebuddy'
-    exclude 'META-INF/maven/**'
-    exclude 'module-info.class'
-    archiveClassifier = 'all'
+    enabled = true
+    doFirst { mainSpec.sourcePaths.clear() }
+    from(provider {
+        zipTree(shadowJar.archiveFile.get().asFile)
+    }) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
 
 afterEvaluate {
@@ -221,25 +235,9 @@ afterEvaluate {
     }
 }
 
-tasks.named('jar', Jar) {
-    archiveClassifier = 'raw'
-}
-
-tasks.named('jarJar') {
-    dependsOn('shadowJar')
-    archiveClassifier = ''
-    enabled = true
-    doFirst {
-        mainSpec.sourcePaths.clear()
-    }
-
-    from(provider { zipTree(shadowJar.archiveFile.get().asFile) }) {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-}
-
 mixin {
-    add sourceSets.embeddedMain, 'nosugar.refmap.json'
+    config 'nosugar.mixins.json'
+    add sourceSets.main, "nosugar.refmap.json"
 }
 
 tasks.withType(JavaCompile).configureEach {
