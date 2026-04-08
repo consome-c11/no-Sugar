@@ -76,6 +76,10 @@ public class ModItems {
     public static final RegistryObject<Item> HALO_OF_SUGAR =
             ITEMS.register("halo_of_sugar", () -> new Halo_of_Sugar_item(new Item.Properties().stacksTo(1)));
 
+    //これを見てる人へ v2で実装予定だから他の人に言わんでくれ
+    /*public static final RegistryObject<Item> NOSUGAR =
+            ITEMS.register("nosugar", () -> new NoSugar_Item(new Item.Properties().stacksTo(1)));*/
+
     //f*cking bakedmodel load :(
     public static final RegistryObject<Item> SUGAR_BOW_DUMMY1 =
             DUMMY_ITEMS.register("sugar_bow_pulling_0", () -> new Sugar_Bow_Item(new Item.Properties().stacksTo(1)));

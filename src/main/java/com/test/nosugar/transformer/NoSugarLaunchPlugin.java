@@ -1,10 +1,11 @@
-package com.test.nosugar.agent.transformer;
+package com.test.nosugar.transformer;
 
+import com.test.nosugar.NoSugar;
+import com.test.nosugar.agent.transformer.TransformerCore;
 import cpw.mods.modlauncher.api.ITransformerActivity;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import cpw.mods.modlauncher.ClassTransformer;
 import java.util.EnumSet;
 
 public class NoSugarLaunchPlugin implements ILaunchPluginService {
@@ -16,7 +17,7 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public EnumSet<Phase> handlesClass(Type type, boolean isEmpty) {
-        if (type.getClassName().startsWith("com.test.nosugar.transformer")) {
+        if (type.getClassName().startsWith("com.test.nosugar")) {
             return EnumSet.noneOf(Phase.class);
         }
         return EnumSet.of(Phase.AFTER, Phase.BEFORE);
@@ -24,10 +25,9 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
 
     @Override
     public boolean processClass(Phase phase, ClassNode classNode, Type classType, String reason) {
-        /*if (classNode.name.startsWith("com.test.nosugar.transformer")) {
+        if (classNode.name.startsWith("com.test.nosugar")) {
             return false;
         }
-
         if (!ITransformerActivity.CLASSLOADING_REASON.equals(reason)) {
             return false;
         }
@@ -36,14 +36,14 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
             TransformerCore.Phase corePhase = switch (phase) {
                 case BEFORE -> TransformerCore.Phase.BEFORE;
                 case AFTER -> TransformerCore.Phase.AFTER;
+                default -> TransformerCore.Phase.CLASS_LOADING;
             };
+            NSTransformDebug.scanAndDump(classNode);
 
-            return TransformerCore.transform(corePhase, classNode);
-        } catch (Throwable e) {
-            TransformerCore.LOGGER.error(
-                    "[NoSugar] Transformer error in class: " + classNode.name, e);
             return false;
-        }*/
-        return false;
+        } catch (Throwable e) {
+            TransformerCore.LOGGER.error("[NoSugar] Transform error: " + classNode.name, e);
+            return false;
+        }
     }
 }

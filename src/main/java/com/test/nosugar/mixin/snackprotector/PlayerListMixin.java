@@ -18,8 +18,8 @@ public class PlayerListMixin {
         System.out.println("isAlive: " + LivingEntityUtils.isAlive(player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(player) + " Health: " + LivingEntityUtils.getHealth(player));
         if (SnackArmor.SnackProtector.isFullSet(player) && player.isAlive() && !player.isDeadOrDying()
                 && player.getHealth() > 0.f && !player.isRemoved() && !player.isRespawnForced()) {
-            //cir.cancel();
-            //cir.setReturnValue(player);
+            cir.cancel();
+            cir.setReturnValue(player);
             //@test ちゃんとMixinするときは元関数読めよ!
         }
     }

@@ -32,35 +32,11 @@ import java.util.function.Consumer;
 import static com.test.nosugar.utils.item.Eraser_Utils.killIfParentFound;
 import static com.test.nosugar.utils.render.ColorUtils.makeWaveLine;
 
-public class SugarSword_Item extends SwordItem {
-    private static final String TAG_COOLDOWN = "RangeAttackCooldown";
-    private static final String TAG_COOLDOWN_MAX = "RangeAttackCooldownMax";
+//これ見てる人へ v2で実装予定だから他の人には言わんでくれ
+public class NoSugar_Item extends SwordItem {
 
-    public SugarSword_Item(Properties props) {
+    public NoSugar_Item(Properties props) {
         super(ModTiers.ERASER_TIER, 10, 7.F, props.stacksTo(1).fireResistant());
-    }
-
-    public static void startRangeAttackCooldown(ItemStack stack, int ticks) {
-        if (stack.isEmpty()) return;
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putInt(TAG_COOLDOWN, ticks);
-        tag.putInt(TAG_COOLDOWN_MAX, ticks);
-    }
-
-    public static boolean isOnCustomCooldown(ItemStack stack) {
-        if (stack.isEmpty()) return false;
-        CompoundTag tag = stack.getTag();
-        return tag != null && tag.contains(TAG_COOLDOWN) && tag.getInt(TAG_COOLDOWN) > 0;
-    }
-
-    public static float getCustomCooldownProgress(ItemStack stack) {
-        if (stack.isEmpty()) return 0.0F;
-        CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains(TAG_COOLDOWN) || !tag.contains(TAG_COOLDOWN_MAX)) return 0.0F;
-
-        int current = tag.getInt(TAG_COOLDOWN);
-        int max = tag.getInt(TAG_COOLDOWN_MAX);
-        return max > 0 ? 1.0F - (float)current / max : 1.0F;
     }
 
     public static HitResult getPlayerLookingAt(Player player, int reach) {
@@ -157,58 +133,17 @@ public class SugarSword_Item extends SwordItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        String text = Component.translatable("item.nosugar.sugar_sword.name").getString();
+        String text = Component.literal("NoSugar").getString();
         return makeWaveLine(text, true);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        String desc = Component.translatable("item.nosuger.sugar_sword.desc").getString();
+        String desc = Component.literal("そなたが破壊すると言うならば、私は創造をしよう。").getString();
         String desc2 = "Fortune VII";
 
         tooltip.add(1, makeWaveLine(desc, 0xFFAAAAAA, 0xFFFFFFFF));
         tooltip.add(2, makeWaveLine(desc2, 0xFFAAAAAA, 0xFFFFFFFF));
     }
 
-    @Override
-    public boolean isBarVisible(ItemStack stack) {
-        return isOnCustomCooldown(stack);
-    }
-
-    @Override
-    public int getBarWidth(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("RangeAttackCooldown") && tag.contains("RangeAttackCooldownMax")) {
-            int current = tag.getInt("RangeAttackCooldown");
-            int max = tag.getInt("RangeAttackCooldownMax");
-            return Math.round(13.0F * (1.0F - (float)current / max));
-        }
-        return 13;
-    }
-
-    @Override
-    public int getBarColor(ItemStack stack) {
-        long time = System.currentTimeMillis() / 50;
-        return ColorUtils.waveGrayWhiteColor(time, 1, 6.0);
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag tag = stack.getTag();
-            if (tag != null && tag.contains(TAG_COOLDOWN)) {
-                int cooldown = tag.getInt(TAG_COOLDOWN);
-                if (cooldown > 0) {
-                    tag.putInt(TAG_COOLDOWN, cooldown - 1);
-                    if (cooldown <= 1) {
-                        tag.remove(TAG_COOLDOWN);
-                        tag.remove(TAG_COOLDOWN_MAX);
-                    }
-                    if (player instanceof ServerPlayer) {
-                        player.containerMenu.broadcastChanges();
-                    }
-                }
-            }
-        }
-    }
 }

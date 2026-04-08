@@ -1,8 +1,8 @@
 package com.test.nosugar.mixin.plugin;
 
 import com.test.nosugar.NoSugar;
+import com.test.nosugar.transformer.NoSugarLaunchPlugin;
 import com.test.nosugar.utils.NSAgentLoader;
-import com.test.nosugar.agent.transformer.NoSugarLaunchPlugin;
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
@@ -24,6 +24,19 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
         if (!registered) {
             registerTransformer();
             registered = true;
+        }
+        try{
+            ILaunchPluginService plugin = new NoSugarLaunchPlugin();
+
+            Field field = Launcher.class.getDeclaredField("launchPlugins");
+            field.setAccessible(true);
+            LaunchPluginHandler pluginHandler = (LaunchPluginHandler) field.get(Launcher.INSTANCE);
+            field = LaunchPluginHandler.class.getDeclaredField("plugins");
+            field.setAccessible(true);
+            Map<String, ILaunchPluginService> map = (Map<String, ILaunchPluginService>) field.get(pluginHandler);
+            map.put(plugin.name(), plugin);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+
         }
     }
 

@@ -32,7 +32,9 @@ public class ForgeHooksMixin {
             boolean hasWorldDestroyer = !main.isEmpty() && main.getItem() == ModItems.WORLD_DESTROYER.get()
                     || !off.isEmpty() && off.getItem() == ModItems.WORLD_DESTROYER.get();
 
-            if (hasEraser || hasWorldDestroyer) {
+            boolean hasNoSugar = !main.isEmpty() && main.getItem() == ModItems.NOSUGAR.get()
+                    || !off.isEmpty() && off.getItem() == ModItems.NOSUGAR.get();
+            if (hasEraser || hasWorldDestroyer || hasNoSugar) {
                 cir.setReturnValue(7);
             }
         }

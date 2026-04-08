@@ -7,6 +7,12 @@ modId = "nosugar"
 version = "${mod_version}"
 displayName = "NoSugar"
 authors = "test"
+credits = """
+ Special Thanks:
+  "全国のすべての佐藤さん"
+  "粉みかんさん"
+  "もちもちさん"
+"""
 description = '''
 :3
 '''
