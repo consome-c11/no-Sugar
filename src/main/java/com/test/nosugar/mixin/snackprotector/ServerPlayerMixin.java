@@ -18,9 +18,9 @@ public class ServerPlayerMixin {
     private void snackProtector$cancelDie(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (self instanceof ILivingEntity iliving && (iliving.isErased(self.getUUID()) || iliving.isErased())) return;
-        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player)) {
+        if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player) && self.getHealth() > 0.f) {
             ci.cancel();
-            System.out.println("isAlive: " + LivingEntityUtils.isAlive(self) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(self) + " Health: " + LivingEntityUtils.getHealth(self));
+            //System.out.println("isAlive: " + LivingEntityUtils.isAlive(self) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(self) + " Health: " + LivingEntityUtils.getHealth(self));
         }
     }
 
