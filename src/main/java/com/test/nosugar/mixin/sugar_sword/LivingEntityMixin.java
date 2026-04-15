@@ -15,6 +15,7 @@ import com.test.nosugar.utils.interfaces.ILivingEntity;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.core.SectionPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,15 +32,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +57,10 @@ public abstract class LivingEntityMixin implements ILivingEntity {
     private boolean Fullset = false;
     @Unique
     private float delta = 0;
+    @Unique
+    private boolean forcefullset = false;
+    @Unique
+    private boolean forcehalo = false;
 
     @Unique
     private static void hardRemove(Entity self, Map<Class<?>, List<Entity>> byClass) {//サンキューチャッピー
@@ -122,6 +129,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
         return delta;
     }
 
+
     @Override
     public void setDelta(float d) {
         LivingEntity self = (LivingEntity) (Object) this;
@@ -130,6 +138,26 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new SyncDeltaPacket(self.getId(), d));
             }
         delta = d;
+    }
+
+    @Override
+    public boolean isForceHalo() {
+        return this.forcehalo;
+    }
+
+    @Override
+    public void setForceHalo(boolean flag) {
+        this.forcehalo = flag;
+    }
+
+    @Override
+    public boolean isForceFullset() {
+        return this.forcefullset;
+    }
+
+    @Override
+    public void setForceFullset(boolean flag) {
+        this.forcefullset = flag;
     }
 
     @Override
@@ -210,13 +238,17 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 //((LivingEntityAccessor) self).callDie(source);
                 sp.die(source);
             }
+
             LivingEntity killer = self.getKillCredit();
             if (killer != null) {
                 if (self instanceof ServerPlayer player)
                     player.awardStat(Stats.ENTITY_KILLED_BY.get(killer.getType()));
                 killer.awardKillScore(self, 0, source);
             }
-            if(!LivingEntityUtils.isAlive(self) && LivingEntityUtils.isDeadOrDying(self))((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
+            if (!LivingEntityUtils.isAlive(self) && LivingEntityUtils.isDeadOrDying(self)) {
+                self.setPose(Pose.DYING);
+                ((LivingEntityAccessor) self).invokeDropAllDeathLoot(source);
+            }
             //((LivingEntityAccessor)self).invokedropFromLootTable(source,false);
             //((LivingEntityAccessor)self).invokedropExperience();
         }
@@ -265,8 +297,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             //フィールド書き換えてるだけ
             ((EntityAccessor) self).setRemovalReason(Entity.RemovalReason.KILLED);
 
-            if (self.level() instanceof ServerLevel sv && sv.getServer() instanceof MinecraftServerAccessor mcacc) {
-                mcacc.getlevels().values().forEach(serverLevel -> {
+            if (self.level() instanceof ServerLevel serverLevel) {
                 ServerBossEvent event = getBossBar(serverLevel);
                 if (event != null) event.removeAllPlayers();
                 self.stopRiding();
@@ -301,10 +332,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                             (PersistentEntitySectionManagerAccessor<Entity>) manager;
 
                     EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
-                serverLevel.getEntities().getAll().forEach(entity -> {
-                    NoSugar.LOGGER.warn("entity {} from world {}", entity, serverLevel);
-                    if(vis.getEntity(self.getUUID()) != null)NoSugar.LOGGER.warn("1entity {} from world {}", entity, serverLevel);
-                });
+
                 ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
                 Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();
                 entityMap.remove(self.getId());
@@ -312,7 +340,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     accessor.invokeBroadcastRemoved();
                 }
                 ((EntityAccessor) self).setlevelCallback(EntityInLevelCallback.NULL);
-                });
             }
 
         }
@@ -331,7 +358,7 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
         EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
         boolean removed = ((EraseEntityLookupBridge<Entity>) vis).eraseEntity(self);
-        NoSugar.LOGGER.info("Lookup Removal: {}", removed);
+        //NoSugar.LOGGER.info("Lookup Removal: {}", removed);
         LevelEntityGetter<Entity> getter = acc.getEntityGetter();
         EntityLookup<Entity> vis2 = ((LevelEntityGetterAdapterAccessor<Entity>) getter).getVisibleEntities();
         ((EraseEntityLookupBridge<Entity>) vis2).eraseEntity(self);
@@ -372,16 +399,67 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                 }
             }
         }
-        else if(callback != null){
+        /*else if(callback != null){
             NoSugar.LOGGER.info("Class: " + callback.getClass().getName());
         }
-        else NoSugar.LOGGER.info(":sob:");
+        else NoSugar.LOGGER.info(":sob:");*/
         //((EntityAccessor) self).getLevelCallBack().onRemove(Entity.RemovalReason.KILLED);
         /*acc.getCallbacks().onTickingEnd(self);
         acc.getCallbacks().onTrackingEnd(self);
         acc.getCallbacks().onDestroyed(self);*/
     }
 
+    @Inject(method = "baseTick", at = @At("HEAD"))
+    private void nosugar$baseTickDeath(CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if(self.level().isClientSide()) {
+            if (this.isErased() && self.deathTime <= 20) {
+                self.deathTime++;
+            }
+        }
+    }
+
+    @Inject(method = "tickDeath", at = @At("HEAD"), cancellable = true)
+    private void nosugar$cancelNormalTickDeath(CallbackInfo ci) {
+        if (this.isErased()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    private void nosugar$writeNSData(CompoundTag nbt, CallbackInfo ci) {
+        nbt.putFloat("nosugar_delta", this.delta);
+        nbt.putBoolean("nosugar_fullset", this.Fullset);
+        nbt.putBoolean("nosugar_forcefullset", this.forcefullset);
+        nbt.putBoolean("nosugar_forcehalo", this.forcehalo);
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void nosugar$readNSData(CompoundTag nbt, CallbackInfo ci) {
+        if (nbt.contains("nosugar_delta")) {
+            this.delta = nbt.getFloat("nosugar_delta");
+
+            LivingEntity entity = (LivingEntity)(Object)this;
+            Level level = entity.level();
+
+            if (level instanceof ServerLevel serverLevel) {
+                SyncDeltaPacket packet = new SyncDeltaPacket(entity.getId(), this.delta);
+
+                for (ServerPlayer player : serverLevel.players()) {
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
+                }
+            }
+        }
+        if (nbt.contains("nosugar_fullset")) {
+            this.Fullset = nbt.getBoolean("nosugar_fullset");
+        }
+        if (nbt.contains("nosugar_forcefullset")) {
+            this.forcefullset = nbt.getBoolean("nosugar_forcefullset");
+        }
+        if (nbt.contains("nosugar_forcehalo")) {
+            this.forcehalo = nbt.getBoolean("nosugar_forcehalo");
+        }
+    }
     /*@Inject(method = "getHealth", at = @At("HEAD"), cancellable = true)
     private void nosugar$getHealth(CallbackInfoReturnable<Float> cir) {
         LivingEntity self = (LivingEntity) (Object) this;

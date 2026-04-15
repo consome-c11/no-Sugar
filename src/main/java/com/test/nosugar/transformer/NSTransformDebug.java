@@ -4,6 +4,7 @@ import com.test.nosugar.NoSugar;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -12,26 +13,46 @@ public class NSTransformDebug {
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
-    private static final MethodMatcher GET_HEALTH = MethodMatcher.of(
-            "net/minecraft/world/entity/LivingEntity",
-            "m_21223_", "getHealth", "()F", false
-    );
-    private static final MethodMatcher IS_DEAD_OR_DYING = MethodMatcher.of(
-            "net/minecraft/world/entity/LivingEntity",
-            "m_21224_", "isDeadOrDying", "()Z", false
-    );
-    private static final MethodMatcher IS_ALIVE = MethodMatcher.of(
-            "net/minecraft/world/entity/Entity",
-            "m_6084_", "isAlive", "()Z", false
-    );
-    private static final MethodMatcher IS_REMOVED = MethodMatcher.of(
-            "net/minecraft/world/entity/Entity",
-            "m_213877_", "isRemoved", "()Z", false
-    );
-    private static final MethodMatcher HURTTIME_FIELD = MethodMatcher.ofField(
-            "net/minecraft/world/entity/LivingEntity",
-            "f_20916_", "hurtTime", "I", false
-    );
+    private static final Class<?> METHOD_MATCHER_CLASS;
+    private static final Method MATCHER_OF_METHOD;
+    private static final Method MATCHER_OF_FIELD_METHOD;
+    private static final Method MATCHES_METHOD;
+    private static final Method MATCHES_CALL_METHOD;
+
+    private static final Object GET_HEALTH;
+    private static final Object IS_DEAD_OR_DYING;
+    private static final Object IS_ALIVE;
+    private static final Object IS_REMOVED;
+    private static final Object HURTTIME_FIELD;
+
+    static {
+        try {
+            ClassLoader sysLoader = ClassLoader.getSystemClassLoader();
+            METHOD_MATCHER_CLASS = Class.forName("com.test.nosugar.agent.transformer.MethodMatcher", true, sysLoader);
+            MATCHER_OF_METHOD = METHOD_MATCHER_CLASS.getMethod("of", String.class, String.class, String.class, String.class, boolean.class);
+            MATCHER_OF_FIELD_METHOD = METHOD_MATCHER_CLASS.getMethod("ofField", String.class, String.class, String.class, String.class, boolean.class);
+            MATCHES_METHOD = METHOD_MATCHER_CLASS.getMethod("matches", MethodNode.class, String.class);
+            MATCHES_CALL_METHOD = METHOD_MATCHER_CLASS.getMethod("matchesCall", MethodInsnNode.class);
+
+            GET_HEALTH = MATCHER_OF_METHOD.invoke(null,
+                    "net/minecraft/world/entity/LivingEntity",
+                    "m_21223_", "getHealth", "()F", false);
+            IS_DEAD_OR_DYING = MATCHER_OF_METHOD.invoke(null,
+                    "net/minecraft/world/entity/LivingEntity",
+                    "m_21224_", "isDeadOrDying", "()Z", false);
+            IS_ALIVE = MATCHER_OF_METHOD.invoke(null,
+                    "net/minecraft/world/entity/Entity",
+                    "m_6084_", "isAlive", "()Z", false);
+            IS_REMOVED = MATCHER_OF_METHOD.invoke(null,
+                    "net/minecraft/world/entity/Entity",
+                    "m_213877_", "isRemoved", "()Z", false);
+            HURTTIME_FIELD = MATCHER_OF_FIELD_METHOD.invoke(null,
+                    "net/minecraft/world/entity/LivingEntity",
+                    "f_20916_", "hurtTime", "I", false);
+        } catch (Exception e) {
+            throw new RuntimeException("[NoSugar] Failed to load MethodMatcher from agent package", e);
+        }
+    }
 
     private NSTransformDebug() {}
 
@@ -43,33 +64,40 @@ public class NSTransformDebug {
     }
 
     private static void scanMethod(String className, MethodNode method) {
-        if (GET_HEALTH.matches(method, className) ||
-                IS_DEAD_OR_DYING.matches(method, className) ||
-                IS_ALIVE.matches(method, className) ||
-                IS_REMOVED.matches(method, className)) {
+        try {
+            boolean matchesHealth = (boolean) MATCHES_METHOD.invoke(GET_HEALTH, method, className) ||
+                    (boolean) MATCHES_METHOD.invoke(IS_DEAD_OR_DYING, method, className) ||
+                    (boolean) MATCHES_METHOD.invoke(IS_ALIVE, method, className) ||
+                    (boolean) MATCHES_METHOD.invoke(IS_REMOVED, method, className);
+
+            if (matchesHealth) {
+                for (AbstractInsnNode insn : method.instructions.toArray()) {
+                    if (insn.getOpcode() == Opcodes.FRETURN || insn.getOpcode() == Opcodes.IRETURN) {
+                        dump(className, method, insn, "HOOK_DEF", method.name + "@RETURN");
+                    }
+                }
+            }
 
             for (AbstractInsnNode insn : method.instructions.toArray()) {
-                if (insn.getOpcode() == Opcodes.FRETURN || insn.getOpcode() == Opcodes.IRETURN) {
-                    dump(className, method, insn, "HOOK_DEF", method.name + "@RETURN");
+                if (insn instanceof MethodInsnNode minsn && isInvocation(minsn.getOpcode())) {
+                    boolean matchesCall = (boolean) MATCHES_CALL_METHOD.invoke(GET_HEALTH, minsn) ||
+                            (boolean) MATCHES_CALL_METHOD.invoke(IS_DEAD_OR_DYING, minsn) ||
+                            (boolean) MATCHES_CALL_METHOD.invoke(IS_ALIVE, minsn) ||
+                            (boolean) MATCHES_CALL_METHOD.invoke(IS_REMOVED, minsn);
+                    if (matchesCall) {
+                        dump(className, method, insn, "HOOK_CALL", minsn.name + "@AFTER");
+                    }
                 }
-            }
-        }
 
-        for (AbstractInsnNode insn : method.instructions.toArray()) {
-            if (insn instanceof MethodInsnNode minsn && isInvocation(minsn.getOpcode())) {
-                if (GET_HEALTH.matchesCall(minsn) ||
-                        IS_DEAD_OR_DYING.matchesCall(minsn) ||
-                        IS_ALIVE.matchesCall(minsn) ||
-                        IS_REMOVED.matchesCall(minsn)) {
-                    dump(className, method, insn, "HOOK_CALL", minsn.name + "@AFTER");
+                if (insn instanceof FieldInsnNode finsn && finsn.getOpcode() == Opcodes.PUTFIELD) {
+                    Method matchesCallField = METHOD_MATCHER_CLASS.getMethod("matchesCall", FieldInsnNode.class);
+                    if ((boolean) matchesCallField.invoke(HURTTIME_FIELD, finsn)) {
+                        dump(className, method, insn, "FIELD_WRITE", finsn.name + "@BEFORE");
+                    }
                 }
             }
-
-            if (insn instanceof FieldInsnNode finsn && finsn.getOpcode() == Opcodes.PUTFIELD) {
-                if (HURTTIME_FIELD.matchesCall(finsn)) {
-                    dump(className, method, insn, "FIELD_WRITE", finsn.name + "@BEFORE");
-                }
-            }
+        } catch (Exception e) {
+            NoSugar.LOGGER.warn("[NSTransformDebug] scanMethod failed: " + e.getMessage());
         }
     }
 

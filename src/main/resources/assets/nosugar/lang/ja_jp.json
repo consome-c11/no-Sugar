@@ -33,5 +33,19 @@
   "item.nosugar.sugar.sword.desc": "攻撃したエンティティを強制的に倒す",
   "item.nosugar.halo.of.sugar.canteen": "[KEY]を押してストレージを開く",
   "item.nosugar.halo.of.sugar.stopwatch": "[KEY]を押して時間を止める",
-  "item.nosugar.halo.of.sugar.desc": "お前は真理に到達した 真理になったとも言える ...安心しろ、対価は要らない。 ...今となっては取ることも出来ないが.  さて、自己紹介としよう。オレはお前たちが｢世界｣と言う存在 あるいは宇宙、あるいは神、あるいは真理、あるいは全、あるいは一 そして、オレは お前だ。  それで? どうやってこれを入手した? ...いまは関係ない。 そして、これを付けるという事は真理になると言うことだ。 ...まぁ これを持っているということはいずれは... まぁいい、自分の代わりになってくれよ、｢[TRUTH]｣。"
+  "item.nosugar.halo.of.sugar.desc": "お前は真理に到達した 真理になったとも言える ...安心しろ、対価は要らない。 ...今となっては取ることも出来ないが.  さて、自己紹介としよう。オレはお前たちが｢世界｣と言う存在 あるいは宇宙、あるいは神、あるいは真理、あるいは全、あるいは一 そして、オレは お前だ。  それで? どうやってこれを入手した? ...いまは関係ない。 そして、これを付けるという事は真理になると言うことだ。 ...まぁ これを持っているということはいずれは... まぁいい、自分の代わりになってくれよ、｢[TRUTH]｣。",
+  "item.nosugar.creative_sword": "クリエイティブの剣",
+  "item.nosugar.creative_sword.desc": "貴方が創造するのならば、私は何をすれば良い?",
+  "key.creative_sword.open_menu": "クリエイティブの剣メニューを開く",
+  "screen.nosugar.creative_sword_menu": "クリエイティブの剣の設定",
+  "screen.nosugar.creative_sword.left_click": "左クリック: %s",
+  "screen.nosugar.creative_sword.left_click.kill": "倒す",
+  "screen.nosugar.creative_sword.left_click.remove": "削除する",
+  "screen.nosugar.creative_sword.right_click": "右クリック: %s",
+  "screen.nosugar.creative_sword.right_click.kill_all": "すべてのエンティティを倒す",
+  "screen.nosugar.creative_sword.right_click.remove_all": "すべてのエンティティを削除する",
+  "screen.nosugar.creative_sword.invulnerable": "無敵: %s",
+  "screen.nosugar.creative_sword.aggro_immune": "攻撃対象にならない: %s",
+  "screen.nosugar.creative_sword.toggle.on": "ON",
+  "screen.nosugar.creative_sword.toggle.off": "OFF"
 }

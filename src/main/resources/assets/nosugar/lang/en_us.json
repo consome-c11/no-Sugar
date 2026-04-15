@@ -48,5 +48,19 @@
   "key.halo.of.sugar.time.stop": "Halo Time Stop",
   "key.halo.of.sugar.open.strage": "Halo Open Storage",
   "item.nosugar.halo.of.sugar.stopwatch": "Press [KEY] to stop the time",
-  "item.nosugar.halo.of.sugar.canteen": "Press the [KEY] to open the storage"
+  "item.nosugar.halo.of.sugar.canteen": "Press the [KEY] to open the storage",
+  "item.nosugar.creative_sword": "Creative Sword",
+  "item.nosugar.creative_sword.desc": "If you are to create, what should I do?",
+  "key.creative_sword.open_menu": "Open Creative Sword Menu",
+  "screen.nosugar.creative_sword_menu": "Creative Sword Settings",
+  "screen.nosugar.creative_sword.left_click": "Left Click: %s",
+  "screen.nosugar.creative_sword.left_click.kill": "Kill",
+  "screen.nosugar.creative_sword.left_click.remove": "Remove",
+  "screen.nosugar.creative_sword.right_click": "Right Click: %s",
+  "screen.nosugar.creative_sword.right_click.kill_all": "Kill All",
+  "screen.nosugar.creative_sword.right_click.remove_all": "Remove All",
+  "screen.nosugar.creative_sword.invulnerable": "Invulnerable: %s",
+  "screen.nosugar.creative_sword.aggro_immune": "No Aggro: %s",
+  "screen.nosugar.creative_sword.toggle.on": "ON",
+  "screen.nosugar.creative_sword.toggle.off": "OFF"
 }

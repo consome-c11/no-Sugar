@@ -1,6 +1,6 @@
 package com.test.nosugar.mixin.sugar_sword;
 
-import com.test.nosugar.agent.transformer.Mapping;
+import com.test.nosugar.transformer.Mapping;
 import com.test.nosugar.utils.UnsafeUtils;
 import com.test.nosugar.utils.interfaces.EraseEntityLookupBridge;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;

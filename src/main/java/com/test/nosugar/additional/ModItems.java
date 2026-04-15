@@ -70,8 +70,8 @@ public class ModItems {
     public static final RegistryObject<Item> STOP_WATCH =
             ITEMS.register("stop_watch", () -> new StopWatch(new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<Item> UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU =
-            ITEMS.register("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", () -> new UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> CREATIVE_SWORD =
+            ITEMS.register("creative_sword", () -> new CreativeSword(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> HALO_OF_SUGAR =
             ITEMS.register("halo_of_sugar", () -> new Halo_of_Sugar_item(new Item.Properties().stacksTo(1)));

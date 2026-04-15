@@ -6,6 +6,7 @@ import com.test.nosugar.mixin.sugar_sword.EntityLookupAccessor;
 import com.test.nosugar.mixin.sugar_sword.LevelEntityGetterAdapterAccessor;
 import com.test.nosugar.mixin.sugar_sword.PersistentEntitySectionManagerAccessor;
 import com.test.nosugar.mixin.sugar_sword.ServerLevelAccessor;
+import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import com.test.nosugar.utils.item.TicUtils;
 import net.minecraft.server.level.ServerLevel;
@@ -28,9 +29,19 @@ import java.util.function.Predicate;
 public class EntityUtils {
 
     public static boolean hasHaloOfSugar(LivingEntity living) {
-        return CuriosApi.getCuriosInventory(living)
+        return isForceHalo(living) || CuriosApi.getCuriosInventory(living)
                 .map(inv -> inv.findFirstCurio(ModItems.HALO_OF_SUGAR.get()).isPresent())
                 .orElse(false);
+    }
+
+    public static boolean isForceHalo(LivingEntity living) {
+        if (living instanceof ILivingEntity il) return il.isForceHalo();
+        return false;
+    }
+
+    public static boolean isForceFullset(LivingEntity living) {
+        if (living instanceof ILivingEntity il) return il.isForceFullset();
+        return false;
     }
 
     public static boolean enable_tag(DamageSource source, TagKey<DamageType> tag){

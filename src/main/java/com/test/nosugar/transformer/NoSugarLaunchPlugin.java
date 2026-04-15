@@ -1,7 +1,5 @@
 package com.test.nosugar.transformer;
 
-import com.test.nosugar.NoSugar;
-import com.test.nosugar.agent.transformer.TransformerCore;
 import cpw.mods.modlauncher.api.ITransformerActivity;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import org.objectweb.asm.Type;
@@ -33,16 +31,11 @@ public class NoSugarLaunchPlugin implements ILaunchPluginService {
         }
 
         try {
-            TransformerCore.Phase corePhase = switch (phase) {
-                case BEFORE -> TransformerCore.Phase.BEFORE;
-                case AFTER -> TransformerCore.Phase.AFTER;
-                default -> TransformerCore.Phase.CLASS_LOADING;
-            };
             NSTransformDebug.scanAndDump(classNode);
 
             return false;
         } catch (Throwable e) {
-            TransformerCore.LOGGER.error("[NoSugar] Transform error: " + classNode.name, e);
+
             return false;
         }
     }

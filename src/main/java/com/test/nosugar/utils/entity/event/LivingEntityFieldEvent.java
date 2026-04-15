@@ -1,7 +1,10 @@
 package com.test.nosugar.utils.entity.event;
 
+import cpw.mods.modlauncher.ClassTransformer;
+import cpw.mods.cl.ModuleClassLoader;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.forgespi.locating.IModLocator;
 
 public class LivingEntityFieldEvent extends Event {
 

@@ -2,6 +2,9 @@ package com.test.nosugar.additional;
 
 import com.test.nosugar.utils.entity.EntityUtils;
 import com.test.nosugar.utils.entity.FlyManager;
+import com.test.nosugar.utils.entity.event.ForceArmorEvent;
+import com.test.nosugar.utils.entity.event.ForceHaloEvent;
+import com.test.nosugar.utils.entity.event.NoSugarBus;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -108,30 +111,37 @@ public class SnackArmor {
 
         public static boolean isFullSet(Player player, boolean real) {
             if (player == null || player.getInventory() == null) return false;
-            if(EntityUtils.hasHaloOfSugar(player))return true;
+            boolean baseCondition = EntityUtils.hasHaloOfSugar(player) || EntityUtils.isForceHalo(player);
+            if (baseCondition) return true;
             ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-            if (real) return isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
-            else
-                return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet)) || player.getUseItem().getItem() == ModItems.SUGAR_SWORD.get();
+            boolean armorSet = isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+            boolean armor = armorSet || EntityUtils.isForceFullset(player);
+            return armor;
         }
 
         public static boolean isFullSet(Player player) {
             if (player == null || player.getInventory() == null) return false;
-            if(EntityUtils.hasHaloOfSugar(player))return true;
+            boolean baseCondition = EntityUtils.hasHaloOfSugar(player) || EntityUtils.isForceHalo(player);
+            if (baseCondition) return true;
             ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
             ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
 
-            return (isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet));
+            boolean armorSet = isSnackArmor(head) && isSnackArmor(chest) && isSnackArmor(legs) && isSnackArmor(feet);
+            boolean forceFullset = armorSet || EntityUtils.isForceFullset(player);
+
+            ForceArmorEvent event = new ForceArmorEvent(player, forceFullset);
+            NoSugarBus.BUS.post(event);
+            return event.isForceFullset();
         }
 
         public static boolean hasSnackProtector(Player player) {
             if (player == null || player.getInventory() == null) return false;
-            if(EntityUtils.hasHaloOfSugar(player))return true;
+            if(EntityUtils.hasHaloOfSugar(player) || EntityUtils.isForceHalo(player))return true;
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (slot.getType() == EquipmentSlot.Type.ARMOR) {
                     ItemStack stack = player.getItemBySlot(slot);
@@ -172,11 +182,12 @@ public class SnackArmor {
         @SubscribeEvent
         public static void onLivingTick(LivingEvent.LivingTickEvent event) {
             if (!(event.getEntity() instanceof Player player)) return;
+            if (player.level().isClientSide) return;
 
-            if (isFullSet(player, true)) {
+            boolean fullSet = isFullSet(player, true);
+            if (fullSet) {
                 applyAbilities(player);
             }
-
         }
 
         @SubscribeEvent
@@ -221,13 +232,12 @@ public class SnackArmor {
         }*/
 
         private static void applyAbilities(Player player) {
+            boolean shouldSyncAbilities = !player.getAbilities().mayfly;
             player.getAbilities().mayfly = true;
             //player.getAbilities().invulnerable = true;
-            /*if (!player.getAbilities().mayfly) {
-
-                //if (!player.onGround()) player.getAbilities().flying = true;
+            if (shouldSyncAbilities) {
                 player.onUpdateAbilities();
-            }*/
+            }
             player.getFoodData().setFoodLevel(20);
             player.getFoodData().setSaturation(20.0F);
             player.clearFire();
@@ -259,8 +269,11 @@ public class SnackArmor {
         public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
             if (!(event.getNewTarget() instanceof Player player)) return;
 
-            if (SnackProtector.isFullSet(player)) {
-                //event.setCanceled(true);
+            boolean shouldCancel = SnackProtector.isFullSet(player) || EntityUtils.isForceHalo(player);
+            ForceHaloEvent haloEvent = new ForceHaloEvent(player, shouldCancel);
+            com.test.nosugar.utils.entity.event.NoSugarBus.BUS.post(haloEvent);
+            if (haloEvent.isForceHalo()) {
+                event.setCanceled(true);
             }
         }
 

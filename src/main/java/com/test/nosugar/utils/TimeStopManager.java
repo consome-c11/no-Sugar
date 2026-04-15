@@ -30,7 +30,7 @@ public class TimeStopManager {
         ResourceKey<Level> dim = level.dimension();
         stoppedLevels.put(dim, true);
         levelOwners.put(dim, owner.getUUID());
-        addEntity(owner); // オーナーを動けるリストに追加
+        addEntity(owner);
     }
 
     public static boolean Resume(Level level, Entity entity) {

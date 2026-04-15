@@ -109,5 +109,26 @@ public class ModPackets {
                 HaloFlyPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, OpenCreativeSwordMenuPacket.class,
+                OpenCreativeSwordMenuPacket::encode,
+                OpenCreativeSwordMenuPacket::decode,
+                OpenCreativeSwordMenuPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, OpenCreativeSwordMenuResponsePacket.class,
+                OpenCreativeSwordMenuResponsePacket::encode,
+                OpenCreativeSwordMenuResponsePacket::decode,
+                OpenCreativeSwordMenuResponsePacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
+        PacketHandler.CHANNEL.registerMessage(
+                id++, SyncCreativeSwordPacket.class,
+                SyncCreativeSwordPacket::encode,
+                SyncCreativeSwordPacket::decode,
+                SyncCreativeSwordPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_SERVER)
+        );
     }
 }

@@ -11,6 +11,7 @@ public class ModKeyBindings {
     public static KeyMapping RANGE_ATTACK;
     public static KeyMapping HALO_TIMESTOP;
     public static KeyMapping HALO_STRAGE;
+    public static KeyMapping CREATIVE_SWORD_MENU;
 
     public static void init(RegisterKeyMappingsEvent event) {
         TOGGLE_RANGE = new KeyMapping(
@@ -43,10 +44,17 @@ public class ModKeyBindings {
                 GLFW.GLFW_KEY_B,
                 "key.categories.nosugar"
         );
+        CREATIVE_SWORD_MENU = new KeyMapping(
+                "key.creative_sword.open_menu",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_R,
+                "key.categories.nosugar"
+        );
         event.register(ModKeyBindings.TOGGLE_RANGE);
         event.register(ModKeyBindings.TOGGLE_SHOOT_MODE);
         event.register(ModKeyBindings.RANGE_ATTACK);
         event.register(ModKeyBindings.HALO_TIMESTOP);
         event.register(ModKeyBindings.HALO_STRAGE);
+        event.register(ModKeyBindings.CREATIVE_SWORD_MENU);
     }
 }

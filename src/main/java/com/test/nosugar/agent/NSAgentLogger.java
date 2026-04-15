@@ -2,14 +2,28 @@ package com.test.nosugar.agent;
 
 public class NSAgentLogger {
     private final String name;
-    public NSAgentLogger(String name) { this.name = name; }
+    private static final String DEBUG_PROPERTY = "nosugar.debug.enabled";
+
+    public NSAgentLogger(String name) {
+        this.name = name;
+    }
+
     public void info(String fmt, Object... args) { log(System.out, "INFO", fmt, args); }
+
     public void error(String fmt, Object... args) { log(System.err, "ERROR", fmt, args); }
+
     public void error(String msg, Throwable t) {
         System.err.printf("[ERROR][%s] %s%n", name, msg);
         t.printStackTrace(System.err);
     }
+
     public void warn(String fmt, Object... args) { log(System.out, "WARN", fmt, args); }
+
+    public void debug(String fmt, Object... args) {
+        if (isDebugEnabled()) {
+            log(System.out, "DEBUG", fmt, args);
+        }
+    }
 
     private void log(java.io.PrintStream out, String level, String fmt, Object[] args) {
         out.printf("[%s][%s] %s%n", level, name, format(fmt, args));
@@ -29,7 +43,7 @@ public class NSAgentLogger {
     }
 
     public boolean isDebugEnabled(){
-        //@test you Are stupid.
-         return false;
+        //@test 👍️
+        return Boolean.getBoolean(DEBUG_PROPERTY);
     }
 }

@@ -42,4 +42,12 @@ public interface ILivingEntity {
     float getDelta();
 
     void setDelta(float delta);
+
+    boolean isForceHalo();
+
+    void setForceHalo(boolean flag);
+
+    boolean isForceFullset();
+
+    void setForceFullset(boolean flag);
 }

@@ -4,9 +4,6 @@ import com.test.nosugar.agent.transformer.TransformerCore;
 
 import com.test.nosugar.utils.entity.event.LivingEntityMethodEvent;
 import com.test.nosugar.utils.entity.event.NoSugarBus;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
 
 public class LivingEntityMethodImpl implements ILivingEntityMethodHook {
 

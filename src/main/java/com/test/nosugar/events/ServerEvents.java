@@ -5,7 +5,11 @@ import com.test.nosugar.NoSugar;
 import com.test.nosugar.additional.ModItems;
 import com.test.nosugar.additional.SnackArmor;
 import com.test.nosugar.entity.HomingArrowEntity;
+import com.test.nosugar.items.CreativeSword;
 import com.test.nosugar.utils.Deets;
+import com.test.nosugar.utils.entity.event.ForceArmorEvent;
+import com.test.nosugar.utils.entity.event.ForceHaloEvent;
+import com.test.nosugar.utils.entity.event.NoSugarBus;
 import com.test.nosugar.utils.interfaces.ILivingEntity;
 import com.test.nosugar.utils.item.BlessingUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -306,7 +310,7 @@ public class ServerEvents {
         if (instance != null) {
             UUID modifierId = UUID.fromString("8c19a0a5-4c3d-4d35-9a5c-8a5c9e5a9c5a");
 
-            if (SnackArmor.SnackProtector.isFullSet(e.player) && e.player.isSprinting()) {
+            if (SnackArmor.SnackProtector.isFullSet(e.player, true) && e.player.isSprinting()) {
                 if (instance.getModifier(modifierId) == null) {
                     instance.addTransientModifier(new AttributeModifier(
                             modifierId,

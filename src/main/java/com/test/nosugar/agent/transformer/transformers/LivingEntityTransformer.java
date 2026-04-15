@@ -3,7 +3,6 @@ package com.test.nosugar.agent.transformer.transformers;
 import com.test.nosugar.agent.transformer.*;
 import com.test.nosugar.agent.transformer.TransformerCore.Phase;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 public class LivingEntityTransformer implements ITransformerModule {

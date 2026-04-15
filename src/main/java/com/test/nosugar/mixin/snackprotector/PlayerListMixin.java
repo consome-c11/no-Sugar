@@ -16,8 +16,8 @@ public class PlayerListMixin {
     @Inject(method = "respawn", at = @At("HEAD"), cancellable = true)
     private void nosugar$onrespawn(ServerPlayer player, boolean keepinventory, CallbackInfoReturnable<ServerPlayer> cir) {
         System.out.println("isAlive: " + LivingEntityUtils.isAlive(player) + " isDeadOrDying: " + LivingEntityUtils.isDeadOrDying(player) + " Health: " + LivingEntityUtils.getHealth(player));
-        if (SnackArmor.SnackProtector.isFullSet(player) && player.isAlive() && !player.isDeadOrDying()
-                && player.getHealth() > 0.f && !player.isRemoved() && !player.isRespawnForced()) {
+        if (SnackArmor.SnackProtector.isFullSet(player) && LivingEntityUtils.isAlive(player) && !LivingEntityUtils.isDeadOrDying(player)
+                && LivingEntityUtils.getHealth(player) > 0.f && !LivingEntityUtils.isRemoved(player) && !player.isRespawnForced()) {
             cir.cancel();
             cir.setReturnValue(player);
             //@test ちゃんとMixinするときは元関数読めよ!

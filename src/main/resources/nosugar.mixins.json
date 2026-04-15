@@ -36,7 +36,8 @@
     "stop_watch.SoundEngineAccessor",
     "stop_watch.SoundEngineMixin",
     "stop_watch.TimerAccessor",
-    "stop_watch.TimerMixin"
+    "stop_watch.TimerMixin",
+    "sugar_sword.LivingEntityRendererMixin"
   ],
   "mixins": [
     "common.DamageSourceMixin",

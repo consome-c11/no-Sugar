@@ -3,8 +3,6 @@ package com.test.nosugar.agent.transformer;
 import com.test.nosugar.agent.NSAgentLogger;
 import com.test.nosugar.agent.transformer.transformers.AbilitiesTransformer;
 import com.test.nosugar.agent.transformer.transformers.LivingEntityTransformer;
-import cpw.mods.modlauncher.TransformingClassLoader;
-import cpw.mods.cl.ModuleClassLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;

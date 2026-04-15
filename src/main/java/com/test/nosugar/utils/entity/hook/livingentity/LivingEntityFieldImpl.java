@@ -3,8 +3,6 @@ package com.test.nosugar.utils.entity.hook.livingentity;
 import com.test.nosugar.agent.transformer.TransformerCore;
 import com.test.nosugar.utils.entity.event.LivingEntityFieldEvent;
 import com.test.nosugar.utils.entity.event.NoSugarBus;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.MinecraftForge;
 
 public class LivingEntityFieldImpl implements ILivingEntityFieldHook {
 

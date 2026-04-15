@@ -174,7 +174,7 @@ public class ClientEvents {
         if (player instanceof ServerPlayer serverPlayer) {
             if (player == null) return;
             ItemStack stack = serverPlayer.getMainHandItem();
-            if(stack.getItem() == ModItems.UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU.get()) {
+            if(stack.getItem() == ModItems.CREATIVE_SWORD.get()) {
                 PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(event.getPos(), DestroyMode.NORMAL));
                 return;
             }
@@ -231,6 +231,29 @@ public class ClientEvents {
             DestroyMode mode = DestroyMode.getMode(player.getMainHandItem());
 
             PacketHandler.CHANNEL.sendToServer(new DestroyBlockPacket(pos, mode));
+        }
+        if (isInGameWorld() && event.getButton() == 0 && event.getAction() == 1 && stack.getItem() == ModItems.CREATIVE_SWORD.get()) {
+            double reach = 4.0;
+
+            Vec3 eyePos = mc.player.getEyePosition();
+            Vec3 lookVec = mc.player.getLookAngle();
+            Vec3 endPos = eyePos.add(lookVec.scale(reach));
+
+            List<LivingEntity> entities = mc.level.getEntitiesOfClass(LivingEntity.class, ((LivingEntity)mc.player).getBoundingBox().inflate(5), e -> e != mc.player);
+
+            List<Integer> targetIds = new ArrayList<>();
+            for (LivingEntity target : entities) {
+
+                if (target.getBoundingBox().clip(eyePos, endPos).isPresent()) {
+                    targetIds.add(target.getId());
+                }
+            }
+
+            if (!targetIds.isEmpty()) {
+                PacketHandler.CHANNEL.sendToServer(new RayCastPacket(targetIds));
+
+                mc.player.swing(InteractionHand.MAIN_HAND);
+            }
         }
     }
 
@@ -296,6 +319,16 @@ public class ClientEvents {
         if (ModKeyBindings.HALO_STRAGE.consumeClick()) {
             if (EntityUtils.hasHaloOfSugar(mc.player)) {
                 PacketHandler.CHANNEL.sendToServer(new OpenHaloStragePacket());
+            }
+        }
+
+        if (ModKeyBindings.CREATIVE_SWORD_MENU.consumeClick()) {
+            ItemStack mainItem = mc.player.getMainHandItem();
+            ItemStack offItem = mc.player.getOffhandItem();
+            
+            if (mainItem.getItem() == ModItems.CREATIVE_SWORD.get()
+                    || (offItem != null && offItem.getItem() == ModItems.CREATIVE_SWORD.get())) {
+                PacketHandler.CHANNEL.sendToServer(new OpenCreativeSwordMenuPacket());
             }
         }
     }
