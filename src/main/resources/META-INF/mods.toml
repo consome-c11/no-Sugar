@@ -33,7 +33,7 @@ side = "BOTH"
 
 [[dependencies.nosugar]]
 modId = "curios"
-mandatory = false
+mandatory = true
 versionRange = "[5.12.1,)"
 ordering = "NONE"
 side = "BOTH"
