@@ -91,7 +91,8 @@ public abstract class LivingEntityMixin implements ILivingEntity {
 
     @Override
     public boolean isErased() {
-        return this.erased;
+        LivingEntity self = (LivingEntity) (Object) this;
+        return this.erased || erasedUuids.contains(self.getUUID());
     }
 
     @Override
@@ -326,12 +327,12 @@ public abstract class LivingEntityMixin implements ILivingEntity {
                     iterated.remove(self.getId());
                 ((EntityAccessor) ((Entity) self)).isAddedToWorld(false);
                 removefromSectionManager(serverLevel);
-                    PersistentEntitySectionManager<Entity> manager =
-                            ((ServerLevelAccessor) serverLevel).getEntityManager();
-                    PersistentEntitySectionManagerAccessor<Entity> acc =
-                            (PersistentEntitySectionManagerAccessor<Entity>) manager;
+                PersistentEntitySectionManager<Entity> manager =
+                        ((ServerLevelAccessor) serverLevel).getEntityManager();
+                PersistentEntitySectionManagerAccessor<Entity> acc =
+                        (PersistentEntitySectionManagerAccessor<Entity>) manager;
 
-                    EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
+                EntityLookup<Entity> vis = acc.getVisibleEntityStorage();
 
                 ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
                 Int2ObjectMap<?> entityMap = ((ChunkMapAccessor) chunkMap).getEntityMap();

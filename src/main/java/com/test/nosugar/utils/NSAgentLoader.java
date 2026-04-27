@@ -45,7 +45,8 @@ public class NSAgentLoader {
             loaded = true;
             return true;
         } catch (Throwable t) {
-            NoSugar.LOGGER.error("[NoSugar] Failed to load agent", t);
+            NoSugar.LOGGER.error("[NoSugar] Failed to load agent :(");
+            NoSugar.LOGGER.debug(t.getMessage(), t);
             return false;
         }
     }

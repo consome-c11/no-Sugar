@@ -24,8 +24,8 @@ public class HandleErasePacket {
             ServerPlayer player = ctx.get().getSender();
             if (player != null) {
                 if (player instanceof ILivingEntity player_) {
-                    player_.unmarkErased(player.getUUID());
-                    player_.setErased(false);
+                    //player_.unmarkErased(player.getUUID());
+                    //player_.setErased(false);
                 }
 
             }

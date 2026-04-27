@@ -57,6 +57,7 @@ public abstract class ItemRendererMixin {
     @Unique
     private static final List<String> AFFECTED_ITEM_IDS2 = new CopyOnWriteArrayList<>(List.of(
             "nosugar:sugar_sword",
+            "nosugar:creative_sword",
             "nosugar:world_destroyer",
             "nosugar:null_ingot",
             "nosugar:sugar_bow",

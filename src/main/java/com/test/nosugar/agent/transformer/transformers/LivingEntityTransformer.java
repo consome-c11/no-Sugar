@@ -11,6 +11,10 @@ public class LivingEntityTransformer implements ITransformerModule {
             "net/minecraft/world/entity/LivingEntity",
             Mapping.GET_HEALTH, "getHealth", "()F", false
     );
+    private static final MethodMatcher GET_MAXHEALTH = MethodMatcher.of(
+            "net/minecraft/world/entity/LivingEntity",
+            Mapping.GET_HEALTH, "getmaxHealth", "()F", false
+    );
     private static final MethodMatcher IS_DEAD_OR_DYING = MethodMatcher.of(
             "net/minecraft/world/entity/LivingEntity",
             Mapping.IS_DEAD_OR_DYING, "isDeadOrDying", "()Z", false

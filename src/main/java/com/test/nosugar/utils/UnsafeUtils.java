@@ -58,29 +58,21 @@ public class UnsafeUtils {
 
     public static boolean allowAttachSelf() {
         if (!SUCCESS) return false;
-
-        String[] targets = {
-                "sun.tools.attach.HotSpotVirtualMachineImpl",
-                "sun.tools.attach.VirtualMachineImpl",
-                "sun.tools.attach.HotSpotVirtualMachine"
-        };
-
-        for (String className : targets) {
-            try {
-                Class<?> clazz = Class.forName(className);
-                for (Field f : clazz.getDeclaredFields()) {
-                    if (f.getType() == boolean.class && f.getName().toLowerCase().contains("allowattach")) {
-                        long offset = UNSAFE.staticFieldOffset(f);
-                        Object base = UNSAFE.staticFieldBase(f);
-                        UNSAFE.putBoolean(base, offset, true);
-                        NoSugar.LOGGER.info("Self-attach enabled: {}", className + "." + f.getName());
-                        return true;
-                    }
+        String className = "sun.tools.attach.HotSpotVirtualMachine";
+        try {
+            Class<?> clazz = Class.forName(className);
+            for (Field f : clazz.getDeclaredFields()) {
+                if (f.getType() == boolean.class && f.getName().toLowerCase().contains("allow_attach_self")) {
+                    long offset = UNSAFE.staticFieldOffset(f);
+                    Object base = UNSAFE.staticFieldBase(f);
+                    UNSAFE.putBoolean(base, offset, true);
+                    NoSugar.LOGGER.info("Self-attach enabled: {}", className + "." + f.getName());
+                    return true;
                 }
-            } catch (ClassNotFoundException ignored) {}
-            catch (Exception e) {
-                NoSugar.LOGGER.warn("Failed to enable self-attach for {}", className, e);
             }
+        } catch (ClassNotFoundException ignored) {
+        } catch (Exception e) {
+            NoSugar.LOGGER.warn("Failed to enable self-attach for {}", className, e);
         }
         return false;
     }

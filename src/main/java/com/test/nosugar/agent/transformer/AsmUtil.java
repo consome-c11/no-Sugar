@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.test.nosugar.agent.NSAgent.DEBUG_ENABLED;
+
 public class AsmUtil {
     private static final Map<Integer, String> OPCODE_NAMES = new HashMap<>();
 
     public static void dumpInsnContext(String className, MethodNode method, AbstractInsnNode target, String label) {
-        if(!TransformerCore.LOGGER.isDebugEnabled()) return;
+        if(!DEBUG_ENABLED) return;
         AbstractInsnNode[] insns = method.instructions.toArray();
         int idx = -1;
         for (int i = 0; i < insns.length; i++) {

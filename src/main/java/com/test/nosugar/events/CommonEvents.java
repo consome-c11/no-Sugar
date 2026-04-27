@@ -28,17 +28,19 @@ public class CommonEvents {
     public static void onLivingMethod(com.test.nosugar.utils.entity.event.LivingEntityMethodEvent event) {
         if (!(event.getEntity() instanceof LivingEntity self) || !(self instanceof ILivingEntity iliving)) return;
         if (event.getMethodType() == LivingEntityMethodEvent.MethodType.GET_HEALTH) {
+            float realret = (float) event.getReturnValue();
             if (iliving.isErased(self.getUUID()) || iliving.isErased()) {
                 event.setReturnValue(0.f);
                 return;
             }
             if (self instanceof Player player && SnackArmor.SnackProtector.isFullSet(player, true)) {
-                event.setReturnValue(player.getMaxHealth());
+                realret = (player.getMaxHealth());
             }
+            float maxHealthCap = realret;
             if(iliving.getDelta() > 0.f) {
-                float maxHealthCap = self.getMaxHealth() - iliving.getDelta();
-                event.setReturnValue(Math.min((Float) event.getReturnValue(), maxHealthCap));
+                maxHealthCap = self.getMaxHealth() - iliving.getDelta();
             }
+            event.setReturnValue(Math.min(realret, maxHealthCap));
         } else if (event.getMethodType() == LivingEntityMethodEvent.MethodType.IS_ALIVE) {
             if (iliving.isErased(self.getUUID()) || iliving.isErased()) {
                 event.setReturnValue(false);

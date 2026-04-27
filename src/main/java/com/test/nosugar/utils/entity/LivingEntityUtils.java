@@ -2,6 +2,7 @@ package com.test.nosugar.utils.entity;
 
 import net.minecraft.world.entity.LivingEntity;
 
+//wrappingさせるため
 public class LivingEntityUtils {
     public static float getHealth(LivingEntity living) {
         return living.getHealth();

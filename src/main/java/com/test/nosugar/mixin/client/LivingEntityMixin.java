@@ -67,7 +67,6 @@ public abstract class LivingEntityMixin implements ILivingEntity {
             mc.level.removeEntity(self.getId(), Entity.RemovalReason.KILLED);
             self.setRemoved(Entity.RemovalReason.KILLED);
 
-            this.unmarkErased(self.getUUID());
         }
         catch (Throwable throwable) {
             NoSugar.LOGGER.warn("An error occurred while trying to erase the entity", throwable);

@@ -108,14 +108,6 @@ public class NSTransformer implements ClassFileTransformer {
                         "transformForByte", "(Ljava/lang/String;[B)[B", false));
 
                 mn.instructions.insertBefore(returnNode, il);
-
-                LOGGER.info("=== Dumping modified method: " + mn.name + mn.desc + " ===");
-                for (AbstractInsnNode node : mn.instructions) {
-                    //wtf hard coded ahh
-                    AsmUtil.dumpInsnContext("cpw/mods/cl/ModuleClassLoader", mn, node,
-                            "HOOK_DEF: " + "transformForByte" + "@" + AsmUtil.getOpcodeName(node.getOpcode()));
-                }
-                LOGGER.info("=== End of dump ===");
             }
         }
     }

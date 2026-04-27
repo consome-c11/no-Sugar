@@ -61,14 +61,15 @@ public class Eraser_Utils {
 
     public static boolean killIfParentFound(LivingEntity self, LivingEntity attacker, boolean skipAnimation) {
         DamageSource src = ModDamageSources.erase(self, attacker);
-        if (findParentEntity(self) instanceof ILivingEntity entity) {
-            if (attacker instanceof Player player) {
-                entity.instantKill(player, false, src);
-                return true;
-            }
+        Entity parent = findParentEntity(self);
+        if (parent instanceof ILivingEntity parentEntity && attacker instanceof Player player) {
+            parentEntity.instantKill(player, skipAnimation, src);
+            return true;
         }
+
         if (self instanceof ILivingEntity entity && attacker instanceof Player player) {
             entity.instantKill(player, skipAnimation, src);
+            return true;
         }
         return false;
     }

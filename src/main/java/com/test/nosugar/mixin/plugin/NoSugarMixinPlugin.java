@@ -1,7 +1,6 @@
 package com.test.nosugar.mixin.plugin;
 
 import com.test.nosugar.NoSugar;
-import com.test.nosugar.transformer.NoSugarLaunchPlugin;
 import com.test.nosugar.utils.NSAgentLoader;
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
@@ -25,19 +24,15 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
             registerTransformer();
             registered = true;
         }
-        try{
-            ILaunchPluginService plugin = new NoSugarLaunchPlugin();
+        /*ILaunchPluginService plugin = new NoSugarLaunchPlugin();
 
-            Field field = Launcher.class.getDeclaredField("launchPlugins");
-            field.setAccessible(true);
-            LaunchPluginHandler pluginHandler = (LaunchPluginHandler) field.get(Launcher.INSTANCE);
-            field = LaunchPluginHandler.class.getDeclaredField("plugins");
-            field.setAccessible(true);
-            Map<String, ILaunchPluginService> map = (Map<String, ILaunchPluginService>) field.get(pluginHandler);
-            map.put(plugin.name(), plugin);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-
-        }
+        Field field = Launcher.class.getDeclaredField("launchPlugins");
+        field.setAccessible(true);
+        LaunchPluginHandler pluginHandler = (LaunchPluginHandler) field.get(Launcher.INSTANCE);
+        field = LaunchPluginHandler.class.getDeclaredField("plugins");
+        field.setAccessible(true);
+        Map<String, ILaunchPluginService> map = (Map<String, ILaunchPluginService>) field.get(pluginHandler);
+        map.put(plugin.name(), plugin);*/
     }
 
     @Override
@@ -83,7 +78,7 @@ public class NoSugarMixinPlugin implements IMixinConfigPlugin {
                 NoSugar.LOGGER.info("[NoSugar] Agent not loaded...");
             }
         } catch (Exception e) {
-            NoSugar.LOGGER.warn("[NoSugar] Failed to register Agent: " + e);
+            //NoSugar.LOGGER.debug("[NoSugar] Failed to register Agent: " + e);
         }
 
     }

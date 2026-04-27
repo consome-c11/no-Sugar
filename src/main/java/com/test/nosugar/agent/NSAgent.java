@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NSAgent {
     public static NSAgentLogger LOGGER = new NSAgentLogger("NoSugar Agent");
+    public static final boolean DEBUG_ENABLED = Boolean.getBoolean("nosugar.debug.enabled");
 
     private static final ConcurrentHashMap<Class<?>, Object> hookInstances = new ConcurrentHashMap<>();
 
