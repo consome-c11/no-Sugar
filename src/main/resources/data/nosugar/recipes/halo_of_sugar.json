@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " H ",
+    "WCR",
+    " B "
+  ],
+  "key": {
+    "H": {
+      "item": "nosugar:snack_protect_helmet"
+    },
+    "C": {
+      "item": "nosugar:snack_protect_chestplate"
+    },
+    "B": {
+      "item": "nosugar:snack_protect_boots"
+    },
+    "W": {
+      "item": "nosugar:stop_watch"
+    },
+    "R": {
+      "item": "nosugar:ultimate_canteen"
+    }
+  },
+  "result": {
+    "item": "nosugar:halo_of_sugar",
+    "count": 1
+  }
+}
